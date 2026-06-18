@@ -4,11 +4,7 @@ TrafficInjector::TrafficInjector(sc_module_name name, int num_nodes, const Netwo
     :   sc_module(name),
         
         data_out("data_out", num_nodes),
-        valid_out("valid_out", num_nodes),
-        ready_in("ready_in", num_nodes),
         data_in("data_in", num_nodes),
-        valid_in("valid_in", num_nodes),
-        ready_out("ready_out", num_nodes),
         
         //path_ready_fifo("path_ready_fifo", 100),
         cfg(config){

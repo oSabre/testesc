@@ -1,5 +1,6 @@
 #include "ControlUnit.h"
 #include <iostream>
+#include "SDN_Controller.h"
 
 ControlUnit::ControlUnit(sc_module_name name) : sc_module(name) {
     // Registra a thread que vai ficar escutando a FIFO

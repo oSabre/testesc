@@ -23,13 +23,8 @@ SC_MODULE(TrafficInjector) {
     std::vector<TrafficEvent> traffic_queue; // Lista dos pacotes a enviar.
     
     // --- PLANO DE DADOS (Handshake por porta de roteador) ---
-    sc_vector<sc_out<Flit>>  data_out; // O que está sendo enviado
-    sc_vector<sc_out<bool>>  valid_out; // Injetor diz: "Dado pronto!"
-    sc_vector<sc_in<bool>>   ready_in;  // Roteador diz: "Tenho buffer livre!"
-
-    sc_vector<sc_in<Flit>>   data_in; // O que está sendo recebido
-    sc_vector<sc_in<bool>>   valid_in; // Roteador diz: "Tenho um dado para você!"
-    sc_vector<sc_out<bool>>  ready_out; // Injetor diz: "Pode mandar o dado para mim"
+    sc_vector<sc_fifo_out<Flit>> data_out; // Injetor joga o flit aqui. Se o router travar, o código espera.
+    sc_vector<sc_fifo_in<Flit>>  data_in;  // Injetor lê o flit aqui quando ele chega no destino.
 
     // --- PLANO DE CONTROLE (Comunicação com o SDN Controller) ---
     // Porta para solicitar rota (Request)

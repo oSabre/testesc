@@ -7,36 +7,38 @@
 
 SC_MODULE(OutputMUX) {
     // Portas de entrada: 5 entradas (N, S, E, W, Local)
-    sc_in<Flit> flit_in[NUM_PORTS];
+    sc_fifo_in<Flit> flit_in[NUM_PORTS];
 
     // Controle vindo do LocalAgent
     sc_in<int> sel;       // Qual índice de porta selecionar
     sc_in<bool> enable;   // Habilita a saída
 
     // Saída para o link externo
-    sc_out<Flit> flit_out;
+    sc_fifo_out<Flit> flit_out;
 
     void mux_logic() {
-        if (enable.read()) {
+        while (true) {
+            // Se o MUX não estiver habilitado pelo SDN, espera uma mudança no controle
+            if (!enable.read()) {
+                wait(enable.value_changed_event() | sel.value_changed_event());
+                continue; 
+            }
+
             int port = sel.read();
             if (port >= 0 && port < NUM_PORTS) {
-                flit_out.write(flit_in[port].read());
-                return;
+                // O .read() BLOQUEIA se o buffer de entrada estiver vazio
+                Flit f = flit_in[port].read(); 
+                
+                // O .write() BLOQUEIA automaticamente se o próximo roteador estiver cheio (Backpressure!)
+                flit_out.write(f); 
+            } else {
+                wait(sel.value_changed_event() | enable.value_changed_event());
             }
         }
-        // Se desabilitado ou porta inválida, envia um flit "vazio"
-        Flit empty_flit;
-        empty_flit.valid = false;
-        flit_out.write(empty_flit);
     }
 
     SC_CTOR(OutputMUX) {
-        SC_METHOD(mux_logic);
-        // Sensível a qualquer mudança nas entradas ou no controle
-        sensitive << enable << sel;
-        for(int i = 0; i < NUM_PORTS; ++i) {
-            sensitive << flit_in[i];
-        }
+        SC_THREAD(mux_logic);
     }
     
 };

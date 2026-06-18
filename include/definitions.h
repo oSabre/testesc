@@ -139,6 +139,13 @@ struct SwitchConfigCmd{
     int flow_id;
 };
 
+inline std::ostream& operator<<(std::ostream& os, const SwitchConfigCmd& cmd) {
+    os << "Cmd(action=" << cmd.action 
+       << ", in=" << cmd.input_port 
+       << ", out=" << cmd.output_port << ")";
+    return os;
+}
+
 enum PortID {
     PORT_LOCAL = 0,
     PORT_NORTH = 1,

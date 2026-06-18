@@ -11,7 +11,9 @@
 #include <systemc.h>
 #include <stats.h>
 #include "routingStrategy.h"
-#include "SDN_Controller.h"
+
+//#include "SDN_Controller.h"
+class SDN_Controller;
 
 SC_MODULE(ControlUnit) {
     sc_in_clk clk;
