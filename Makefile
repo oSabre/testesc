@@ -9,7 +9,8 @@ MAIN_SOURCES = main.cpp \
                srcs/Stats.cpp \
                srcs/TrafficInjector.cpp \
                srcs/arbitro.cpp \
-               srcs/sdn_controller.cpp
+               srcs/sdn_controller.cpp \
+			   srcs/ControlUnit.cpp
 
 all: con.exe back.exe reset.exe burst.exe integrity.exe testevec.exe main.exe conpl.exe
 

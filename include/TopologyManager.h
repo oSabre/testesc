@@ -137,6 +137,14 @@ public:
         return links;
     }
 
+    bool is_link_busy(int u, int v){
+        auto it = link_map.find({std::min(u, v), std::max(u, v)});
+        if(it != link_map.end()){
+            return links[it->second].is_busy;
+        }
+        return true;
+    }
+
 };
 
 #endif

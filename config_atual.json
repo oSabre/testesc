@@ -1,0 +1,38 @@
+{
+  "network_params": {
+    "num_control_units": 4,
+    "link_transit_latency_ns": 10,
+    "max_retries": 10,
+    "retry_wait_ns": 30,
+    "packets_per_flow": 10,
+    "flits_per_packet": 5,
+    "idle_cycles": 2
+  },
+  "topology": [
+    {
+      "id": 0,
+      "u": 0,
+      "v": 2
+    },
+    {
+      "id": 1,
+      "u": 1,
+      "v": 3
+    },
+    {
+      "id": 2,
+      "u": 2,
+      "v": 3
+    },
+    {
+      "id": 3,
+      "u": 3,
+      "v": 1
+    }
+  ],
+  "traffic": {
+    "mode": "deterministic",
+    "source_file": "traces/trace_01.csv",
+    "seed": 1
+  }
+}

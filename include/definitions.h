@@ -111,6 +111,7 @@ struct PortSignals {
 const int NUM_PORTS = 5; // N, S, L, O, Local
 const int BUFFER_SIZE = 16;
 const sc_time CLOCK_PERIOD(10, SC_NS); 
+const sc_time LAT(1, SC_NS);
 
 struct NetworkConfig {
     sc_time link_transit_latency;
@@ -126,6 +127,24 @@ struct TrafficEvent {
     int dst;
     double start_time_ns;
     int flow_id;
+};
+
+enum ConfigAction {SETUP, RELEASE};
+
+struct SwitchConfigCmd{
+    ConfigAction action;
+    int output_port; // Qual MUX de saída configurar (ex: porta que vai pro próximo nó)
+    int input_port; // Qual porta de entrada selecionar (ex: porta que vem do nó anterior)
+    bool enable;
+    int flow_id;
+};
+
+enum PortID {
+    PORT_LOCAL = 0,
+    PORT_NORTH = 1,
+    PORT_SOUTH = 2,
+    PORT_EAST = 3,
+    PORT_WEST = 4
 };
 
 #endif

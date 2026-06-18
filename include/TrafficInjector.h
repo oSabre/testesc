@@ -33,10 +33,10 @@ SC_MODULE(TrafficInjector) {
 
     // --- PLANO DE CONTROLE (Comunicação com o SDN Controller) ---
     // Porta para solicitar rota (Request)
-    sc_out<PacketMetadata> request_to_sdn;
+    sc_fifo_out<PacketMetadata> request_to_sdn;
 
     // Porta para receber o sinal de "Caminho Pronto" (Start Signal)
-    //sc_fifo<int>    path_ready_fifo; 
+    sc_fifo_in<int> path_ready_in; 
     
     // Porta para avisar "Comunicação Terminada" (Release Signal)
     //sc_out<bool>   release_path_signal;

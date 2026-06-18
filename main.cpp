@@ -2,8 +2,7 @@
 #include <nlohmann/json.hpp>
 #include <fstream>
 #include <iostream>
-#include <string>
-#include <memory>
+#include <vector>
 #include "ControlUnit.h"
 #include "definitions.h"
 #include "TopologyManager.h"
@@ -13,10 +12,7 @@
 #include "TrafficInjector.h"
 #include "SDN_Controller.h"
 
-
 using json = nlohmann::json;
-
-
 
 int sc_main(int argc, char* argv[]) {
     sc_clock clk("clk", 10, SC_NS);
@@ -103,25 +99,113 @@ int sc_main(int argc, char* argv[]) {
     std::cout << "-----------------------------------------------\n" << std::endl;
     // ---------------------------------------
 
-    TrafficInjector* ti = new TrafficInjector("Traffic_Injector", 16, net_cfg);
+    // =========================================================================
+    // 4. INSTANCIAÇÃO DOS CANAIS E SINAIS DE CONEXÃO
+    // =========================================================================
+    // --- Canais do Plano de Controle (FIFOs) ---
+    sc_fifo<PacketMetadata> request_fifo("request_fifo", 100);
+    sc_fifo<int> path_ready_fifo("path_ready_fifo", 100);
 
+    /*
+    // --- Sinais do Plano de Dados (Dummy para evitar erro de porta solta) ---
+    sc_vector<sc_signal<Flit>> data_out_sigs("data_out_sigs", num_nodes);
+    sc_vector<sc_signal<bool>> valid_out_sigs("valid_out_sigs", num_nodes);
+    sc_vector<sc_signal<bool>> ready_in_sigs("ready_in_sigs", num_nodes);
+
+    sc_vector<sc_signal<Flit>> data_in_sigs("data_in_sigs", num_nodes);
+    sc_vector<sc_signal<bool>> valid_in_sigs("valid_in_sigs", num_nodes);
+    sc_vector<sc_signal<bool>> ready_out_sigs("ready_out_sigs", num_nodes);
+    */
+
+    // --- Plano de Controle: 1 FIFO por Roteador ---
+    // O SDN Controller precisa falar individualmente com cada roteador.
+    sc_vector<sc_fifo<SwitchConfigCmd>> router_config_fifos("router_config_fifos", num_nodes);
+
+    // --- Plano de Dados: Matriz de Sinais (Tecido de Interconexão) ---
+    // Precisamos de um sinal para cada porta de cada roteador.
+    // Matriz: [router_id][port_id]
+    sc_vector<sc_vector<sc_signal<Flit>>> fabric("fabric", num_nodes);
+    for(int i = 0; i < num_nodes; ++i) {
+        fabric[i].init(NUM_PORTS);
+    }
+
+    // =========================================================================
+    // 5. INSTANCIAÇÃO E CONEXÃO DOS MÓDULOS
+    // =========================================================================
+    // Instanciando Roteadores
+    sc_vector<Router*> routers("routers", num_nodes);
+    for(int i = 0; i < num_nodes; ++i) {
+        routers[i] = new Router(("Router_" + std::to_string(i)).c_str());
+        routers[i]->clk(clk);
+        routers[i]->config_in(router_config_fifos[i]); // Conecta ao FIFO de controle dele
+    }
+
+    // Fazendo a Cablagem (Bind) baseada na Topologia
+    for (int i = 0; i < num_nodes; ++i) {
+        for (int p = 0; p < NUM_PORTS; ++p) {
+            if (p == PORT_LOCAL) {
+                // Porta Local: Conectamos ao TrafficInjector futuramente
+                // (O Injetor acessará routers[i]->flit_in[PORT_LOCAL])
+                continue; 
+            }
+
+            int vizinho = tm->get_neighbor_at_port(i, p);
+            if (vizinho != -1) {
+                // Conectamos a saída do Router[i] na porta p ao sinal da "fabric"
+                routers[i]->flit_out[p](fabric[i][p]);
+                
+                // Conectamos a entrada do vizinho (na porta que aponta de volta para i)
+                int reverse_port = tm->get_port_to_neighbor(vizinho, i);
+                routers[vizinho]->flit_in[reverse_port](fabric[i][p]);
+            }
+        }
+    }
+
+    // Instanciação do Injetor de Tráfego
+    TrafficInjector* ti = new TrafficInjector("Traffic_Injector", num_nodes, net_cfg);
     std::string csv_path = cfg["traffic"]["source_file"];
-
     ti->load_traffic_from_csv(csv_path);
-
+    
+    // Conexões básicas do Injetor
     ti->clk(clk);
     ti->rst(rst);
 
-    sc_signal<PacketMetadata> request_ti_SDN;
-    ti->request_to_sdn(request_ti_SDN);
+    // Conexões de Controle do Injetor
+    ti->request_to_sdn(request_fifo);
+    ti->path_ready_in(path_ready_fifo); // Nova porta que adicionamos
 
-    SDN_Controller* sdn = new SDN_Controller("SDN_Controller", num_cu);
+    // Conectando o Injetor à porta LOCAL de cada roteador
+    for(int i = 0; i < num_nodes; ++i) {
+        ti->data_out[i](routers[i]->flit_in[PORT_LOCAL]);
+        ti->data_in[i](routers[i]->flit_out[PORT_LOCAL]);
+    }
+
+    // Instanciação do SDN Controller
+    SDN_Controller* sdn = new SDN_Controller("SDN_Controller", num_cu, tm->get_num_nodes());
     sdn->clk(clk);
-    sdn->requisitions_in(request_ti_SDN);
+    
+    // Conexões de Controle do SDN
+    sdn->requisitions_in(request_fifo);
+    sdn->path_ready_out(path_ready_fifo);
+    
+    // Passando referências globais de infraestrutura
+    sdn->set_topology(tm);
+    sdn->set_config(&net_cfg);
+    
+    // =========================================================================
+    // 6. EXECUÇÃO DA SIMULAÇÃO
+    // =========================================================================
+    std::cout << "Iniciando a simulacao do sistema..." << std::endl;
+    
+    sc_start(10, SC_US);
+    
+    std::cout << "Simulacao finalizada com sucesso." << std::endl;
 
-
-    std::cout << "Teste..." << std::endl;
-    sc_start(100, SC_NS);
+    // Limpeza de memória
+    delete tm;
+    delete ti;
+    delete sdn;
 
     return 0;
+    
 }

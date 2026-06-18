@@ -5,22 +5,24 @@
 #include "definitions.h"
 
 SC_MODULE(InputBuffer) {
-    sc_in_clk clk;
-    sc_fifo_in<Flit> in;
-    sc_fifo_out<Flit> out;
+    sc_in<bool> clk;
+    sc_fifo_in<Flit>  fifo_in;
+    sc_fifo_out<Flit> fifo_out;
+    sc_time latency;
 
     void buffer_logic() {
-        while(true) {
-            wait(); // Sincronizado com o clock
-            if (in.num_available() > 0) {
-                Flit f = in.read();
-                out.write(f); // Passa para o Crossbar
-            }
+        while (true) {
+            Flit f = fifo_in.read(); // BLOQUEIA se o buffer estiver vazio
+            
+            // Simula a latência de trânsito ou processamento do buffer
+            wait(latency); 
+            
+            fifo_out.write(f);       // BLOQUEIA se o próximo estágio (MUX) estiver cheio
         }
     }
 
-    SC_CTOR(InputBuffer) {
-        SC_CTHREAD(buffer_logic, clk.pos());
+    InputBuffer(sc_module_name name, sc_time lat) : sc_module(name), latency(lat) {
+        SC_THREAD(buffer_logic);
     }
 };
 

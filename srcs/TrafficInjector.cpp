@@ -1,20 +1,20 @@
 #include "TrafficInjector.h"
 
 TrafficInjector::TrafficInjector(sc_module_name name, int num_nodes, const NetworkConfig& config) 
-    :   sc_module(name), 
-        /*
+    :   sc_module(name),
+        
         data_out("data_out", num_nodes),
         valid_out("valid_out", num_nodes),
         ready_in("ready_in", num_nodes),
         data_in("data_in", num_nodes),
         valid_in("valid_in", num_nodes),
         ready_out("ready_out", num_nodes),
-        */
+        
         //path_ready_fifo("path_ready_fifo", 100),
         cfg(config){
     
     SC_THREAD(run);
-    //SC_THREAD(monitor_controller_responses);
+    SC_THREAD(monitor_controller_responses);
     
 }
 
@@ -86,9 +86,7 @@ void TrafficInjector::request_path(TrafficEvent event){
     req.sender_id = event.src;
     req.receiver_id = event.dst;
     
-    request_mutex.lock();
     request_to_sdn.write(req);
-    request_mutex.unlock();
 }
 
 void TrafficInjector::wait_for_path_ready(int flow_id){
@@ -105,11 +103,20 @@ void TrafficInjector::wait_for_path_ready(int flow_id){
 }
 
 void TrafficInjector::monitor_controller_responses(){
-    while(true){
-        //int ready_id = path_ready_fifo.read();
+    while (true) {
+        // 1. Bloqueia aguardando um sinal vindo do SDN via FIFO
+        int ready_id = path_ready_in.read(); 
+
+        // 2. Atualiza o mapa de forma segura
         map_mutex.lock();
-        //ready_flows[ready_id] = true;
+        ready_flows[ready_id] = true;
         map_mutex.unlock();
+
+        // 3. LOG DE DEBUG (Para você confirmar a chegada)
+        std::cout << "@" << sc_time_stamp() << " [TrafficInjector] "
+                  << "Sinal recebido: Circuito fechado para o Flow ID " << ready_id << std::endl;
+
+        // 4. Notifica todas as threads que estão presas no wait_for_path_ready
         ready_event.notify();
     }
 }
