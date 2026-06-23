@@ -12,12 +12,12 @@ Arbitro::Arbitro(sc_module_name name, int num_cus):
 
 void Arbitro::arbitrate_test_process(){
     while (true){
-        PacketMetadata req = requisitions_in.read();
+        //PacketMetadata req = requisitions_in.read();
 
-        std::cout << "[Arbitro] @ " << sc_time_stamp() 
-                  << ": Requisicao " << req.flow_id 
-                  << " chegou do roteador (injetor) " << req.sender_id 
-                  << std::endl; 
+        //std::cout << "[Arbitro] @ " << sc_time_stamp() 
+        //          << ": Requisicao " << req.flow_id 
+        //          << " chegou do roteador (injetor) " << req.sender_id 
+        //          << std::endl; 
     } 
 }
 
@@ -32,9 +32,9 @@ void Arbitro::arbitrate_process() {
         // 3. Round-Robin: envia para next_cu e incrementa
         cu_request_ports[next_cu].write(req);
         
-        std::cout << "[Arbitro] @ " << sc_time_stamp() 
-                  << " -> Enviando Flow " << req.flow_id 
-                  << " para ControlUnit " << next_cu << std::endl;
+        //std::cout << "[Arbitro] @ " << sc_time_stamp() 
+        //          << " -> Enviando Flow " << req.flow_id 
+        //          << " para ControlUnit " << next_cu << std::endl;
 
         next_cu = (next_cu + 1) % num_cus; // Incremento circular
     }

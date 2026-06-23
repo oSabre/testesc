@@ -17,21 +17,23 @@ SC_MODULE(LocalAgent) {
             if (cmd.output_port >= 0 && cmd.output_port < NUM_PORTS &&
                 cmd.input_port >= 0 && cmd.input_port < NUM_PORTS) {
                 if (cmd.action == SETUP) {
+                    //std::cout << "[DEBUG LocalAgent] Escrevendo no buffer_target[" << cmd.input_port 
+                    //        << "] o valor: " << cmd.output_port << std::endl;
                     // Configura o MUX da porta de saída correspondente
                     mux_sel[cmd.output_port].write(cmd.input_port);
                     mux_enable[cmd.output_port].write(true);
                     buffer_target[cmd.input_port].write(cmd.output_port);
                     
-                    std::cout << "@" << sc_time_stamp() << " [LocalAgent] "
-                              << "Executando SETUP: Saida " << cmd.output_port 
-                              << " conectada a Entrada " << cmd.input_port << std::endl;
+                    //std::cout << "@" << sc_time_stamp() << " [LocalAgent] "
+                    //          << "Executando SETUP: Saida " << cmd.output_port 
+                    //          << " conectada a Entrada " << cmd.input_port << std::endl;
                 }else if (cmd.action == RELEASE) {
                     // Desliga o MUX da porta de saída correspondente
                     mux_enable[cmd.output_port].write(false);
                     buffer_target[cmd.input_port].write(-1);
                     
-                    std::cout << "@" << sc_time_stamp() << " [LocalAgent] "
-                              << "Executando RELEASE na Saída " << cmd.output_port << std::endl;
+                    //std::cout << "@" << sc_time_stamp() << " [LocalAgent] "
+                    //          << "Executando RELEASE na Saida " << cmd.output_port << std::endl;
                 }
             }else{
                 std::cout << "@" << sc_time_stamp() << " [Erro LocalAgent] Comando SDN com portas invalidas! "

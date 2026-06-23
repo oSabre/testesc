@@ -17,6 +17,10 @@ SC_MODULE(SDN_Controller) {
     
     sc_fifo_in<PacketMetadata> requisitions_in;
 
+
+    // Porta para receber o aviso de fim de transmissão do Injetor
+    sc_fifo_in<int> teardown_in;
+
     // Saída final para o injetor.
     sc_fifo_out<int> path_ready_out;
 
@@ -43,6 +47,6 @@ SC_MODULE(SDN_Controller) {
     void set_topology(TopologyManager* _tm);
     void set_config(const NetworkConfig* _cfg);
     void configure_path_hardware(const std::vector<int>& route, int flow_id);
-
+    void process_teardown();
 };
 #endif

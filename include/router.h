@@ -31,7 +31,7 @@ SC_MODULE(Router) {
     InputBuffer* buffers[NUM_PORTS];
     OutputMUX* muxes[NUM_PORTS];
     
-    SC_CTOR(Router) {
+    Router(sc_module_name name, const NetworkConfig& net_cfg) : sc_module(name) {
         // 1. Instancia o Agente Local
         agent = new LocalAgent("agent");
         agent->config_in(config_in); // Conecta o fifo de configuração
@@ -39,7 +39,7 @@ SC_MODULE(Router) {
         // 2. INSTANCIAÇÃO: Cria todos os buffers e muxes primeiro
         for (int i = 0; i < NUM_PORTS; ++i) {
             buffers[i] = new InputBuffer(("buffer_" + std::to_string(i)).c_str(), LAT);
-            muxes[i] = new OutputMUX(("mux_" + std::to_string(i)).c_str());
+            muxes[i] = new OutputMUX(("mux_" + std::to_string(i)).c_str(), net_cfg.link_transit_latency);
         }
 
         // 3. CONEXÃO LINEAR: Conecta portas externas e sinais de controle individuais

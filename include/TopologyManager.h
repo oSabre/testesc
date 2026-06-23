@@ -57,9 +57,9 @@ public:
         port_map[{v, u}] = p_v;
 
        // DEBUG para validar a atribuição
-        std::cout << "Link " << id << " entre " << u << " e " << v 
-              << " | " << u << " porta " << p_u 
-              << " <-> " << v << " porta " << p_v << std::endl;
+        //std::cout << "Link " << id << " entre " << u << " e " << v 
+        //      << " | " << u << " porta " << p_u 
+        //      << " <-> " << v << " porta " << p_v << std::endl;
 
         //topo_mutex.unlock();
     }

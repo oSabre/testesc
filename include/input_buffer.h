@@ -10,27 +10,32 @@ SC_MODULE(InputBuffer) {
     sc_fifo_in<Flit>  fifo_in;
     sc_fifo_out<Flit> fifo_out[NUM_PORTS];
     sc_time latency;
+    int current_target;
 
     void buffer_logic() {
+        current_target = -1;
         while (true) {
-            Flit f = fifo_in.read(); // BLOQUEIA se o buffer estiver vazio
+            // 2. Bloqueia aguardando um flit
+            Flit f = fifo_in.read();
 
-            int out_p = target_port.read();
+            current_target = target_port.read();
 
-            if (out_p >= 0 && out_p < NUM_PORTS) {
-                
-                // Simula a latência de processamento
-                wait(latency); 
-                
-                // Envia para o MUX correto na matriz interna
-                fifo_out[out_p].write(f); 
-                
+
+            //if(f.is_tail) std::cout << "@" << sc_time_stamp() << " [InputBuffer " << name() << "] is tail" << endl;
+
+            //std::cout << "@" << sc_time_stamp() << " [InputBuffer " << name() 
+            //              << "] Flit " << f.flit_id << " lendo rota " 
+            //              << current_target << std::endl;
+
+            // 3. Encaminha baseado no estado atual
+            if (current_target >= 0 && current_target < NUM_PORTS) {
+                wait(latency);
+                fifo_out[current_target].write(f);
             } else {
-                // Se a rota for inválida, descarta o flit ou exibe um alerta de erro
-                std::cout << "@" << sc_time_stamp() << " [Erro InputBuffer] Flit recebido mas rota interna " 
-                          << out_p << " é inválida!" << std::endl;
+                std::cout << "@" << sc_time_stamp() << " [InputBuffer " << name() 
+                          << "] ERRO: Flit " << f.flit_id << " chegou, mas rota eh " 
+                          << current_target << " (nao configurada!)" << std::endl;
             }
-            
         }
     }
 

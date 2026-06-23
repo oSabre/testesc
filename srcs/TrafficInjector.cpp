@@ -1,16 +1,24 @@
 #include "TrafficInjector.h"
 
-TrafficInjector::TrafficInjector(sc_module_name name, int num_nodes, const NetworkConfig& config) 
+TrafficInjector::TrafficInjector(sc_module_name name, int num_nodes, const NetworkConfig& config, StatsCollector* sc_ptr) 
     :   sc_module(name),
         
         data_out("data_out", num_nodes),
         data_in("data_in", num_nodes),
         
         //path_ready_fifo("path_ready_fifo", 100),
-        cfg(config){
+        request_to_sdn("request_to_sdn"),
+        teardown_to_sdn("teardown_to_sdn"),
+        
+        cfg(config),
+        stats(sc_ptr){
     
     SC_THREAD(run);
     SC_THREAD(monitor_controller_responses);
+
+    for (int i = 0; i < num_nodes; ++i) {
+        sc_spawn(sc_bind(&TrafficInjector::receive_data_process, this, i));
+    }
     
 }
 
@@ -43,16 +51,16 @@ void TrafficInjector::load_traffic_from_csv(const std::string& filename){
 }
 
 void TrafficInjector::run() {
-    std::cout << "[RUN] Entrou TrafficInjector RUN" << std::endl;
+    //std::cout << "[RUN] Entrou TrafficInjector RUN" << std::endl;
     for (const auto& event : traffic_queue) {
         // Cria uma thread para este fluxo específico
         sc_spawn([this, event]() { this->process_traffic_flow(event); });
-        std::cout << "[RUN] SPAWNED" << std::endl;
+        //std::cout << "[RUN] SPAWNED" << std::endl;
     }
 }
 
 void TrafficInjector::process_traffic_flow(TrafficEvent event) {
-    std::cout << "[PROCESS_TRAFFIC_FLOW] ENTROU" << std::endl;
+    //std::cout << "[PROCESS_TRAFFIC_FLOW] ENTROU" << std::endl;
     // 1. Aguarda o tempo de início
     
     sc_time start_time(event.start_time_ns, SC_NS);
@@ -61,22 +69,27 @@ void TrafficInjector::process_traffic_flow(TrafficEvent event) {
         wait(start_time - current);
     }
         
-
+    stats->record_request(event.flow_id, sc_time_stamp());
     // 2. Faz o pedido (Handshake de controle)
     request_path(event);
 
     // 3. Aguarda o sinal de pronto (Sincronização)
     wait_for_path_ready(event.flow_id);
 
+    stats->record_setup(event.flow_id, sc_time_stamp());
     // 4. Envia o payload (Handshake de dados)
     send_data_payload(event);
 
+    // 4.5 Aguarda a confirmação de que os dados chegaram ao destino
+    wait_for_flow_completion(event.flow_id);
+
+    stats->record_finish(event.flow_id, sc_time_stamp());
     // 5. Libera o recurso
     release_path(event.flow_id);
 }
 
 void TrafficInjector::request_path(TrafficEvent event){
-    std::cout << "[REQUEST PATH] ENTROU" << std::endl;
+    //std::cout << "[REQUEST PATH] ENTROU" << std::endl;
     PacketMetadata req;
     req.flow_id = event.flow_id;
     req.sender_id = event.src;
@@ -109,19 +122,81 @@ void TrafficInjector::monitor_controller_responses(){
         map_mutex.unlock();
 
         // 3. LOG DE DEBUG (Para você confirmar a chegada)
-        std::cout << "@" << sc_time_stamp() << " [TrafficInjector] "
-                  << "Sinal recebido: Circuito fechado para o Flow ID " << ready_id << std::endl;
+        //std::cout << "@" << sc_time_stamp() << " [TrafficInjector] "
+        //          << "Sinal recebido: Circuito fechado para o Flow ID " << ready_id << std::endl;
 
         // 4. Notifica todas as threads que estão presas no wait_for_path_ready
         ready_event.notify();
     }
 }
 
-void TrafficInjector::send_data_payload(TrafficEvent event){
+void TrafficInjector::send_data_payload(TrafficEvent event) {
+    //std::cout << "@" << sc_time_stamp() << " [TrafficInjector] Iniciando envio: Flow ID " 
+    //          << event.flow_id << " (" << event.src << " -> " << event.dst << ")" << std::endl;
 
+    for (int p = 0; p < cfg.packets_per_flow; ++p) {
+        for (int f = 0; f < cfg.flits_per_packet; ++f) {
+            Flit flit;
+            flit.flit_id = f;
+            flit.packet_id = p;
+            flit.flow_id = event.flow_id;
+            flit.src_id = event.src;
+            flit.dst_id = event.dst;
+            
+            flit.is_header = (f == 0);
+            flit.is_tail = (f == cfg.flits_per_packet - 1);
+            flit.timestamp = sc_time_stamp();
+
+            // Escreve o Flit na porta Local do Roteador de Origem
+            data_out[event.src].write(flit);
+
+            // Atraso de injeção de 1 ciclo (ajuste para o seu clock, se necessário)
+            wait(1, SC_NS); 
+        }
+        
+        // Aplica os idle_cycles entre um pacote e outro
+        if (p < cfg.packets_per_flow - 1) {
+            wait(cfg.idle_cycles, SC_NS);
+        }
+    }
 }
 
-void TrafficInjector::release_path(int flow_id){
+void TrafficInjector::receive_data_process(int node_id) {
+    while (true) {
+        // Bloqueia até um flit chegar do roteador para este nó
+        Flit flit = data_in[node_id].read();
 
+        // Se for o flit final do último pacote
+        if (flit.is_tail && flit.packet_id == cfg.packets_per_flow - 1) {
+            //std::cout << "@" << sc_time_stamp() << " [TrafficInjector] Destino " << node_id 
+            //          << " recebeu o ULTIMO flit do Flow ID " << flit.flow_id << std::endl;
+            
+            // Marca o fluxo como completo e notifica
+            map_mutex.lock();
+            completed_flows[flit.flow_id] = true;
+            map_mutex.unlock();
+            completed_event.notify();
+        }
+    }
+}
+
+void TrafficInjector::wait_for_flow_completion(int flow_id) {
+    while(true){
+        map_mutex.lock();
+        if(completed_flows.count(flow_id) && completed_flows[flow_id]){
+            completed_flows.erase(flow_id);
+            map_mutex.unlock();
+            break;
+        }
+        map_mutex.unlock();
+        wait(completed_event);
+    }
+}
+
+void TrafficInjector::release_path(int flow_id) {
+    //std::cout << "@" << sc_time_stamp() << " [TrafficInjector] Transmissao concluida. Solicitando TEARDOWN para o Flow ID " 
+              //<< flow_id << std::endl;
+              
+    teardown_to_sdn.write(flow_id);
 }
 

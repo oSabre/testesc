@@ -10,7 +10,9 @@
 #include "router.h"
 #include "dijkstra.h"
 #include "TrafficInjector.h"
+#include "StatsCollector.h"
 #include "SDN_Controller.h"
+#include "TrafficUtils.h"
 
 using json = nlohmann::json;
 
@@ -18,6 +20,8 @@ int sc_main(int argc, char* argv[]) {
     sc_clock clk("clk", 10, SC_NS);
     sc_signal<bool> rst("rst");
     rst.write(false);
+
+    StatsCollector stats;
     
     // Carregamento do JSON
     std::ifstream file("config.json");
@@ -74,6 +78,7 @@ int sc_main(int argc, char* argv[]) {
     int num_nodes = tm->get_num_nodes();
 
     // --- DEBUG: Mapeamento de Topologia ---
+    /*
     std::cout << "\n--- Debug: Topologia e Mapeamento de Portas ---" << std::endl;
     
     // 1. Links (Arestas)
@@ -97,14 +102,18 @@ int sc_main(int argc, char* argv[]) {
         }
     }
     std::cout << "-----------------------------------------------\n" << std::endl;
+    */
     // ---------------------------------------
 
     // =========================================================================
     // 4. INSTANCIAÇÃO DOS CANAIS E SINAIS DE CONEXÃO
     // =========================================================================
     // --- Canais do Plano de Controle Global ---
-    sc_fifo<PacketMetadata> request_fifo("request_fifo", 100);
-    sc_fifo<int> path_ready_fifo("path_ready_fifo", 100);
+    sc_fifo<PacketMetadata> request_fifo("request_fifo", 1000);
+    sc_fifo<int> path_ready_fifo("path_ready_fifo", 1000);
+
+    // --- Canal para o Injetor avisar o SDN que o fluxo terminou ---
+    sc_fifo<int> teardown_fifo("teardown_fifo", 1000);
 
     // --- Fios Ponto-a-Ponto (Alocados dinamicamente) ---
     // Canais entre o SDN e os Roteadores (Plano de Controle Local)
@@ -116,9 +125,9 @@ int sc_main(int argc, char* argv[]) {
 
     // Inicializa os canais de comunicação estritos
     for(int i = 0; i < num_nodes; ++i) {
-        sdn_to_router_fifos[i] = new sc_fifo<SwitchConfigCmd>(("sdn_2_R" + std::to_string(i)).c_str(), 100);
-        ti_to_router_fifos[i]  = new sc_fifo<Flit>(("ti_2_R" + std::to_string(i)).c_str(), 100);
-        router_to_ti_fifos[i]  = new sc_fifo<Flit>(("R" + std::to_string(i) + "_2_ti").c_str(), 100);
+        sdn_to_router_fifos[i] = new sc_fifo<SwitchConfigCmd>(("sdn_2_R" + std::to_string(i)).c_str(), 1000);
+        ti_to_router_fifos[i]  = new sc_fifo<Flit>(("ti_2_R" + std::to_string(i)).c_str(), 1000);
+        router_to_ti_fifos[i]  = new sc_fifo<Flit>(("R" + std::to_string(i) + "_2_ti").c_str(), 1000);
     }
 
     // Estrutura para salvar os FIFOs da malha (fabric) e deletar depois
@@ -130,12 +139,14 @@ int sc_main(int argc, char* argv[]) {
     // 5.1 Instanciando os Roteadores
     std::vector<Router*> routers(num_nodes);
     for(int i = 0; i < num_nodes; ++i) {
-        routers[i] = new Router(("Router_" + std::to_string(i)).c_str());
+        routers[i] = new Router(("Router_" + std::to_string(i)).c_str(), net_cfg);
         routers[i]->clk(clk);
         routers[i]->config_in(*sdn_to_router_fifos[i]); // Ouve o canal do SDN
     }
 
+    // =========================================================================
     // 5.2 Fazendo a Cablagem (Bind) baseada na Topologia
+    // =========================================================================
     for (int i = 0; i < num_nodes; ++i) {
         for (int p = 0; p < NUM_PORTS; ++p) {
             
@@ -149,30 +160,63 @@ int sc_main(int argc, char* argv[]) {
             // Tratamento dinâmico para as demais portas
             int vizinho = tm->get_neighbor_at_port(i, p);
             if (vizinho != -1) {
-                // Cria um canal FIFO sob demanda APENAS para a direção (i -> vizinho)
+                // --- PORTA CONECTADA: Cria o canal real da malha ---
                 std::string fifo_name = "link_R" + std::to_string(i) + "_p" + std::to_string(p);
-                sc_fifo<Flit>* link_fifo = new sc_fifo<Flit>(fifo_name.c_str(), 10);
-                fabric_fifos.push_back(link_fifo); // Guarda para evitar Memory Leak no final
+                sc_fifo<Flit>* link_fifo = new sc_fifo<Flit>(fifo_name.c_str(), 1000);
+                fabric_fifos.push_back(link_fifo); 
 
-                // Roteador 'i' cospe os dados neste canal
+                // Roteador 'i' envia dados por este canal
                 routers[i]->flit_out[p](*link_fifo);
                 
-                // Roteador 'vizinho' lê os dados deste canal na sua porta de volta
+                // Roteador 'vizinho' lê os dados deste canal na sua porta reversa
                 int reverse_port = tm->get_port_to_neighbor(vizinho, i);
                 routers[vizinho]->flit_in[reverse_port](*link_fifo);
+            } else {
+                // --- PORTA DE BORDA (SEM VIZINHO): Conecta a canais dummy ---
+                // Criamos um canal sem saída para a entrada e outro para a saída
+                std::string dummy_in_nm  = "dummy_in_R"  + std::to_string(i) + "_p" + std::to_string(p);
+                std::string dummy_out_nm = "dummy_out_R" + std::to_string(i) + "_p" + std::to_string(p);
+                
+                sc_fifo<Flit>* d_in  = new sc_fifo<Flit>(dummy_in_nm.c_str(), 1000);
+                sc_fifo<Flit>* d_out = new sc_fifo<Flit>(dummy_out_nm.c_str(), 1000);
+                
+                // Guarda na lista para o delete final não esquecer deles
+                fabric_fifos.push_back(d_in);
+                fabric_fifos.push_back(d_out);
+
+                // Amarra as portas soltas do Roteador nesses FIFOs isolados
+                routers[i]->flit_in[p](*d_in);
+                routers[i]->flit_out[p](*d_out);
             }
         }
     }
 
     // 5.3 Instanciação e Conexão do Injetor de Tráfego
-    TrafficInjector* ti = new TrafficInjector("Traffic_Injector", num_nodes, net_cfg);
-    std::string csv_path = cfg["traffic"]["source_file"];
+    std::string traffic_mode = cfg["traffic"]["mode"]; // "deterministic" ou "uniform"
+    TrafficInjector* ti = new TrafficInjector("Traffic_Injector", num_nodes, net_cfg, &stats);
+    std::string csv_path;
+
+    if(traffic_mode == "deterministic"){
+        csv_path = cfg["traffic"]["source_file"];
+    } else if (traffic_mode == "uniform"){
+        int seed = cfg["traffic"].value("seed", 1);
+        int num_packets = cfg["traffic"].value("num_packets", 1000);
+        generateUniformTraffic(num_nodes, num_packets, seed, "uniform.csv");
+        csv_path = "uniform.csv";
+    }else{
+        std::cerr << "Erro: Modo de trafego desconhecido: " << traffic_mode << std::endl;
+        return 1;
+    }
+
     ti->load_traffic_from_csv(csv_path);
     
     ti->clk(clk);
     ti->rst(rst);
     ti->request_to_sdn(request_fifo);
     ti->path_ready_in(path_ready_fifo); 
+
+    // Bind da saída de teardown do Injetor para o FIFO
+    ti->teardown_to_sdn(teardown_fifo);
 
     for(int i = 0; i < num_nodes; ++i) {
         // Conecta as portas do Injetor aos canais que vão para os Roteadores
@@ -189,6 +233,9 @@ int sc_main(int argc, char* argv[]) {
     sdn->requisitions_in(request_fifo);
     sdn->path_ready_out(path_ready_fifo);
     
+    // Bind da entrada de teardown do SDN lendo do FIFO
+    sdn->teardown_in(teardown_fifo);
+
     // Conectando o plano de controle de saída do SDN aos canais dos roteadores
     for(int i = 0; i < num_nodes; ++i) {
         // Presumindo que seu SDN possui um array de portas chamado 'config_out'
@@ -203,6 +250,8 @@ int sc_main(int argc, char* argv[]) {
     sc_start(10, SC_US);
     
     std::cout << "Simulacao finalizada com sucesso." << std::endl;
+
+    stats.generate_report("results.csv");
 
     // Desalocação segura de memória (Evitando leaks no C++)
     delete tm;

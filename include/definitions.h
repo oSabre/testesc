@@ -154,4 +154,10 @@ enum PortID {
     PORT_WEST = 4
 };
 
+enum TrafficMode{
+    DETERMINISTIC,
+    UNIFORM,
+    RANDOM
+};
+
 #endif

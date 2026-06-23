@@ -15,21 +15,40 @@ void ControlUnit::process_routing() {
         std::vector<int> route;
 
         // 2. Log para validar que a mensagem chegou e qual CU processou
-        std::cout << "[ControlUnit " << name() << "] @ " << sc_time_stamp() 
-                  << ": Processando calculo de rota para Flow ID " << req.flow_id 
-                  << " (Origem: " << req.sender_id 
-                  << " -> Destino: " << req.receiver_id << ")" << std::endl;
+        //std::cout << "[ControlUnit " << name() << "] @ " << sc_time_stamp() 
+        //          << ": Processando calculo de rota para Flow ID " << req.flow_id 
+         //         << " (Origem: " << req.sender_id 
+         //         << " -> Destino: " << req.receiver_id << ")" << std::endl;
 
         // 3. Simula um tempo de processamento (latência do cálculo da rota)
         // Por enquanto vamos colocar um tempo fixo
         wait(5, SC_NS); 
 
+        //std::cout << "[ControlUnit " << name() << "] @ " << sc_time_stamp() 
+        //  << ": Acordou do processamento, iniciando loop de alocacao." << std::endl;
+
         while(!path_allocated){
+            // --- INSERÇÃO DOS LOGS DE DIAGNÓSTICO ---
+            // 1. Validar se os IDs estão dentro do esperado
+            if (req.sender_id >= tm->get_num_nodes() || req.receiver_id >= tm->get_num_nodes()) {
+                std::cerr << "[ERRO CRÍTICO] " << name() << " IDs de nó fora do limite! "
+                        << "Src: " << req.sender_id << ", Dst: " << req.receiver_id 
+                        << " | Grafo atual tem " << tm->get_num_nodes() << " nós." << std::endl;
+            }
+
+            // 2. Log de pré-processamento
+            std::cout << "[DEBUG] " << name() << " calculando rota: " 
+                    << req.sender_id << " -> " << req.receiver_id << std::endl;
+            // ----------------------------------------
+
             route = calculate_dijkstra(req.sender_id, req.receiver_id);
 
             if (route.empty()) {
                 // Não há caminhos livres na topologia inteira.
                 // Espera um tempo para que alguma mensagem termine e libere a rede.
+                std::cout << "[ControlUnit " << name() << "] @ " << sc_time_stamp() 
+                        << ": ERRO: Dijkstra retornou rota vazia (caminho impossivel?)." << std::endl;
+
                 wait(cfg->retry_wait_ns, SC_NS); 
                 continue; 
             }
@@ -37,11 +56,14 @@ void ControlUnit::process_routing() {
             path_allocated = tm->try_allocate_path(route);
 
             if(path_allocated){
-                std::cout << "[ControlUnit] Rota encontrada e reservada para o Flow " << req.flow_id 
-                          << " (CU: " << this->name() << ")" << std::endl;
+                //std::cout << "[ControlUnit] Rota encontrada e reservada para o Flow " << req.flow_id 
+                //          << " (CU: " << this->name() << ")" << std::endl;
                 parent_sdn->configure_path_hardware(route, req.flow_id);
                 path_ready_out.write(req.flow_id);
             }else{
+                //std::cout << "[ControlUnit " << name() << "] @ " << sc_time_stamp() 
+                //            << ": Caminho para Flow " << req.flow_id << " BUSY. Tentando novamente em " 
+                 //           << cfg->retry_wait_ns << " ns." << std::endl;
                 wait(cfg->retry_wait_ns, SC_NS);
             }
 

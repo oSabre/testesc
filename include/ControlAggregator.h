@@ -17,7 +17,7 @@ SC_MODULE(ControlAggregator) {
                 // Se alguma CU enviou o "ok" (flow_id)
                 if (inputs[i].num_available() > 0) {
                     int flow_id = inputs[i].read();
-                    std::cout << "[Aggregator] LI o Flow " << flow_id << " da porta " << i << std::endl;
+                    //std::cout << "[Aggregator] LI o Flow " << flow_id << " da porta " << i << std::endl;
                     output.write(flow_id); // Repassa para o TrafficInjector
                     found = true;
                 }
