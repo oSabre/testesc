@@ -68,7 +68,20 @@ void TrafficInjector::process_traffic_flow(TrafficEvent event) {
     if (start_time > current) {
         wait(start_time - current);
     }
-        
+
+    // Validação: um fluxo com origem == destino nunca tem uma rota válida
+    // (Dijkstra devolve um caminho de tamanho 1, e try_allocate_path sempre
+    // recusa caminhos assim). Sem esse check, a ControlUnit que pegasse esse
+    // fluxo ficava presa num loop infinito de retry, e como o Arbitro faz
+    // round-robin sem checar disponibilidade, essa CU travada acabava
+    // bloqueando a admissão de TODOS os outros fluxos que caíssem nela.
+    if (event.src == event.dst) {
+        std::cerr << "@" << sc_time_stamp() << " [TrafficInjector] AVISO: Flow "
+                  << event.flow_id << " descartado (origem == destino == "
+                  << event.src << ")." << std::endl;
+        return;
+    }
+
     stats->record_request(event.flow_id, sc_time_stamp());
     // 2. Faz o pedido (Handshake de controle)
     request_path(event);
@@ -199,4 +212,3 @@ void TrafficInjector::release_path(int flow_id) {
               
     teardown_to_sdn.write(flow_id);
 }
-

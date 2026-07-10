@@ -155,7 +155,7 @@ if __name__ == "__main__":
     ]
     
     # População inicial inteligente baseada na Mesh funcional
-    tamanho_pop = 40
+    tamanho_pop = 80
     pop_inicial = np.tile(v_mesh_original, (tamanho_pop, 1)).astype(float)
     
     # Adicionamos pequenas perturbações aleatórias nas outras cópias para dar diversidade
@@ -168,7 +168,7 @@ if __name__ == "__main__":
     # Inicializa o NSGA-II alimentado com a nossa população inicial guiada
     algorithm = NSGA2(pop_size=tamanho_pop, sampling=pop_inicial)
     
-    termination = get_termination("n_gen", 10)
+    termination = get_termination("n_gen", 20)
     
     print("Iniciando otimização guiada da Mesh 16 nós (Blindado contra quedas)...")
     

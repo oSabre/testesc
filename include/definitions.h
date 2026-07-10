@@ -120,6 +120,60 @@ struct NetworkConfig {
     int packets_per_flow;
     int flits_per_packet;
     int idle_cycles;
+
+    // Profundidade (em flits) dos FIFOs do plano de DADOS: injetor<->roteador
+    // e roteador<->roteador (malha/fabric). Antes esse valor estava hardcoded
+    // em 1000 no main.cpp, o que na prática desativava qualquer backpressure
+    // real (um fluxo inteiro nunca chega perto de 1000 flits em trânsito).
+    // Usamos BUFFER_SIZE como default caso o JSON não especifique.
+    int buffer_size = BUFFER_SIZE;
+
+    // --- Coeficientes do modelo de custo do Dijkstra (ControlUnit) ---
+    // O tempo de cálculo de rota deixou de ser um valor fixo e passou a
+    // escalar com o trabalho real do algoritmo: O((V + E) log V).
+    // Todos calibráveis via config.json; valores abaixo são defaults.
+
+    // Custo de inicialização O(V): alocar/zerar dist[] e prev[] escala
+    // com o tamanho da rede (num_nodes).
+    double dijkstra_base_ns_per_node = 0.1;
+
+    // Custo de uma operação de heap (push/pop na priority_queue),
+    // escalado por log2(tamanho da fila) — mais nós/arestas ativos na
+    // busca tornam cada operação de heap mais cara.
+    double dijkstra_pq_op_ns = 1.0;
+
+    // Custo de examinar uma aresta candidata (olhar o vizinho + consultar
+    // o estado do link via is_link_busy, que representa o controlador
+    // consultando o estado atual da rede).
+    double dijkstra_edge_check_ns = 0.2;
+
+    // Latência de propagação do PLANO DE CONTROLE: tempo entre o SDN
+    // Controller escrever um SwitchConfigCmd e o LocalAgent do roteador
+    // efetivamente aplicar a configuração no hardware (mux_sel/mux_enable/
+    // buffer_target). Antes esse valor era zero (o comando "teleportava"),
+    // o que fazia a rede parecer reagir instantaneamente às decisões do
+    // controlador. Análogo ao link_transit_latency, mas para o plano de
+    // controle. Default 0 preserva o comportamento antigo se não setado.
+    sc_time control_plane_latency = SC_ZERO_TIME;
+
+    // Jitter máximo (em ns) somado ao retry_wait_ns de cada ControlUnit.
+    // Sem isso, vários fluxos que colidem no mesmo link re-tentam sempre
+    // no mesmo instante simulado (retry_wait_ns fixo), gerando um
+    // "thundering herd" artificial e sincronizado que não existe num
+    // sistema real. O valor efetivo de espera de cada retry é sorteado
+    // uniformemente em [retry_wait_ns, retry_wait_ns + retry_jitter_ns].
+    // Se não vier do JSON, main.cpp usa um default proporcional a
+    // retry_wait_ns (25%) em vez de 0.
+    int retry_jitter_ns = 0;
+
+    // Seed mestre da simulação. Combinado com o hash do nome de cada
+    // ControlUnit para semear o RNG do jitter de retry. Sem isso, duas
+    // "réplicas" da simulação (rodando o mesmo binário duas vezes) dariam
+    // exatamente o mesmo resultado, porque o RNG só dependia do nome do
+    // módulo (fixo). Trocar essa seed entre execuções é o que torna cada
+    // réplica estatisticamente independente. Lido de simulation.seed no
+    // config.json (default 1 preserva reprodutibilidade se não setado).
+    unsigned int master_seed = 1;
 };
 
 struct TrafficEvent {

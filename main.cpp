@@ -3,6 +3,7 @@
 #include <fstream>
 #include <iostream>
 #include <vector>
+#include <algorithm>
 #include "ControlUnit.h"
 #include "definitions.h"
 #include "TopologyManager.h"
@@ -53,7 +54,53 @@ int sc_main(int argc, char* argv[]) {
     net_cfg.flits_per_packet = cfg["network_params"]["flits_per_packet"];
     net_cfg.idle_cycles = cfg["network_params"]["idle_cycles"];
     net_cfg.packets_per_flow = cfg["network_params"]["packets_per_flow"];
+    // Profundidade dos FIFOs do plano de dados. Se não vier no JSON, cai no
+    // default BUFFER_SIZE (definido em definitions.h) via o valor padrão do
+    // próprio membro em NetworkConfig.
+    net_cfg.buffer_size = cfg["network_params"].value("buffer_size_flits", net_cfg.buffer_size);
+
+    // Coeficientes do custo computacional do Dijkstra (opcionais no JSON;
+    // usam os defaults de definitions.h se não especificados).
+    net_cfg.dijkstra_base_ns_per_node = cfg["network_params"].value("dijkstra_base_ns_per_node", net_cfg.dijkstra_base_ns_per_node);
+    net_cfg.dijkstra_pq_op_ns         = cfg["network_params"].value("dijkstra_pq_op_ns", net_cfg.dijkstra_pq_op_ns);
+    net_cfg.dijkstra_edge_check_ns    = cfg["network_params"].value("dijkstra_edge_check_ns", net_cfg.dijkstra_edge_check_ns);
+
+    // Latência de propagação do plano de controle (SDN -> LocalAgent do roteador).
+    double control_plane_latency_ns = cfg["network_params"].value("control_plane_latency_ns", 0.0);
+    net_cfg.control_plane_latency = sc_time(control_plane_latency_ns, SC_NS);
+
+    // Jitter de retry: se não vier do JSON, usa 25% do retry_wait_ns como default
+    // (em vez de 0), para já evitar o "thundering herd" sincronizado por padrão.
+    net_cfg.retry_jitter_ns = cfg["network_params"].value(
+        "retry_jitter_ns", std::max(1, net_cfg.retry_wait_ns / 4));
+
     int num_cu = cfg["network_params"]["num_control_units"];
+
+    // --- Bloco opcional "simulation": suporte a réplicas e warm-up ---
+    // Todos os campos são opcionais; ausentes -> comportamento antigo (seed
+    // fixa 1, sem warm-up, saída em "results.csv").
+    //
+    // IMPORTANTE sobre réplicas: o SystemC não permite reiniciar o kernel
+    // de simulação dentro do mesmo processo (uma vez que sc_start() roda,
+    // não dá pra "resetar" e rodar de novo com outra seed no mesmo
+    // binário). Réplicas de verdade são feitas rodando este executável
+    // várias vezes externamente, cada vez com um "simulation.seed" e
+    // "simulation.output_file" diferentes, e agregando os CSVs depois
+    // (ver run_replicas.sh).
+    json sim_cfg = cfg.value("simulation", json::object());
+    net_cfg.master_seed = sim_cfg.value("seed", 1u);
+    double warmup_ns = sim_cfg.value("warmup_ns", 0.0);
+    std::string output_file = sim_cfg.value("output_file", std::string("results.csv"));
+
+    // Duração da simulação, antes hardcoded (sc_start(10, SC_US), depois
+    // mudado manualmente para 15 e recompilado). Agora configurável via
+    // simulation.duration_us -- essencial para o sweep de carga e para
+    // topologias maiores, onde mais pacotes/nos precisam de mais tempo
+    // simulado só para caberem na janela, sem isso a "incompletude" por
+    // corte de tempo se mistura com contencao real.
+    double duration_us = sim_cfg.value("duration_us", 15.0);
+
+    stats.set_warmup_window(sc_time(warmup_ns, SC_NS));
 
     // Topologia
     TopologyManager* tm = new TopologyManager();
@@ -118,6 +165,8 @@ int sc_main(int argc, char* argv[]) {
     // --- Fios Ponto-a-Ponto (Alocados dinamicamente) ---
     // Canais entre o SDN e os Roteadores (Plano de Controle Local)
     std::vector<sc_fifo<SwitchConfigCmd>*> sdn_to_router_fifos(num_nodes);
+    // Canais de confirmação (ACK): roteador -> SDN, um por roteador.
+    std::vector<sc_fifo<int>*> router_to_sdn_ack_fifos(num_nodes);
     
     // Canais entre o Injetor de Tráfego e as Portas Locais dos Roteadores
     std::vector<sc_fifo<Flit>*> ti_to_router_fifos(num_nodes);
@@ -126,8 +175,13 @@ int sc_main(int argc, char* argv[]) {
     // Inicializa os canais de comunicação estritos
     for(int i = 0; i < num_nodes; ++i) {
         sdn_to_router_fifos[i] = new sc_fifo<SwitchConfigCmd>(("sdn_2_R" + std::to_string(i)).c_str(), 1000);
-        ti_to_router_fifos[i]  = new sc_fifo<Flit>(("ti_2_R" + std::to_string(i)).c_str(), 1000);
-        router_to_ti_fifos[i]  = new sc_fifo<Flit>(("R" + std::to_string(i) + "_2_ti").c_str(), 1000);
+        router_to_sdn_ack_fifos[i] = new sc_fifo<int>(("R" + std::to_string(i) + "_2_sdn_ack").c_str(), 1000);
+        // FIFOs de DADOS (Flit): usam buffer_size realista, não mais 1000.
+        // Antes, com capacidade 1000, um fluxo inteiro (poucas dezenas de
+        // flits em geral) nunca enchia o FIFO, então o backpressure do
+        // "buffer cheio" simplesmente nunca acontecia.
+        ti_to_router_fifos[i]  = new sc_fifo<Flit>(("ti_2_R" + std::to_string(i)).c_str(), net_cfg.buffer_size);
+        router_to_ti_fifos[i]  = new sc_fifo<Flit>(("R" + std::to_string(i) + "_2_ti").c_str(), net_cfg.buffer_size);
     }
 
     // Estrutura para salvar os FIFOs da malha (fabric) e deletar depois
@@ -142,6 +196,7 @@ int sc_main(int argc, char* argv[]) {
         routers[i] = new Router(("Router_" + std::to_string(i)).c_str(), net_cfg);
         routers[i]->clk(clk);
         routers[i]->config_in(*sdn_to_router_fifos[i]); // Ouve o canal do SDN
+        routers[i]->config_ack(*router_to_sdn_ack_fifos[i]); // Confirma aplicação de volta ao SDN
     }
 
     // =========================================================================
@@ -162,7 +217,8 @@ int sc_main(int argc, char* argv[]) {
             if (vizinho != -1) {
                 // --- PORTA CONECTADA: Cria o canal real da malha ---
                 std::string fifo_name = "link_R" + std::to_string(i) + "_p" + std::to_string(p);
-                sc_fifo<Flit>* link_fifo = new sc_fifo<Flit>(fifo_name.c_str(), 1000);
+                // Mesma correção: buffer realista em vez de capacidade "infinita" (1000).
+                sc_fifo<Flit>* link_fifo = new sc_fifo<Flit>(fifo_name.c_str(), net_cfg.buffer_size);
                 fabric_fifos.push_back(link_fifo); 
 
                 // Roteador 'i' envia dados por este canal
@@ -177,8 +233,8 @@ int sc_main(int argc, char* argv[]) {
                 std::string dummy_in_nm  = "dummy_in_R"  + std::to_string(i) + "_p" + std::to_string(p);
                 std::string dummy_out_nm = "dummy_out_R" + std::to_string(i) + "_p" + std::to_string(p);
                 
-                sc_fifo<Flit>* d_in  = new sc_fifo<Flit>(dummy_in_nm.c_str(), 1000);
-                sc_fifo<Flit>* d_out = new sc_fifo<Flit>(dummy_out_nm.c_str(), 1000);
+                sc_fifo<Flit>* d_in  = new sc_fifo<Flit>(dummy_in_nm.c_str(), net_cfg.buffer_size);
+                sc_fifo<Flit>* d_out = new sc_fifo<Flit>(dummy_out_nm.c_str(), net_cfg.buffer_size);
                 
                 // Guarda na lista para o delete final não esquecer deles
                 fabric_fifos.push_back(d_in);
@@ -199,7 +255,13 @@ int sc_main(int argc, char* argv[]) {
     if(traffic_mode == "deterministic"){
         csv_path = cfg["traffic"]["source_file"];
     } else if (traffic_mode == "uniform"){
-        int seed = cfg["traffic"].value("seed", 1);
+        // Se traffic.seed nao for especificado, cai no master_seed da
+        // simulacao -- assim, mudar so "simulation.seed" ja basta para
+        // gerar uma replica genuinamente diferente (padrao de trafego E
+        // jitter de retry mudam juntos), a menos que o usuario queira
+        // fixar o trafego e variar so o jitter (setando traffic.seed
+        // explicitamente).
+        int seed = cfg["traffic"].value("seed", static_cast<int>(net_cfg.master_seed));
         int num_packets = cfg["traffic"].value("num_packets", 1000);
         generateUniformTraffic(num_nodes, num_packets, seed, "uniform.csv");
         csv_path = "uniform.csv";
@@ -209,6 +271,11 @@ int sc_main(int argc, char* argv[]) {
     }
 
     ti->load_traffic_from_csv(csv_path);
+
+    // Pré-registra todos os fluxos do tráfego ANTES da simulação começar.
+    // Sem isso, fluxos cujo start_time_ns cai depois do fim da janela de
+    // sc_start() nunca aparecem no relatório final (nem como incompletos).
+    stats.register_expected_flows(ti->traffic_queue);
     
     ti->clk(clk);
     ti->rst(rst);
@@ -229,6 +296,7 @@ int sc_main(int argc, char* argv[]) {
     sdn->clk(clk);
     sdn->set_topology(tm);
     sdn->set_config(&net_cfg);
+    sdn->set_stats(&stats);
     
     sdn->requisitions_in(request_fifo);
     sdn->path_ready_out(path_ready_fifo);
@@ -240,6 +308,7 @@ int sc_main(int argc, char* argv[]) {
     for(int i = 0; i < num_nodes; ++i) {
         // Presumindo que seu SDN possui um array de portas chamado 'config_out'
         sdn->router_config_out[i](*sdn_to_router_fifos[i]); 
+        sdn->router_config_ack_in[i](*router_to_sdn_ack_fifos[i]);
     }
     
     // =========================================================================
@@ -247,11 +316,11 @@ int sc_main(int argc, char* argv[]) {
     // =========================================================================
     std::cout << "Iniciando a simulacao do sistema..." << std::endl;
     
-    sc_start(10, SC_US);
+    sc_start(duration_us, SC_US);
     
     std::cout << "Simulacao finalizada com sucesso." << std::endl;
 
-    stats.generate_report("results.csv");
+    stats.generate_report(output_file);
 
     // Desalocação segura de memória (Evitando leaks no C++)
     delete tm;
@@ -260,6 +329,7 @@ int sc_main(int argc, char* argv[]) {
     
     for (auto router : routers) delete router;
     for (auto fifo : sdn_to_router_fifos) delete fifo;
+    for (auto fifo : router_to_sdn_ack_fifos) delete fifo;
     for (auto fifo : ti_to_router_fifos) delete fifo;
     for (auto fifo : router_to_ti_fifos) delete fifo;
     for (auto fifo : fabric_fifos) delete fifo;

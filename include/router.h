@@ -13,6 +13,9 @@ SC_MODULE(Router) {
     sc_fifo_in<Flit> flit_in[NUM_PORTS];
     sc_fifo_out<Flit> flit_out[NUM_PORTS];
     sc_fifo_in<SwitchConfigCmd> config_in;
+    // Confirma ao SDN_Controller que o comando de config_in foi realmente
+    // aplicado (não só recebido) -- ver LocalAgent.h para o porquê.
+    sc_fifo_out<int> config_ack;
 
     // Fios de controle do LocalAgent para os MUXes e Buffers
     sc_signal<int> mux_sel[NUM_PORTS];        // Agent -> Mux (Seleção)
@@ -33,8 +36,9 @@ SC_MODULE(Router) {
     
     Router(sc_module_name name, const NetworkConfig& net_cfg) : sc_module(name) {
         // 1. Instancia o Agente Local
-        agent = new LocalAgent("agent");
+        agent = new LocalAgent("agent", net_cfg.control_plane_latency);
         agent->config_in(config_in); // Conecta o fifo de configuração
+        agent->config_ack(config_ack); // Conecta o fifo de confirmação
 
         // 2. INSTANCIAÇÃO: Cria todos os buffers e muxes primeiro
         for (int i = 0; i < NUM_PORTS; ++i) {
