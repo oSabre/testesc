@@ -578,7 +578,7 @@
     }
   ],
   "traffic": {
-    "mode": "uniform",
+    "mode": "bit_reversal",
     "num_packets": 200,
     "source_file": "traces/trace_01.csv",
     "seed": 1

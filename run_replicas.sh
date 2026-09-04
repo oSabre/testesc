@@ -122,6 +122,6 @@ def summarize(name, values):
     print(f"{name}: media={mean:.3f}  desvio_padrao={stdev:.3f}  n={len(values)}  valores={values}")
 
 print(f"--- Agregado de {len(latencies)} replica(s) ---")
-summarize("Latencia media (regime permanente, ns)", latencies)
+summarize("Latencia media (regime permanente, ciclos)", latencies)
 summarize("Taxa de conclusao (%)", completion_rates)
 PYEOF

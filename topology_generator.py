@@ -172,6 +172,62 @@ def saturate_with_shortcuts(edges, num_nodes, rows, cols, max_degree=4):
     return sorted(edge_set), added
 
 
+def remove_links_keep_connected(edges, num_nodes, num_to_remove,
+                                 protect_edges=None, seed=42):
+    """Remove num_to_remove arestas de uma copia de `edges`, sem nunca
+    desconectar o grafo (verificado a cada remocao) e sem tocar em
+    protect_edges (os atalhos de longo alcance, que devem sobreviver para
+    a topologia continuar "irregular" no mesmo sentido da small-world).
+
+    Duas passadas, ambas deterministicas dado `seed`:
+      1) Tenta espalhar a reducao por nos AINDA NAO tocados (evita
+         concentrar a perda de grau sempre nos mesmos nos).
+      2) Se ainda faltar remover, permite repetir nos ja tocados,
+         continuando a verificar conectividade em toda remocao.
+    """
+    import random
+    rng = random.Random(seed)
+    protect = set(tuple(sorted(e)) for e in (protect_edges or []))
+
+    edge_set = set(tuple(sorted(e)) for e in edges)
+    candidates = [e for e in edge_set if e not in protect]
+    rng.shuffle(candidates)
+
+    removed = []
+    touched = set()
+
+    for e in candidates:
+        if len(removed) >= num_to_remove:
+            break
+        u, v = e
+        if u in touched or v in touched:
+            continue
+        trial = edge_set - {e}
+        if is_connected(build_adj(trial, num_nodes), num_nodes):
+            edge_set = trial
+            removed.append(e)
+            touched.add(u)
+            touched.add(v)
+
+    if len(removed) < num_to_remove:
+        for e in candidates:
+            if len(removed) >= num_to_remove:
+                break
+            if e in removed or e not in edge_set:
+                continue
+            trial = edge_set - {e}
+            if is_connected(build_adj(trial, num_nodes), num_nodes):
+                edge_set = trial
+                removed.append(e)
+
+    if len(removed) < num_to_remove:
+        raise RuntimeError(
+            f"So consegui remover {len(removed)}/{num_to_remove} arestas "
+            "sem desconectar o grafo -- peca um alvo menos agressivo.")
+
+    return sorted(edge_set), removed
+
+
 def small_world_rewire(edges, remove, add):
     """Remove uma lista de arestas e adiciona outra, preservando a
     contagem total de links (rewiring 1-para-1)."""
@@ -220,15 +276,19 @@ def main():
     validate_and_report("irregular small-world 4x4 (16 nos, mesmo orcamento)",
                          smallworld16, 16)
 
-    # Anel 0-1-2-...-15-0
-    ring16 = [(i, (i + 1) % 16) for i in range(16)]
-    fewlinks16 = small_world_rewire(
-        ring16,
-        remove=[],
-        add=[(0, 8), (4, 12), (2, 10), (6, 14)],
-    )
+    # "Menos links": parte da PRÓPRIA small-world (não de um anel -- assim
+    # toda a família mesh/small-world/menos-links/mais-links vem da mesma
+    # base, e qualquer diferença de desempenho é atribuível só à
+    # quantidade de links, não a uma estrutura fundamentalmente diferente).
+    # Remove 4 links locais (~16.7%, mesma proporção usada abaixo pro caso
+    # de 64 nós), protegendo os 2 atalhos de longo alcance -- eles
+    # continuam intactos, só a redundância local diminui.
+    fewlinks16, removed16 = remove_links_keep_connected(
+        smallworld16, 16, num_to_remove=4,
+        protect_edges=[(0, 15), (3, 12)])
     ok = validate_and_report(
-        "irregular MENOS links (anel + 4 acordes, 16 nos, 20 links)",
+        f"irregular MENOS links (small-world - {len(removed16)} links, "
+        f"16 nos, {len(fewlinks16)} links)",
         fewlinks16, 16)
 
     save(to_config(mesh16,
@@ -240,9 +300,11 @@ def main():
                     "Mesmo orcamento da mesh (24 links), grau uniforme 3."),
          "config_irregular_smallworld.json")
     save(to_config(fewlinks16,
-                    "Irregular com MENOS links: anel de 16 nos (16 links) "
-                    "+ 4 acordes diametrais de longo alcance (20 links "
-                    "totais, ~83% do orcamento da mesh). Grau 2 ou 3."),
+                    "Irregular com MENOS links: deriva da small-world "
+                    f"(24 links) removendo {len(removed16)} links locais "
+                    "(protegendo os 2 atalhos de longo alcance), chegando "
+                    f"a {len(fewlinks16)} links. Mesma familia da mesh/"
+                    "small-world/mais-links, so o orcamento muda."),
          "config_irregular_fewlinks_16.json")
 
     # --- Irregular com MAIS links (16 nos) ---
@@ -318,21 +380,18 @@ def main():
         smallworld64, 64)
     assert ok_sw64, "small-world 8x8 falhou na validacao -- ver mensagem acima"
 
-    # --- Irregular com MENOS links (64 nos): anel + acordes, escalado ---
-    # Anel de 64 nos (64 links) + 8 acordes diametrais (nos espacados de 4
-    # em 4, cada um ligado ao seu antipoda i+32) = 72 links totais (~64%
-    # do orcamento da mesh 8x8 de 112 links).
-    #
-    # OBS: usar passo 8 aqui (em vez de 4) geraria acordes DUPLICADOS --
-    # (i, i+32) e (i+32, i+64=i) sao a MESMA aresta quando i e i+32 caem
-    # os dois dentro do mesmo range(0,64,8), reduzindo o total de acordes
-    # unicos pela metade. Por isso o range vai só até 32 (metade do anel),
-    # garantindo 8 acordes realmente distintos.
-    ring64 = [(i, (i + 1) % 64) for i in range(64)]
-    chords64 = [(i, (i + 32) % 64) for i in range(0, 32, 4)]  # 8 acordes únicos
-    fewlinks64 = small_world_rewire(ring64, remove=[], add=chords64)
+    # "Menos links" (64 nos): mesma logica do caso 16 nos -- deriva da
+    # PROPRIA small-world 64, removendo ~16.7% dos links locais (mesma
+    # proporcao do caso 16 nos: 4/24 = 16.7%), protegendo os 6 atalhos de
+    # longo alcance (add_64) que definem o carater "small-world" da
+    # topologia.
+    num_remove_64 = round(0.167 * len(smallworld64))  # ~19 de 112
+    fewlinks64, removed64 = remove_links_keep_connected(
+        smallworld64, 64, num_to_remove=num_remove_64,
+        protect_edges=add_64)
     validate_and_report(
-        "irregular MENOS links (anel + 8 acordes, 64 nos, 72 links)",
+        f"irregular MENOS links (small-world - {len(removed64)} links, "
+        f"64 nos, {len(fewlinks64)} links)",
         fewlinks64, 64)
 
     # --- Irregular com MAIS links (64 nos) ---
@@ -357,9 +416,11 @@ def main():
                     "inteiro. Mesmo orcamento da mesh (112 links)."),
          "config_irregular_smallworld_64.json")
     save(to_config(fewlinks64,
-                    "Irregular com MENOS links 8x8: anel de 64 nos (64 "
-                    "links) + 8 acordes diametrais (72 links totais, ~64% "
-                    "do orcamento da mesh 8x8)."),
+                    "Irregular com MENOS links 8x8: deriva da small-world "
+                    f"(112 links) removendo {len(removed64)} links locais "
+                    "(protegendo os 6 atalhos de longo alcance), chegando "
+                    f"a {len(fewlinks64)} links. Mesma familia da mesh/"
+                    "small-world/mais-links, so o orcamento muda."),
          "config_irregular_fewlinks_64.json")
     save(to_config(morelinks64,
                     "Irregular com MAIS links 8x8: parte da small-world "

@@ -157,7 +157,7 @@ def mean_std(values):
 
 
 print("=" * 72)
-print(f"{'Topologia':<20} {'N':>3} {'Lat. media (ns)':>22} {'Taxa conclusao (%)':>22}")
+print(f"{'Topologia':<20} {'N':>3} {'Lat. media (ciclos)':>22} {'Taxa conclusao (%)':>22}")
 print("-" * 72)
 for label, data in results.items():
     n = len(data["latency"])

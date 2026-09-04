@@ -248,7 +248,7 @@ int sc_main(int argc, char* argv[]) {
     }
 
     // 5.3 Instanciação e Conexão do Injetor de Tráfego
-    std::string traffic_mode = cfg["traffic"]["mode"]; // "deterministic" ou "uniform"
+    std::string traffic_mode = cfg["traffic"]["mode"]; // "deterministic", "uniform", "bit_reversal" ou "butterfly"
     TrafficInjector* ti = new TrafficInjector("Traffic_Injector", num_nodes, net_cfg, &stats);
     std::string csv_path;
 
@@ -265,6 +265,19 @@ int sc_main(int argc, char* argv[]) {
         int num_packets = cfg["traffic"].value("num_packets", 1000);
         generateUniformTraffic(num_nodes, num_packets, seed, "uniform.csv");
         csv_path = "uniform.csv";
+    } else if (traffic_mode == "bit_reversal"){
+        // Padrao de permutacao: exige num_nodes potencia de 2. Reusa o
+        // mesmo campo traffic.num_packets do modo uniform, para permitir
+        // comparacao com o mesmo volume total de trafego entre padroes.
+        int num_packets = cfg["traffic"].value("num_packets", 1000);
+        generateBitReversalTraffic(num_nodes, num_packets, "bit_reversal.csv");
+        csv_path = "bit_reversal.csv";
+    } else if (traffic_mode == "butterfly"){
+        // Padrao de permutacao "perfect shuffle" (rotaciona os bits do
+        // endereco). Mesma logica de reaproveitamento de num_packets.
+        int num_packets = cfg["traffic"].value("num_packets", 1000);
+        generateButterflyTraffic(num_nodes, num_packets, "butterfly.csv");
+        csv_path = "butterfly.csv";
     }else{
         std::cerr << "Erro: Modo de trafego desconhecido: " << traffic_mode << std::endl;
         return 1;

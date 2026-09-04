@@ -1,0 +1,32 @@
+
+        SystemC 3.0.2-Accellera --- May 19 2026 19:19:57
+        Copyright (c) 1996-2025 by all Contributors,
+        ALL RIGHTS RESERVED
+JSON carregado com sucesso!
+Arquivo bit_reversal.csv gerado com sucesso (bit-reversal, 100 pacotes, 12 pares unicos por rodada).
+Iniciando a simulacao do sistema...
+[ControlUnit SDN_Controller.vector_0_1] @ 162167 ps: ERRO: Dijkstra retornou rota vazia (caminho impossivel?).
+[ControlUnit SDN_Controller.vector_0_3] @ 1110 ns: ERRO: Dijkstra retornou rota vazia (caminho impossivel?).
+[ControlUnit SDN_Controller.vector_0_1] @ 1366846 ps: ERRO: Dijkstra retornou rota vazia (caminho impossivel?).
+[ControlUnit SDN_Controller.vector_0_3] @ 2290 ns: ERRO: Dijkstra retornou rota vazia (caminho impossivel?).
+[ControlUnit SDN_Controller.vector_0_1] @ 2566525 ps: ERRO: Dijkstra retornou rota vazia (caminho impossivel?).
+[ControlUnit SDN_Controller.vector_0_0] @ 3763921 ps: ERRO: Dijkstra retornou rota vazia (caminho impossivel?).
+[ControlUnit SDN_Controller.vector_0_3] @ 4659810 ps: ERRO: Dijkstra retornou rota vazia (caminho impossivel?).
+[ControlUnit SDN_Controller.vector_0_0] @ 5031335 ps: ERRO: Dijkstra retornou rota vazia (caminho impossivel?).
+[ControlUnit SDN_Controller.vector_0_3] @ 6005755 ps: ERRO: Dijkstra retornou rota vazia (caminho impossivel?).
+[ControlUnit SDN_Controller.vector_0_1] @ 6262631 ps: ERRO: Dijkstra retornou rota vazia (caminho impossivel?).
+[ControlUnit SDN_Controller.vector_0_0] @ 6320400 ps: ERRO: Dijkstra retornou rota vazia (caminho impossivel?).
+[ControlUnit SDN_Controller.vector_0_0] @ 7325600 ps: ERRO: Dijkstra retornou rota vazia (caminho impossivel?).
+[ControlUnit SDN_Controller.vector_0_1] @ 7329911 ps: ERRO: Dijkstra retornou rota vazia (caminho impossivel?).
+[ControlUnit SDN_Controller.vector_0_3] @ 7341144 ps: ERRO: Dijkstra retornou rota vazia (caminho impossivel?).
+[ControlUnit SDN_Controller.vector_0_1] @ 8559078 ps: ERRO: Dijkstra retornou rota vazia (caminho impossivel?).
+[ControlUnit SDN_Controller.vector_0_0] @ 8619551 ps: ERRO: Dijkstra retornou rota vazia (caminho impossivel?).
+[ControlUnit SDN_Controller.vector_0_2] @ 9811800 ps: ERRO: Dijkstra retornou rota vazia (caminho impossivel?).
+[ControlUnit SDN_Controller.vector_0_3] @ 9841130 ps: ERRO: Dijkstra retornou rota vazia (caminho impossivel?).
+[ControlUnit SDN_Controller.vector_0_0] @ 11015919 ps: ERRO: Dijkstra retornou rota vazia (caminho impossivel?).
+[ControlUnit SDN_Controller.vector_0_1] @ 12133766 ps: ERRO: Dijkstra retornou rota vazia (caminho impossivel?).
+[ControlUnit SDN_Controller.vector_0_0] @ 12139474 ps: ERRO: Dijkstra retornou rota vazia (caminho impossivel?).
+[ControlUnit SDN_Controller.vector_0_3] @ 13339836 ps: ERRO: Dijkstra retornou rota vazia (caminho impossivel?).
+[ControlUnit SDN_Controller.vector_0_3] @ 14519124 ps: ERRO: Dijkstra retornou rota vazia (caminho impossivel?).
+[ControlUnit SDN_Controller.vector_0_1] @ 14736839 ps: ERRO: Dijkstra retornou rota vazia (caminho impossivel?).
+Simulacao finalizada com sucesso.

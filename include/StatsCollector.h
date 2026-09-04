@@ -6,6 +6,7 @@
 #include <vector>
 #include <fstream>
 #include <iostream>
+#include <cmath>
 #include "definitions.h" // TrafficEvent
 
 // Estágio em que um fluxo se encontra. Substitui os antigos booleanos
@@ -120,7 +121,7 @@ public:
         if (logs.empty()) return;
 
         std::ofstream file(filename);
-        file << "flow_id,status,in_warmup,control_latency_ns,data_latency_ns,total_latency_ns\n";
+        file << "flow_id,status,in_warmup,control_latency_cycles,data_latency_cycles,total_latency_cycles\n";
 
         double total_sum = 0;
         int completed_flows = 0;      // completos FORA do warm-up (entram na media)
@@ -140,17 +141,27 @@ public:
             bool in_warmup = (warmup_window > SC_ZERO_TIME) && (log.start_time < warmup_window);
 
             if (log.status == FlowStatus::COMPLETED) {
-                double control = (log.setup_time - log.start_time).to_double() / 1000.0;
-                double data = (log.end_time - log.setup_time).to_double() / 1000.0;
+                // Valores REAIS (fracionários), usados para a media
+                // (total_sum) -- arredondar cada fluxo individualmente
+                // antes de somar acumularia erro de arredondamento na
+                // media final. Só a EXIBIÇÃO por linha é arredondada.
+                double control = (log.setup_time - log.start_time).to_double() / CLOCK_PERIOD.to_double();
+                double data = (log.end_time - log.setup_time).to_double() / CLOCK_PERIOD.to_double();
                 double total = control + data;
 
+                // Arredondamento só para apresentação (ex: reunião com
+                // orientador) -- "ciclos fracionários" são tecnicamente
+                // corretos aqui (o clock é vestigial, o tempo real é
+                // contínuo por baixo), mas confundem numa leitura rápida.
+                // Isso é uma aproximação de exibição, não uma mudança na
+                // precisão da simulação em si.
                 file << id << "," << status_to_str(log.status) << "," << (in_warmup ? 1 : 0) << ","
-                     << control << "," << data << "," << total << "\n";
+                     << std::llround(control) << "," << std::llround(data) << "," << std::llround(total) << "\n";
 
                 if (in_warmup) {
                     completed_in_warmup++;
                 } else {
-                    total_sum += total;
+                    total_sum += total; // acumula o valor REAL, não o arredondado
                     completed_flows++;
                 }
             } else {
@@ -176,7 +187,7 @@ public:
         // --- Resumo agregado: antes, essa informação só dava pra ser
         // inferida contando linhas "INCOMPLETO" manualmente no CSV. ---
         file << "\n--- Resumo ---\n";
-        file << "Janela de warm-up (ns)," << (warmup_window.to_double() / 1000.0) << "\n";
+        file << "Janela de warm-up (ciclos)," << std::llround(warmup_window.to_double() / CLOCK_PERIOD.to_double()) << "\n";
         file << "Total de fluxos no trafego," << total_flows << "\n";
         file << "Completos (total)," << total_completed << "\n";
         file << "Completos dentro do warm-up (excluidos da media)," << completed_in_warmup << "\n";
@@ -188,9 +199,11 @@ public:
         file << "Taxa de conclusao (%)," << completion_rate << "\n";
 
         if (completed_flows > 0) {
-            file << "Latencia media regime permanente exclui warmup ns," << (total_sum / completed_flows) << "\n";
+            // Media calculada sobre os valores REAIS (total_sum), só o
+            // resultado final e arredondado para exibição.
+            file << "Latencia media regime permanente exclui warmup ciclos," << std::llround(total_sum / completed_flows) << "\n";
         } else {
-            file << "Latencia media ns,N/A (nenhum fluxo em regime permanente finalizado)\n";
+            file << "Latencia media ciclos,N/A (nenhum fluxo em regime permanente finalizado)\n";
         }
 
         file.close();
