@@ -5,4 +5,7 @@
 JSON carregado com sucesso!
 Arquivo uniform.csv gerado com sucesso (100 pacotes).
 Iniciando a simulacao do sistema...
+@9340 ns [InputBuffer Router_1.buffer_0] ERRO: Flit 0 chegou, mas rota eh -1 (nao configurada!)
+[ControlUnit SDN_Controller.vector_0_2] @ 11940 ns: ERRO: Dijkstra retornou rota vazia (caminho impossivel?).
 Simulacao finalizada com sucesso.
+Arquivo battery_out/smallworld_16_uniform/results_seed1_linkusage.csv gerado com sucesso (uso de 24 links).

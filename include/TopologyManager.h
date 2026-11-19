@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <iostream>
+#include <fstream>
 #include <map>
 #include <systemc.h>
 
@@ -11,6 +12,7 @@ struct Link {
     int id;
     int u, v;
     bool is_busy;
+    long long usage_count = 0; // quantas vezes este link foi usado por um fluxo alocado com sucesso
 
     Link(int _id, int _u, int _v) : id(_id), u(_u), v(_v), is_busy(false) {}
 };
@@ -28,8 +30,22 @@ private:
     // Mutex do SystemC
     sc_mutex topo_mutex;
 
+    // Porta de EJECAO do destino como recurso (opcional, network_params.reserve_dst_port).
+    // Sem isso, dois circuitos para o MESMO destino que chegam por links diferentes
+    // sao ambos alocados, mas disputam o unico MUX de saida local do roteador de
+    // destino: um deles nunca conclui (PRESO_TRANSMISSAO) e segura seus links para
+    // sempre, o que depois causa descartes em cascata. Com a reserva, o 2o fluxo
+    // falha na alocacao e entra no fluxo normal de retry.
+    bool reserve_dst = false;
+    bool reserve_src = false;           // porta de injecao (origem) como recurso
+    std::map<int, bool> src_busy;
+    std::map<int, bool> dst_busy;
+
 public:
     TopologyManager() : num_nodes(0){}
+
+    void set_reserve_dst(bool b) { reserve_dst = b; }
+    void set_reserve_src(bool b) { reserve_src = b; }
 
     void add_link(int id, int u, int v) {
         //topo_mutex.lock();
@@ -95,6 +111,19 @@ public:
             return false;
         }
 
+        // 0a. (opcional) porta de injecao da origem precisa estar livre: sem isso, o RELEASE
+        // do fluxo anterior da mesma origem apaga o buffer_target[LOCAL] do fluxo novo.
+        if (reserve_src && src_busy[path.front()]) {
+            topo_mutex.unlock();
+            return false;
+        }
+
+        // 0. (opcional) porta de ejecao do destino precisa estar livre
+        if (reserve_dst && dst_busy[path.back()]) {
+            topo_mutex.unlock();
+            return false;
+        }
+
         // 1. Verifica disponibilidade de TODOS os segmentos primeiro
         for (size_t i = 0; i < path.size() - 1; ++i) {
             int u = path[i], v = path[i+1];
@@ -106,12 +135,15 @@ public:
             }
         }
 
-        // 2. Aloca (marca como busy)
+        // 2. Aloca (marca como busy) e contabiliza o uso deste link
         for (size_t i = 0; i < path.size() - 1; ++i) {
             int u = path[i], v = path[i+1];
             int idx = link_map[{std::min(u, v), std::max(u, v)}];
             links[idx].is_busy = true;
+            links[idx].usage_count++;
         }
+        if (reserve_dst) dst_busy[path.back()] = true;
+        if (reserve_src) src_busy[path.front()] = true;
 
         topo_mutex.unlock();
         return true;
@@ -127,6 +159,8 @@ public:
                 links[it->second].is_busy = false;
             }
         }
+        if (reserve_dst && !path.empty()) dst_busy[path.back()] = false;
+        if (reserve_src && !path.empty()) src_busy[path.front()] = false;
         
         topo_mutex.unlock();
     }
@@ -143,6 +177,29 @@ public:
             return links[it->second].is_busy;
         }
         return true;
+    }
+
+    // Exporta quantas vezes cada link fisico foi usado por um fluxo
+    // alocado com sucesso ao longo de toda a simulacao. Serve para
+    // confirmar (ou refutar) a hipotese de que uma topologia concentra
+    // trafego desproporcional em poucos links de longo alcance (gargalo),
+    // mesmo quando as metricas estruturais (diametro/caminho medio)
+    // parecem boas no papel.
+    void export_link_usage(const std::string& filename) const {
+        std::ofstream file(filename);
+        if (!file.is_open()) {
+            std::cerr << "Erro: Nao foi possivel criar o arquivo " << filename << std::endl;
+            return;
+        }
+
+        file << "link_id,u,v,usage_count\n";
+        for (const auto& link : links) {
+            file << link.id << "," << link.u << "," << link.v << "," << link.usage_count << "\n";
+        }
+        file.close();
+
+        std::cout << "Arquivo " << filename << " gerado com sucesso "
+                  << "(uso de " << links.size() << " links)." << std::endl;
     }
 
 };

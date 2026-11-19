@@ -1,0 +1,30 @@
+{
+  "name": "bfs_mix_cu16_ga_seeded",
+  "algo": "ga",
+  "init": "seeded",
+  "traffic": "mix",
+  "cus": 16,
+  "pop": 20,
+  "gens": 30,
+  "budget_evals": 620,
+  "unique_topologies_evaluated": 620,
+  "train_seeds": [
+    1,
+    2,
+    3
+  ],
+  "best_fitness": 0.7596173509200322,
+  "best_completion": 100.0,
+  "best_avg_path": 3.515376984126984,
+  "best_diameter": 7,
+  "refs": {
+    "config_mesh_64.json": 1.0,
+    "config_irregular_smallworld_64.json": 0.9415097775653244
+  },
+  "best_per_pattern_ratio_vs_mesh": {
+    "uniform": 0.9043617014513577,
+    "bit_reversal": 0.6736046830317666,
+    "butterfly": 0.7008856682769726
+  },
+  "elapsed_s": 152.2
+}

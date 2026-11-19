@@ -1,0 +1,25 @@
+{
+  "name": "noee_bit_reversal_cu16_ga_seeded",
+  "algo": "ga",
+  "init": "seeded",
+  "traffic": "bit_reversal",
+  "cus": 16,
+  "pop": 30,
+  "gens": 40,
+  "budget_evals": 1230,
+  "unique_topologies_evaluated": 1230,
+  "train_seeds": [
+    1,
+    2,
+    3
+  ],
+  "best_fitness": 764.48,
+  "best_completion": 100.0,
+  "best_avg_path": 3.6969246031746033,
+  "best_diameter": 8,
+  "refs": {
+    "config_mesh_64.json": 985.9733333333334,
+    "config_irregular_smallworld_64.json": 1033.08
+  },
+  "elapsed_s": 101.1
+}

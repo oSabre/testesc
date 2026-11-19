@@ -1,0 +1,25 @@
+{
+  "name": "bit_reversal_cu16_ga_seeded",
+  "algo": "ga",
+  "init": "seeded",
+  "traffic": "bit_reversal",
+  "cus": 16,
+  "pop": 30,
+  "gens": 40,
+  "budget_evals": 1230,
+  "unique_topologies_evaluated": 1230,
+  "train_seeds": [
+    1,
+    2,
+    3
+  ],
+  "best_fitness": 169.69,
+  "best_completion": 100.0,
+  "best_avg_path": 3.621031746031746,
+  "best_diameter": 6,
+  "refs": {
+    "config_mesh_64.json": 595.4066666666666,
+    "config_irregular_smallworld_64.json": 614.2266666666667
+  },
+  "elapsed_s": 90.8
+}

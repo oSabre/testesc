@@ -1,0 +1,25 @@
+{
+  "name": "butterfly_cu16_ga_seeded",
+  "algo": "ga",
+  "init": "seeded",
+  "traffic": "butterfly",
+  "cus": 16,
+  "pop": 30,
+  "gens": 40,
+  "budget_evals": 1230,
+  "unique_topologies_evaluated": 1230,
+  "train_seeds": [
+    1,
+    2,
+    3
+  ],
+  "best_fitness": 280.64,
+  "best_completion": 100.0,
+  "best_avg_path": 3.6121031746031744,
+  "best_diameter": 8,
+  "refs": {
+    "config_mesh_64.json": 424.5866666666667,
+    "config_irregular_smallworld_64.json": 577.8966666666666
+  },
+  "elapsed_s": 110.8
+}

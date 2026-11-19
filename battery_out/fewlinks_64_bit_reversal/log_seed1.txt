@@ -5,8 +5,5 @@
 JSON carregado com sucesso!
 Arquivo bit_reversal.csv gerado com sucesso (bit-reversal, 100 pacotes, 56 pares unicos por rodada).
 Iniciando a simulacao do sistema...
-[ControlUnit SDN_Controller.vector_0_0] @ 1639936 ps: ERRO: Dijkstra retornou rota vazia (caminho impossivel?).
-[ControlUnit SDN_Controller.vector_0_2] @ 9148250 ps: ERRO: Dijkstra retornou rota vazia (caminho impossivel?).
-[ControlUnit SDN_Controller.vector_0_0] @ 12518359 ps: ERRO: Dijkstra retornou rota vazia (caminho impossivel?).
-[ControlUnit SDN_Controller.vector_0_2] @ 12904714 ps: ERRO: Dijkstra retornou rota vazia (caminho impossivel?).
 Simulacao finalizada com sucesso.
+Arquivo battery_out/fewlinks_64_bit_reversal/results_seed1_linkusage.csv gerado com sucesso (uso de 93 links).

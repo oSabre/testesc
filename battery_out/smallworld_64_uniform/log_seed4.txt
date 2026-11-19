@@ -6,3 +6,4 @@ JSON carregado com sucesso!
 Arquivo uniform.csv gerado com sucesso (100 pacotes).
 Iniciando a simulacao do sistema...
 Simulacao finalizada com sucesso.
+Arquivo battery_out/smallworld_64_uniform/results_seed4_linkusage.csv gerado com sucesso (uso de 112 links).

@@ -1,0 +1,26 @@
+{
+  "name": "noee_butterfly_cu16_ga_seeded",
+  "algo": "ga",
+  "init": "seeded",
+  "traffic": "butterfly",
+  "cus": 16,
+  "pop": 30,
+  "gens": 40,
+  "budget_evals": 1230,
+  "unique_topologies_evaluated": 1230,
+  "train_seeds": [
+    1,
+    2,
+    3
+  ],
+  "best_fitness": 773.5733333333334,
+  "best_completion": 100.0,
+  "best_avg_path": 3.6547619047619047,
+  "best_diameter": 7,
+  "refs": {
+    "config_mesh_64.json": 836.8733333333333,
+    "config_irregular_smallworld_64.json": 1016.1333333333333
+  },
+  "best_per_pattern_ratio_vs_mesh": null,
+  "elapsed_s": 105.4
+}

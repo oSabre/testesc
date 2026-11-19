@@ -7,6 +7,7 @@
 #include <fstream>
 #include <iostream>
 #include <cmath>
+#include <iomanip>
 #include "definitions.h" // TrafficEvent
 
 // Estágio em que um fluxo se encontra. Substitui os antigos booleanos
@@ -26,6 +27,11 @@ struct FlowLog {
     sc_time end_time = SC_ZERO_TIME;
 
     FlowStatus status = FlowStatus::NOT_STARTED;
+
+    // Origem/destino/instante agendado (do trafego), p/ diagnostico no CSV
+    int src = -1;
+    int dst = -1;
+    double start_ns = 0.0;
 };
 
 class StatsCollector {
@@ -40,6 +46,7 @@ private:
     // estabelecidas) e não o regime permanente que normalmente é o que
     // se quer medir.
     sc_time warmup_window = SC_ZERO_TIME;
+    sc_time sim_duration = SC_ZERO_TIME;
 
     static const char* status_to_str(FlowStatus s) {
         switch (s) {
@@ -80,7 +87,10 @@ public:
         // os métodos abaixo, que sim são chamados de dentro de threads
         // durante a simulação.
         for (const auto& ev : traffic_queue) {
-            logs[ev.flow_id]; // cria a entrada com status default NOT_STARTED
+            FlowLog& fl = logs[ev.flow_id]; // cria a entrada com status default NOT_STARTED
+            fl.src = ev.src;
+            fl.dst = ev.dst;
+            fl.start_ns = ev.start_time_ns;
         }
     }
 
@@ -117,21 +127,35 @@ public:
         log_mutex.unlock();
     }
 
+    // Duracao total simulada (usada como penalidade p/ fluxos nao concluidos)
+    void set_sim_duration(sc_time d) { sim_duration = d; }
+
     void generate_report(const std::string& filename) {
         if (logs.empty()) return;
 
         std::ofstream file(filename);
-        file << "flow_id,status,in_warmup,control_latency_cycles,data_latency_cycles,total_latency_cycles\n";
+        file << "flow_id,status,in_warmup,control_latency_cycles,data_latency_cycles,total_latency_cycles,retries,src,dst,start_ns\n";
 
         double total_sum = 0;
+        int penalized_flows = 0;      // nao concluidos fora do warm-up
         int completed_flows = 0;      // completos FORA do warm-up (entram na media)
         int completed_in_warmup = 0;  // completos DENTRO do warm-up (excluidos da media)
         int not_started = 0;
         int stuck_routing = 0;
         int stuck_transmission = 0;
         int discarded = 0;
+        // Retries (tentativas falhas de alocar rota): dos fluxos concluidos
+        // fora do warm-up, e de todos os fluxos que chegaram ao plano de controle
+        long long retries_sum_done = 0;
+        int done_with_retry = 0, retries_max = 0;
+        long long retries_sum_all = 0;
+        int reached_cp = 0;
+        auto& rc = flow_retry_counts();
 
         for (auto const& [id, log] : logs) {
+            int nret = rc.count(id) ? rc[id] : 0;
+            if (log.status != FlowStatus::NOT_STARTED) { reached_cp++; retries_sum_all += nret; }
+            if (nret > retries_max) retries_max = nret;
             // Warm-up definido pelo instante em que o fluxo foi SOLICITADO
             // (start_time), nao pelo instante em que terminou -- assim,
             // fluxos "do regime permanente" que so terminam depois de um
@@ -156,18 +180,23 @@ public:
                 // Isso é uma aproximação de exibição, não uma mudança na
                 // precisão da simulação em si.
                 file << id << "," << status_to_str(log.status) << "," << (in_warmup ? 1 : 0) << ","
-                     << std::llround(control) << "," << std::llround(data) << "," << std::llround(total) << "\n";
+                     << std::llround(control) << "," << std::llround(data) << "," << std::llround(total) << "," << nret
+                     << "," << log.src << "," << log.dst << "," << log.start_ns << "\n";
 
                 if (in_warmup) {
                     completed_in_warmup++;
                 } else {
                     total_sum += total; // acumula o valor REAL, não o arredondado
+                    retries_sum_done += nret;
+                    if (nret > 0) done_with_retry++;
                     completed_flows++;
                 }
             } else {
                 file << id << "," << status_to_str(log.status) << "," << (in_warmup ? 1 : 0)
-                     << ",N/A,N/A,N/A\n";
+                     << ",N/A,N/A,N/A," << nret
+                     << "," << log.src << "," << log.dst << "," << log.start_ns << "\n";
 
+                if (!in_warmup) penalized_flows++;
                 switch (log.status) {
                     case FlowStatus::NOT_STARTED: not_started++;      break;
                     case FlowStatus::REQUESTED:   stuck_routing++;    break;
@@ -205,6 +234,33 @@ public:
         } else {
             file << "Latencia media ciclos,N/A (nenhum fluxo em regime permanente finalizado)\n";
         }
+
+        // --- Metricas p/ otimizacao (GA): sem arredondar e penalizadas ---
+        // Penalizada: fluxo nao concluido (fora do warm-up) conta com
+        // latencia = duracao total da simulacao (ciclos).
+        double sim_cycles = sim_duration.to_double() / CLOCK_PERIOD.to_double();
+        int n_eval = completed_flows + penalized_flows;
+        file << std::setprecision(10);
+        if (completed_flows > 0)
+            file << "Latencia media exata sem arredondar ciclos," << (total_sum / completed_flows) << "\n";
+        else
+            file << "Latencia media exata sem arredondar ciclos,N/A\n";
+        file << "Fluxos nao concluidos penalizados," << penalized_flows << "\n";
+        file << "Penalidade por fluxo (ciclos)," << sim_cycles << "\n";
+        if (n_eval > 0)
+            file << "Latencia media penalizada ciclos,"
+                 << ((total_sum + penalized_flows * sim_cycles) / n_eval) << "\n";
+        else
+            file << "Latencia media penalizada ciclos,N/A\n";
+
+        // --- Retries por fluxo (diagnostico da contencao de rotas) ---
+        file << "Retries medios por fluxo concluido (regime permanente),"
+             << (completed_flows > 0 ? (double)retries_sum_done / completed_flows : 0.0) << "\n";
+        file << "Fluxos concluidos com pelo menos 1 retry (%),"
+             << (completed_flows > 0 ? 100.0 * done_with_retry / completed_flows : 0.0) << "\n";
+        file << "Retries medios por fluxo que chegou ao plano de controle,"
+             << (reached_cp > 0 ? (double)retries_sum_all / reached_cp : 0.0) << "\n";
+        file << "Retries maximo em um fluxo," << retries_max << "\n";
 
         file.close();
     }

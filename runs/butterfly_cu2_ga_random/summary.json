@@ -1,0 +1,22 @@
+{
+  "name": "butterfly_cu2_ga_random",
+  "algo": "ga",
+  "init": "random",
+  "traffic": "butterfly",
+  "cus": 2,
+  "pop": 30,
+  "gens": 40,
+  "budget_evals": 1230,
+  "unique_topologies_evaluated": 1246,
+  "train_seeds": [
+    1,
+    2,
+    3
+  ],
+  "best_fitness": 1322.64,
+  "best_completion": 18.666666666666668,
+  "best_avg_path": 3.5243055555555554,
+  "best_diameter": 6,
+  "refs": {},
+  "elapsed_s": 134.2
+}

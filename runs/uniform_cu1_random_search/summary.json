@@ -1,0 +1,22 @@
+{
+  "name": "uniform_cu1_random_search",
+  "algo": "random_search",
+  "init": "seeded",
+  "traffic": "uniform",
+  "cus": 1,
+  "pop": 30,
+  "gens": 40,
+  "budget_evals": 1230,
+  "unique_topologies_evaluated": 1230,
+  "train_seeds": [
+    1,
+    2,
+    3
+  ],
+  "best_fitness": 1464.1133333333335,
+  "best_completion": 4.333333333333333,
+  "best_avg_path": 3.6145833333333335,
+  "best_diameter": 9,
+  "refs": {},
+  "elapsed_s": 116.8
+}

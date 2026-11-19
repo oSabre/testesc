@@ -83,6 +83,7 @@ void TrafficInjector::process_traffic_flow(TrafficEvent event) {
     }
 
     stats->record_request(event.flow_id, sc_time_stamp());
+    TRACE_FLOW(event.flow_id, "[Injector] flow " << event.flow_id << " " << event.src << "->" << event.dst << " pede rota");
     // 2. Faz o pedido (Handshake de controle)
     request_path(event);
 
@@ -90,13 +91,16 @@ void TrafficInjector::process_traffic_flow(TrafficEvent event) {
     wait_for_path_ready(event.flow_id);
 
     stats->record_setup(event.flow_id, sc_time_stamp());
+    TRACE_FLOW(event.flow_id, "[Injector] flow " << event.flow_id << " caminho pronto, inicia envio");
     // 4. Envia o payload (Handshake de dados)
     send_data_payload(event);
 
     // 4.5 Aguarda a confirmação de que os dados chegaram ao destino
+    TRACE_FLOW(event.flow_id, "[Injector] flow " << event.flow_id << " todos os flits injetados, aguarda entrega");
     wait_for_flow_completion(event.flow_id);
 
     stats->record_finish(event.flow_id, sc_time_stamp());
+    TRACE_FLOW(event.flow_id, "[Injector] flow " << event.flow_id << " entrega confirmada");
     // 5. Libera o recurso
     release_path(event.flow_id);
 }
@@ -162,14 +166,19 @@ void TrafficInjector::send_data_payload(TrafficEvent event) {
 
             // Escreve o Flit na porta Local do Roteador de Origem
             data_out[event.src].write(flit);
+            TRACE_FLOW(event.flow_id, "[Injector] flow " << event.flow_id << " injetou flit " << f << " pkt " << p << " em " << event.src);
 
-            // Atraso de injeção de 1 ciclo (ajuste para o seu clock, se necessário)
-            wait(1, SC_NS); 
+            // Atraso de injeção de 1 ciclo. Antes era wait(1,SC_NS) --
+            // o comentário original já dizia "1 ciclo", só a implementação
+            // usava nanosegundos crus em vez do período de clock de verdade.
+            wait(CLOCK_PERIOD);
         }
         
-        // Aplica os idle_cycles entre um pacote e outro
+        // Aplica os idle_cycles entre um pacote e outro, em ciclos de
+        // verdade agora (antes era wait(idle_cycles, SC_NS) -- nanosegundos
+        // crus com nome de ciclos).
         if (p < cfg.packets_per_flow - 1) {
-            wait(cfg.idle_cycles, SC_NS);
+            wait(CLOCK_PERIOD * cfg.idle_cycles);
         }
     }
 }
@@ -178,6 +187,7 @@ void TrafficInjector::receive_data_process(int node_id) {
     while (true) {
         // Bloqueia até um flit chegar do roteador para este nó
         Flit flit = data_in[node_id].read();
+        TRACE_FLOW(flit.flow_id, "[Injector] no " << node_id << " recebeu flit " << flit.flit_id << " pkt " << flit.packet_id << " flow " << flit.flow_id << (flit.is_tail ? " TAIL" : ""));
 
         // Se for o flit final do último pacote
         if (flit.is_tail && flit.packet_id == cfg.packets_per_flow - 1) {
@@ -211,4 +221,5 @@ void TrafficInjector::release_path(int flow_id) {
               //<< flow_id << std::endl;
               
     teardown_to_sdn.write(flow_id);
+    TRACE_FLOW(flow_id, "[Injector] flow " << flow_id << " pede teardown");
 }

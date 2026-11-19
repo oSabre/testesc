@@ -1,0 +1,170 @@
+
+== smallworld | uniform | bfs_free | seed 1000 | cus=16 ==
+  Total de fluxos no trafego                                     100
+  Completos (total)                                              100
+  Nao iniciados (fora da janela de simulacao)                    0
+  Presos em roteamento (aguardando alocacao de rota)             0
+  Presos em transmissao (rota alocada mas sem confirmacao)       0
+  Descartados por timeout de roteamento                          0
+  Taxa de conclusao (%)                                          100
+  Latencia media exata sem arredondar ciclos                     18.08
+  Fluxos nao concluidos penalizados                              0
+  Latencia media penalizada ciclos                               18.08
+  Retries medios por fluxo concluido (regime permanente)         0.02
+  Fluxos concluidos com pelo menos 1 retry (%)                   2
+  Retries medios por fluxo que chegou ao plano de controle       0.02
+  Retries maximo em um fluxo                                     1
+  status por fluxo: {'COMPLETO': 100}
+
+== smallworld | uniform | bfs_free | seed 1001 | cus=16 ==
+  Total de fluxos no trafego                                     100
+  Completos (total)                                              100
+  Nao iniciados (fora da janela de simulacao)                    0
+  Presos em roteamento (aguardando alocacao de rota)             0
+  Presos em transmissao (rota alocada mas sem confirmacao)       0
+  Descartados por timeout de roteamento                          0
+  Taxa de conclusao (%)                                          100
+  Latencia media exata sem arredondar ciclos                     18.16
+  Fluxos nao concluidos penalizados                              0
+  Latencia media penalizada ciclos                               18.16
+  Retries medios por fluxo concluido (regime permanente)         0.02
+  Fluxos concluidos com pelo menos 1 retry (%)                   2
+  Retries medios por fluxo que chegou ao plano de controle       0.02
+  Retries maximo em um fluxo                                     1
+  status por fluxo: {'COMPLETO': 100}
+
+== smallworld | uniform | bfs_free | seed 1002 | cus=16 ==
+  Total de fluxos no trafego                                     100
+  Completos (total)                                              100
+  Nao iniciados (fora da janela de simulacao)                    0
+  Presos em roteamento (aguardando alocacao de rota)             0
+  Presos em transmissao (rota alocada mas sem confirmacao)       0
+  Descartados por timeout de roteamento                          0
+  Taxa de conclusao (%)                                          100
+  Latencia media exata sem arredondar ciclos                     17.38
+  Fluxos nao concluidos penalizados                              0
+  Latencia media penalizada ciclos                               17.38
+  Retries medios por fluxo concluido (regime permanente)         0.02
+  Fluxos concluidos com pelo menos 1 retry (%)                   2
+  Retries medios por fluxo que chegou ao plano de controle       0.02
+  Retries maximo em um fluxo                                     1
+  status por fluxo: {'COMPLETO': 100}
+
+== smallworld | uniform | bfs_free | seed 1003 | cus=16 ==
+  Total de fluxos no trafego                                     100
+  Completos (total)                                              100
+  Nao iniciados (fora da janela de simulacao)                    0
+  Presos em roteamento (aguardando alocacao de rota)             0
+  Presos em transmissao (rota alocada mas sem confirmacao)       0
+  Descartados por timeout de roteamento                          0
+  Taxa de conclusao (%)                                          100
+  Latencia media exata sem arredondar ciclos                     17.62
+  Fluxos nao concluidos penalizados                              0
+  Latencia media penalizada ciclos                               17.62
+  Retries medios por fluxo concluido (regime permanente)         0.02
+  Fluxos concluidos com pelo menos 1 retry (%)                   2
+  Retries medios por fluxo que chegou ao plano de controle       0.02
+  Retries maximo em um fluxo                                     1
+  status por fluxo: {'COMPLETO': 100}
+
+== smallworld | uniform | bfs_free | seed 1004 | cus=16 ==
+  Total de fluxos no trafego                                     100
+  Completos (total)                                              100
+  Nao iniciados (fora da janela de simulacao)                    0
+  Presos em roteamento (aguardando alocacao de rota)             0
+  Presos em transmissao (rota alocada mas sem confirmacao)       0
+  Descartados por timeout de roteamento                          0
+  Taxa de conclusao (%)                                          100
+  Latencia media exata sem arredondar ciclos                     16.22
+  Fluxos nao concluidos penalizados                              0
+  Latencia media penalizada ciclos                               16.22
+  Retries medios por fluxo concluido (regime permanente)         0.01
+  Fluxos concluidos com pelo menos 1 retry (%)                   1
+  Retries medios por fluxo que chegou ao plano de controle       0.01
+  Retries maximo em um fluxo                                     1
+  status por fluxo: {'COMPLETO': 100}
+
+== smallworld | uniform | bfs_free | seed 1005 | cus=16 ==
+  Total de fluxos no trafego                                     100
+  Completos (total)                                              100
+  Nao iniciados (fora da janela de simulacao)                    0
+  Presos em roteamento (aguardando alocacao de rota)             0
+  Presos em transmissao (rota alocada mas sem confirmacao)       0
+  Descartados por timeout de roteamento                          0
+  Taxa de conclusao (%)                                          100
+  Latencia media exata sem arredondar ciclos                     18.67
+  Fluxos nao concluidos penalizados                              0
+  Latencia media penalizada ciclos                               18.67
+  Retries medios por fluxo concluido (regime permanente)         0.02
+  Fluxos concluidos com pelo menos 1 retry (%)                   2
+  Retries medios por fluxo que chegou ao plano de controle       0.02
+  Retries maximo em um fluxo                                     1
+  status por fluxo: {'COMPLETO': 100}
+
+== smallworld | uniform | bfs_free | seed 1006 | cus=16 ==
+  Total de fluxos no trafego                                     100
+  Completos (total)                                              100
+  Nao iniciados (fora da janela de simulacao)                    0
+  Presos em roteamento (aguardando alocacao de rota)             0
+  Presos em transmissao (rota alocada mas sem confirmacao)       0
+  Descartados por timeout de roteamento                          0
+  Taxa de conclusao (%)                                          100
+  Latencia media exata sem arredondar ciclos                     19.28
+  Fluxos nao concluidos penalizados                              0
+  Latencia media penalizada ciclos                               19.28
+  Retries medios por fluxo concluido (regime permanente)         0.03
+  Fluxos concluidos com pelo menos 1 retry (%)                   3
+  Retries medios por fluxo que chegou ao plano de controle       0.03
+  Retries maximo em um fluxo                                     1
+  status por fluxo: {'COMPLETO': 100}
+
+== smallworld | uniform | bfs_free | seed 1007 | cus=16 ==
+  Total de fluxos no trafego                                     100
+  Completos (total)                                              100
+  Nao iniciados (fora da janela de simulacao)                    0
+  Presos em roteamento (aguardando alocacao de rota)             0
+  Presos em transmissao (rota alocada mas sem confirmacao)       0
+  Descartados por timeout de roteamento                          0
+  Taxa de conclusao (%)                                          100
+  Latencia media exata sem arredondar ciclos                     22.34
+  Fluxos nao concluidos penalizados                              0
+  Latencia media penalizada ciclos                               22.34
+  Retries medios por fluxo concluido (regime permanente)         0.06
+  Fluxos concluidos com pelo menos 1 retry (%)                   6
+  Retries medios por fluxo que chegou ao plano de controle       0.06
+  Retries maximo em um fluxo                                     1
+  status por fluxo: {'COMPLETO': 100}
+
+== smallworld | uniform | bfs_free | seed 1008 | cus=16 ==
+  Total de fluxos no trafego                                     100
+  Completos (total)                                              100
+  Nao iniciados (fora da janela de simulacao)                    0
+  Presos em roteamento (aguardando alocacao de rota)             0
+  Presos em transmissao (rota alocada mas sem confirmacao)       0
+  Descartados por timeout de roteamento                          0
+  Taxa de conclusao (%)                                          100
+  Latencia media exata sem arredondar ciclos                     16.69
+  Fluxos nao concluidos penalizados                              0
+  Latencia media penalizada ciclos                               16.69
+  Retries medios por fluxo concluido (regime permanente)         0.01
+  Fluxos concluidos com pelo menos 1 retry (%)                   1
+  Retries medios por fluxo que chegou ao plano de controle       0.01
+  Retries maximo em um fluxo                                     1
+  status por fluxo: {'COMPLETO': 100}
+
+== smallworld | uniform | bfs_free | seed 1009 | cus=16 ==
+  Total de fluxos no trafego                                     100
+  Completos (total)                                              100
+  Nao iniciados (fora da janela de simulacao)                    0
+  Presos em roteamento (aguardando alocacao de rota)             0
+  Presos em transmissao (rota alocada mas sem confirmacao)       0
+  Descartados por timeout de roteamento                          0
+  Taxa de conclusao (%)                                          100
+  Latencia media exata sem arredondar ciclos                     20.73
+  Fluxos nao concluidos penalizados                              0
+  Latencia media penalizada ciclos                               20.73
+  Retries medios por fluxo concluido (regime permanente)         0.04
+  Fluxos concluidos com pelo menos 1 retry (%)                   4
+  Retries medios por fluxo que chegou ao plano de controle       0.04
+  Retries maximo em um fluxo                                     1
+  status por fluxo: {'COMPLETO': 100}

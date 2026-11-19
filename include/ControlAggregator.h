@@ -1,4 +1,5 @@
 #include <systemc.h>
+#include "definitions.h"
 
 SC_MODULE(ControlAggregator) {
     // Portas de entrada (uma para cada CU)
@@ -22,7 +23,11 @@ SC_MODULE(ControlAggregator) {
                     found = true;
                 }
             }
-            if (!found) wait(1, SC_NS); // Espera um pouco se nada estiver pronto
+            // Antes: wait(1, SC_NS) hardcoded, sem relação com o clock.
+            // Agora: o agregador varre as saídas das CUs uma vez por ciclo
+            // -- uma descrição fisicamente sensata de um
+            // multiplexador/varredor de hardware.
+            if (!found) wait(CLOCK_PERIOD); // Espera 1 ciclo se nada estiver pronto
             else wait(SC_ZERO_TIME);    // Se processou, verifica novamente no próximo delta-cycle
         }
     }

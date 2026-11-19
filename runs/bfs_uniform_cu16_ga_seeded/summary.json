@@ -1,0 +1,26 @@
+{
+  "name": "bfs_uniform_cu16_ga_seeded",
+  "algo": "ga",
+  "init": "seeded",
+  "traffic": "uniform",
+  "cus": 16,
+  "pop": 30,
+  "gens": 40,
+  "budget_evals": 1230,
+  "unique_topologies_evaluated": 1230,
+  "train_seeds": [
+    1,
+    2,
+    3
+  ],
+  "best_fitness": 451.21000000000004,
+  "best_completion": 100.0,
+  "best_avg_path": 3.4439484126984126,
+  "best_diameter": 7,
+  "refs": {
+    "config_mesh_64.json": 524.3366666666666,
+    "config_irregular_smallworld_64.json": 526.9433333333333
+  },
+  "best_per_pattern_ratio_vs_mesh": null,
+  "elapsed_s": 137.7
+}

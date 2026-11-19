@@ -41,7 +41,7 @@ fi
 
 echo "Usando interpretador Python: $PYTHON_BIN ($(command -v "$PYTHON_BIN"))"
 
-BIN="./main.exe"   # ajuste para o nome/caminho do seu executavel
+BIN="./main.exe"
 
 NUM_REPLICAS="${1:?uso: compare_topologies.sh <num_replicas> [seed_inicial] rotulo1:config1.json rotulo2:config2.json ...}"
 shift

@@ -5,9 +5,6 @@
 JSON carregado com sucesso!
 Arquivo butterfly.csv gerado com sucesso (butterfly (shuffle), 100 pacotes, 62 pares unicos por rodada).
 Iniciando a simulacao do sistema...
-[ControlUnit SDN_Controller.vector_0_1] @ 3732905 ps: ERRO: Dijkstra retornou rota vazia (caminho impossivel?).
-[ControlUnit SDN_Controller.vector_0_1] @ 6984054 ps: ERRO: Dijkstra retornou rota vazia (caminho impossivel?).
-[ControlUnit SDN_Controller.vector_0_2] @ 7975756 ps: ERRO: Dijkstra retornou rota vazia (caminho impossivel?).
-[ControlUnit SDN_Controller.vector_0_3] @ 10214876 ps: ERRO: Dijkstra retornou rota vazia (caminho impossivel?).
-[ControlUnit SDN_Controller.vector_0_0] @ 10388925 ps: ERRO: Dijkstra retornou rota vazia (caminho impossivel?).
+[ControlUnit SDN_Controller.vector_0_0] @ 2990 ns: ERRO: Dijkstra retornou rota vazia (caminho impossivel?).
 Simulacao finalizada com sucesso.
+Arquivo battery_out/fewlinks_64_butterfly/results_seed4_linkusage.csv gerado com sucesso (uso de 93 links).

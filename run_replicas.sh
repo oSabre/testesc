@@ -46,7 +46,7 @@ fi
 
 echo "Usando interpretador Python: $PYTHON_BIN ($(command -v "$PYTHON_BIN"))"
 
-BIN="./main.exe"                 # ajuste para o nome/caminho do seu executável
+BIN="./main.exe"
 BASE_CONFIG="${1:?uso: run_replicas.sh <config_base.json> <num_replicas> [seed_inicial]}"
 NUM_REPLICAS="${2:?informe o numero de replicas}"
 SEED_START="${3:-1}"

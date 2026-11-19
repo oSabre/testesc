@@ -1,0 +1,22 @@
+{
+  "name": "bit_reversal_cu1_ga_random",
+  "algo": "ga",
+  "init": "random",
+  "traffic": "bit_reversal",
+  "cus": 1,
+  "pop": 30,
+  "gens": 40,
+  "budget_evals": 1230,
+  "unique_topologies_evaluated": 1230,
+  "train_seeds": [
+    1,
+    2,
+    3
+  ],
+  "best_fitness": 1400.5366666666666,
+  "best_completion": 9.666666666666666,
+  "best_avg_path": 3.501984126984127,
+  "best_diameter": 7,
+  "refs": {},
+  "elapsed_s": 109.3
+}

@@ -19,6 +19,7 @@ SC_MODULE(InputBuffer) {
             Flit f = fifo_in.read();
 
             current_target = target_port.read();
+            TRACE_FLOW(f.flow_id, "[InputBuffer " << name() << "] flit " << f.flit_id << " pkt " << f.packet_id << " flow " << f.flow_id << " alvo=" << current_target << (current_target < 0 ? "  !! ROTA NAO CONFIGURADA" : ""));
 
 
             //if(f.is_tail) std::cout << "@" << sc_time_stamp() << " [InputBuffer " << name() << "] is tail" << endl;

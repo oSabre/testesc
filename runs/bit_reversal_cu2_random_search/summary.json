@@ -1,0 +1,22 @@
+{
+  "name": "bit_reversal_cu2_random_search",
+  "algo": "random_search",
+  "init": "seeded",
+  "traffic": "bit_reversal",
+  "cus": 2,
+  "pop": 30,
+  "gens": 40,
+  "budget_evals": 1230,
+  "unique_topologies_evaluated": 1230,
+  "train_seeds": [
+    1,
+    2,
+    3
+  ],
+  "best_fitness": 1422.5666666666666,
+  "best_completion": 10.0,
+  "best_avg_path": 3.4751984126984126,
+  "best_diameter": 8,
+  "refs": {},
+  "elapsed_s": 124.3
+}

@@ -44,6 +44,15 @@ SC_MODULE(LocalAgent) {
                     //std::cout << "[DEBUG LocalAgent] Escrevendo no buffer_target[" << cmd.input_port 
                     //        << "] o valor: " << cmd.output_port << std::endl;
                     // Configura o MUX da porta de saída correspondente
+                    if (trace_enabled()) {
+                        std::string rn = get_parent_object() ? std::string(get_parent_object()->name()) : std::string("?");
+                        std::string mn = rn + ".mux_" + std::to_string(cmd.output_port);
+                        auto it_b = mux_blocked_port().find(mn);
+                        int bp = (it_b == mux_blocked_port().end()) ? -1 : it_b->second;
+                        TRACE_FLOW(cmd.flow_id, "[LocalAgent " << rn << "] SETUP aplicado flow " << cmd.flow_id
+                                   << " in=" << cmd.input_port << " out=" << cmd.output_port
+                                   << " (mux esperando porta " << bp << ")");
+                    }
                     mux_sel[cmd.output_port].write(cmd.input_port);
                     mux_enable[cmd.output_port].write(true);
                     buffer_target[cmd.input_port].write(cmd.output_port);
@@ -53,6 +62,11 @@ SC_MODULE(LocalAgent) {
                     //          << " conectada a Entrada " << cmd.input_port << std::endl;
                 }else if (cmd.action == RELEASE) {
                     // Desliga o MUX da porta de saída correspondente
+                    if (trace_enabled()) {
+                        std::string rn = get_parent_object() ? std::string(get_parent_object()->name()) : std::string("?");
+                        TRACE_FLOW(cmd.flow_id, "[LocalAgent " << rn << "] RELEASE aplicado flow " << cmd.flow_id
+                                   << " in=" << cmd.input_port << " out=" << cmd.output_port);
+                    }
                     mux_enable[cmd.output_port].write(false);
                     buffer_target[cmd.input_port].write(-1);
                     

@@ -5,5 +5,5 @@
 JSON carregado com sucesso!
 Arquivo uniform.csv gerado com sucesso (100 pacotes).
 Iniciando a simulacao do sistema...
-[ControlUnit SDN_Controller.vector_0_3] @ 5246921 ps: ERRO: Dijkstra retornou rota vazia (caminho impossivel?).
 Simulacao finalizada com sucesso.
+Arquivo battery_out/fewlinks_64_uniform/results_seed3_linkusage.csv gerado com sucesso (uso de 93 links).

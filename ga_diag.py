@@ -1,0 +1,116 @@
+#!/usr/bin/env python3
+"""
+ga_diag.py -- diagnostico de UMA simulacao: mostra o RESUMO do results.csv
+(concluidos, descartados por timeout, presos em roteamento/transmissao, retries,
+latencias) para entender por que fluxos nao concluem (ex.: uniform).
+Guarda o CSV completo em diag_<rotulo>_<padrao>_<alg>_seed<N>.csv.
+
+Uso:
+  py ga_diag.py --bin ./main.exe --traffic uniform --cus 16 --duration-us 150 \
+     --spacing-ns 800 --np routing_algorithm=bfs_free --np dijkstra_early_exit=false \
+     --seed 1000 mesh:configs/configs_ciclos/config_mesh_64.json
+"""
+import argparse, json, os, shutil, subprocess, tempfile, csv
+import ga_common as gc
+
+KEYS = ["Total de fluxos", "Completos (total)", "Nao iniciados", "Presos em roteamento",
+        "Presos em transmissao", "Descartados por timeout", "Taxa de conclusao",
+        "Fluxos nao concluidos penalizados", "Latencia media exata", "Latencia media penalizada",
+        "Retries medios por fluxo concluido", "Fluxos concluidos com pelo menos 1 retry",
+        "Retries medios por fluxo que chegou", "Retries maximo"]
+
+
+def main():
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    gc.common_args(ap)
+    ap.add_argument("--seed", type=int, default=1000)
+    ap.add_argument("--n-seeds", type=int, default=1, help="roda seeds seed..seed+n-1 e agrega a analise de fluxos presos")
+    ap.add_argument("--window-ns", type=float, default=300.0,
+                    help="janela p/ considerar dois fluxos 'simultaneos' (analise de presos)")
+    ap.add_argument("topos", nargs="+", help="rotulo:config.json")
+    a = ap.parse_args()
+    alg = gc.parse_kv(a.np).get("routing_algorithm", "dijkstra")
+    for it in a.topos:
+        label, path = it.split(":", 1)
+        edges = gc.edges_from_config(path)
+        agg = {"stuck": 0, "stuck_same_dst": 0, "stuck_same_src": 0, "stuck_either": 0,
+               "ok": 0, "ok_same_dst": 0, "ok_same_src": 0, "ok_either": 0}
+        for seed in range(a.seed, a.seed + a.n_seeds):
+            dst_file = run_one(a, label, edges, alg, seed)
+            show(dst_file, label, a, alg, seed)
+            gc._ca.record(f"{label} {a.traffic}", seed, gc.parse_results(dst_file))
+            analyze_stuck(dst_file, a.window_ns, agg)
+        if agg["stuck"] + agg["ok"] > 0 and (agg["stuck"] > 0):
+            print(f"\n-- {label}: fluxos presos x simultaneidade (janela +-{a.window_ns:.0f} ns, {a.n_seeds} seed(s)) --")
+            for name, tot in (("presos em transmissao", agg["stuck"]), ("concluidos", agg["ok"])):
+                k = "stuck" if name.startswith("presos") else "ok"
+                print(f"  {name:<24} n={tot:<5} outro fluxo com MESMO destino: {100*agg[k+'_same_dst']/max(tot,1):5.1f}%"
+                      f" | MESMA origem: {100*agg[k+'_same_src']/max(tot,1):5.1f}%"
+                      f" | qualquer: {100*agg[k+'_either']/max(tot,1):5.1f}%")
+
+
+def run_one(a, label, edges, alg, seed):
+    cfg = gc.build_config(gc.load_template(a.template), edges, a.traffic, seed, a.cus,
+                          a.duration_us, a.num_packets,
+                          {"mode": a.injection_mode, "burst_max": a.burst_max, "spacing_ns": a.spacing_ns},
+                          gc.parse_kv(a.np))
+    tmp = tempfile.mkdtemp(prefix="dg_")
+    try:
+        os.makedirs(os.path.join(tmp, "log"), exist_ok=True)
+        json.dump(cfg, open(os.path.join(tmp, "config.json"), "w"))
+        cmd = a.bin.split()
+        if os.path.exists(cmd[0]):
+            cmd[0] = os.path.abspath(cmd[0])
+        subprocess.run(cmd, cwd=tmp, timeout=a.timeout, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        dst = f"diag_{label}_{a.traffic}_{alg}_seed{seed}.csv"
+        shutil.copy(os.path.join(tmp, "results.csv"), dst)
+        return dst
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+
+
+def show(dst, label, a, alg, seed):
+    from collections import Counter
+    print(f"\n== {label} | {a.traffic} | {alg} | seed {seed} | cus={a.cus} ==")
+    with open(dst, newline="") as f:
+        for r in csv.reader(f):
+            if len(r) >= 2 and any(r[0].startswith(k) for k in KEYS):
+                print(f"  {r[0]:<62} {r[1]}")
+    c = Counter()
+    with open(dst, newline="") as f:
+        for r in csv.DictReader(f):
+            if r.get("status") in ("COMPLETO", "NAO_INICIADO", "PRESO_ROTEAMENTO",
+                                   "PRESO_TRANSMISSAO", "DESCARTADO_TIMEOUT"):
+                c[r["status"]] += 1
+    print("  status por fluxo:", dict(c))
+
+
+def analyze_stuck(dst, window_ns, agg):
+    """Para cada fluxo (preso ou concluido): existe OUTRO fluxo com mesmo destino /
+    mesma origem agendado dentro de +-window_ns? Compara presos x concluidos."""
+    rows = []
+    with open(dst, newline="") as f:
+        for r in csv.DictReader(f):
+            if r.get("status") in ("COMPLETO", "PRESO_TRANSMISSAO") and r.get("src") not in (None, ""):
+                try:
+                    rows.append((r["status"], int(r["src"]), int(r["dst"]), float(r["start_ns"])))
+                except ValueError:
+                    pass
+    for i, (st_, s, d, t) in enumerate(rows):
+        same_d = same_s = False
+        for j, (_, s2, d2, t2) in enumerate(rows):
+            if i != j and abs(t - t2) <= window_ns:
+                same_d |= (d2 == d)
+                same_s |= (s2 == s)
+        k = "stuck" if st_ == "PRESO_TRANSMISSAO" else "ok"
+        agg[k] += 1
+        agg[k + "_same_dst"] += same_d
+        agg[k + "_same_src"] += same_s
+        agg[k + "_either"] += (same_d or same_s)
+
+
+if __name__ == "__main__":
+    main()
+    _ca_code = gc._ca.summary(None, "(diag)")
+    if _ca_code:
+        raise SystemExit(_ca_code)

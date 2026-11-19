@@ -1,0 +1,103 @@
+{
+  "traffic": "uniform",
+  "cus": 16,
+  "train_seeds": [
+    1,
+    2,
+    3
+  ],
+  "fresh_seeds": [
+    1000,
+    1001,
+    1002,
+    1003,
+    1004,
+    1005,
+    1006,
+    1007,
+    1008,
+    1009
+  ],
+  "candidates": [
+    {
+      "label": "random_1022",
+      "path": "configs/configs_ciclos\\config_random_1022.json",
+      "train_fitness": 602.1633333333333,
+      "fresh_fitness": 643.384,
+      "fresh_std": 78.23769057600477,
+      "fresh_completion": 99.8
+    },
+    {
+      "label": "random_1003",
+      "path": "configs/configs_ciclos\\config_random_1003.json",
+      "train_fitness": 585.0233333333333,
+      "fresh_fitness": 647.448,
+      "fresh_std": 81.49024751465663,
+      "fresh_completion": 99.8
+    },
+    {
+      "label": "random_1014",
+      "path": "configs/configs_ciclos\\config_random_1014.json",
+      "train_fitness": 587.0966666666667,
+      "fresh_fitness": 648.768,
+      "fresh_std": 129.67381572408686,
+      "fresh_completion": 99.7
+    },
+    {
+      "label": "random_1028",
+      "path": "configs/configs_ciclos\\config_random_1028.json",
+      "train_fitness": 548.73,
+      "fresh_fitness": 654.559,
+      "fresh_std": 132.2364373595854,
+      "fresh_completion": 99.8
+    },
+    {
+      "label": "random_1030",
+      "path": "configs/configs_ciclos\\config_random_1030.json",
+      "train_fitness": 576.7733333333333,
+      "fresh_fitness": 660.2719999999999,
+      "fresh_std": 112.75731203685986,
+      "fresh_completion": 99.7
+    },
+    {
+      "label": "random_1048",
+      "path": "configs/configs_ciclos\\config_random_1048.json",
+      "train_fitness": 574.1866666666667,
+      "fresh_fitness": 661.698,
+      "fresh_std": 79.52876569728298,
+      "fresh_completion": 99.7
+    },
+    {
+      "label": "random_1034",
+      "path": "configs/configs_ciclos\\config_random_1034.json",
+      "train_fitness": 572.8833333333333,
+      "fresh_fitness": 676.89,
+      "fresh_std": 143.39658418370902,
+      "fresh_completion": 99.7
+    },
+    {
+      "label": "random_1017",
+      "path": "configs/configs_ciclos\\config_random_1017.json",
+      "train_fitness": 572.2366666666667,
+      "fresh_fitness": 677.6949999999999,
+      "fresh_std": 102.72165759414558,
+      "fresh_completion": 99.5
+    },
+    {
+      "label": "random_1033",
+      "path": "configs/configs_ciclos\\config_random_1033.json",
+      "train_fitness": 596.2266666666667,
+      "fresh_fitness": 679.521,
+      "fresh_std": 127.5815278731386,
+      "fresh_completion": 99.6
+    },
+    {
+      "label": "random_1005",
+      "path": "configs/configs_ciclos\\config_random_1005.json",
+      "train_fitness": 576.61,
+      "fresh_fitness": 680.57,
+      "fresh_std": 125.32034028396545,
+      "fresh_completion": 99.8
+    }
+  ]
+}

@@ -77,6 +77,7 @@ void SDN_Controller::ack_listener_process(int router_index) {
         // Bloqueia até o LocalAgent deste roteador confirmar a aplicação
         // de algum comando (identificado pelo flow_id que ele mandou).
         int flow_id = router_config_ack_in[router_index].read();
+        TRACE_FLOW(flow_id, "[SDN] ACK do roteador " << router_index << " flow " << flow_id);
 
         ack_mutex.lock();
         acked_routers_by_flow[flow_id].insert(router_index);
@@ -169,6 +170,7 @@ void SDN_Controller::configure_path_hardware(const std::vector<int>& route, int 
 
         // 5. Envia pelo "fio" dedicado daquele roteador específico (Graças ao laço/vetor!)
         router_config_out[current_node].write(cmd);
+        TRACE_FLOW(flow_id, "[SDN] SETUP escrito: flow " << flow_id << " roteador " << current_node << " in=" << in_port << " out=" << out_port);
 
         // Log de validação
         //std::cout << "[SDN] Roteador " << current_node << ": Conectando Entrada " 
@@ -180,6 +182,7 @@ void SDN_Controller::process_teardown() {
     while (true) {
         // 1. Bloqueia até chegar um pedido de teardown do TrafficInjector
         int flow_id = teardown_in.read();
+        TRACE_FLOW(flow_id, "[SDN] teardown solicitado: flow " << flow_id);
 
         //std::cout << "@" << sc_time_stamp() << " [SDN_Controller] Iniciando TEARDOWN para o Flow ID " 
         //          << flow_id << std::endl;
@@ -213,6 +216,7 @@ void SDN_Controller::process_teardown() {
 
                 // Envia o comando para o Agente Local do Roteador
                 router_config_out[current_router].write(cmd);
+                TRACE_FLOW(flow_id, "[SDN] RELEASE escrito: flow " << flow_id << " roteador " << current_router << " in=" << in_port << " out=" << out_port);
                 
                 //std::cout << "  -> [SDN] Roteador " << current_router 
                 //          << ": Desconectando Entrada " << in_port << " da Saida " << out_port << std::endl;
@@ -229,6 +233,7 @@ void SDN_Controller::process_teardown() {
             wait_for_route_ack(flow_id, route);
 
             tm->release_path(route);
+            TRACE_FLOW(flow_id, "[SDN] release_path: links liberados flow " << flow_id);
 
             // 4. Limpa a rota da memória do controlador para liberar os recursos lógicos
             active_paths.erase(flow_id);

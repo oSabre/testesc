@@ -1,0 +1,25 @@
+{
+  "name": "uniform_cu1_ga_seeded",
+  "algo": "ga",
+  "init": "seeded",
+  "traffic": "uniform",
+  "cus": 1,
+  "pop": 30,
+  "gens": 40,
+  "budget_evals": 1230,
+  "unique_topologies_evaluated": 1230,
+  "train_seeds": [
+    1,
+    2,
+    3
+  ],
+  "best_fitness": 1432.5333333333333,
+  "best_completion": 7.333333333333333,
+  "best_avg_path": 3.6850198412698414,
+  "best_diameter": 7,
+  "refs": {
+    "config_mesh_64.json": 1481.1633333333334,
+    "config_irregular_smallworld_64.json": 1481.1666666666667
+  },
+  "elapsed_s": 111.2
+}

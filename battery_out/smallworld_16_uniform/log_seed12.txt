@@ -1,0 +1,9 @@
+
+        SystemC 3.0.2-Accellera --- May 19 2026 19:19:57
+        Copyright (c) 1996-2025 by all Contributors,
+        ALL RIGHTS RESERVED
+JSON carregado com sucesso!
+Arquivo uniform.csv gerado com sucesso (100 pacotes).
+Iniciando a simulacao do sistema...
+Simulacao finalizada com sucesso.
+Arquivo battery_out/smallworld_16_uniform/results_seed12_linkusage.csv gerado com sucesso (uso de 24 links).

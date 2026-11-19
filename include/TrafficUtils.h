@@ -4,8 +4,50 @@
 #include <vector>
 #include <cmath>
 #include <utility>
+#include <string>
+#include <algorithm>
 
-void generateUniformTraffic(int num_nodes, int num_packets, int seed, const std::string& filename) {
+// --- Modelo de tempo de injecao ---
+//  "fixed"        : fluxo i comeca em i*spacing_ns (modelo antigo)
+//  "burst"        : rajadas; todos os fluxos de uma rajada comecam NO MESMO
+//                   instante; tamanho ~ U[1,burst_max]; intervalo entre
+//                   rajadas ~ Exponencial(mean_gap_ns)
+//  "poisson"      : burst com burst_max=1 (chegadas independentes)
+//  "simultaneous" : todos em t=0 (pior caso de contencao)
+// mean_gap_ns <= 0 => mantem a MESMA carga media do modelo fixed
+// (tamanho medio da rajada * spacing_ns). Tempos quantizados em 10 ns.
+struct InjectionCfg {
+    std::string mode = "burst";
+    int burst_max = 4;
+    double mean_gap_ns = 0;
+    int spacing_ns = 100;
+    int seed = 1;
+};
+
+static std::vector<int> make_start_times(int n, const InjectionCfg& c) {
+    std::vector<int> t(n, 0);
+    if (c.mode == "fixed") {
+        for (int i = 0; i < n; ++i) t[i] = i * c.spacing_ns;
+        return t;
+    }
+    if (c.mode == "simultaneous") return t;
+    int bmax = (c.mode == "poisson") ? 1 : std::max(1, c.burst_max);
+    double gap = c.mean_gap_ns > 0 ? c.mean_gap_ns : (1.0 + bmax) / 2.0 * c.spacing_ns;
+    std::mt19937 rng(static_cast<unsigned>(c.seed) * 2654435761u + 12345u);
+    std::uniform_int_distribution<int> bsz(1, bmax);
+    std::exponential_distribution<double> ex(1.0 / gap);
+    double now = 0;
+    int i = 0;
+    while (i < n) {
+        int k = std::min(bsz(rng), n - i);
+        int ts = static_cast<int>(std::llround(now / 10.0)) * 10;
+        for (int j = 0; j < k; ++j) t[i++] = ts;
+        now += ex(rng);
+    }
+    return t;
+}
+
+void generateUniformTraffic(int num_nodes, int num_packets, int seed, const std::string& filename, const InjectionCfg& inj = InjectionCfg()) {
     std::ofstream file(filename);
     if (!file.is_open()) {
         std::cerr << "Erro: Nao foi possivel criar o arquivo " << filename << std::endl;
@@ -16,6 +58,7 @@ void generateUniformTraffic(int num_nodes, int num_packets, int seed, const std:
 
     std::mt19937 rng(seed);
     std::uniform_int_distribution<int> dist(0, num_nodes - 1);
+    std::vector<int> times = make_start_times(num_packets, inj);
 
     // Ajuste o formato abaixo para bater exatamente com o que seu load_traffic_from_csv espera!
     // Exemplo comum: id, src, dst, start_time
@@ -24,7 +67,7 @@ void generateUniformTraffic(int num_nodes, int num_packets, int seed, const std:
         int dst = dist(rng);
         while (src == dst) dst = dist(rng); // Garante que src != dst
 
-        int start_time = i * 100; // Espaçamento fixo entre pacotes (ex: 100ns)
+        int start_time = times[i];
         //int flow_id = i + 1;
         
         file << src << "," << dst << "," << start_time << "," << i << "\n";
@@ -95,7 +138,7 @@ static std::vector<std::pair<int,int>> build_permutation_round(
 static void write_permutation_csv(
         const std::vector<std::pair<int,int>>& round,
         int num_packets, const std::string& filename,
-        const std::string& pattern_name) {
+        const std::string& pattern_name, const InjectionCfg& inj) {
     if (round.empty()) {
         std::cerr << "Erro: " << pattern_name
                   << " nao gerou nenhum par valido (todos os nos sao "
@@ -110,10 +153,11 @@ static void write_permutation_csv(
         return;
     }
     file << "# src, dst, start_time_ns, flow_id" << "\n";
+    std::vector<int> times = make_start_times(num_packets, inj);
 
     for (int i = 0; i < num_packets; ++i) {
         const auto& p = round[i % round.size()];
-        int start_time = i * 100;
+        int start_time = times[i];
         file << p.first << "," << p.second << "," << start_time << "," << i << "\n";
     }
     file.close();
@@ -123,7 +167,7 @@ static void write_permutation_csv(
               << " pares unicos por rodada)." << std::endl;
 }
 
-void generateBitReversalTraffic(int num_nodes, int num_packets, const std::string& filename) {
+void generateBitReversalTraffic(int num_nodes, int num_packets, const std::string& filename, const InjectionCfg& inj = InjectionCfg()) {
     int k = bits_for_num_nodes(num_nodes);
     if (k < 0) {
         std::cerr << "Erro: bit-reversal exige num_nodes potencia de 2 (recebido "
@@ -131,10 +175,10 @@ void generateBitReversalTraffic(int num_nodes, int num_packets, const std::strin
         return;
     }
     auto round = build_permutation_round(num_nodes, k, bit_reverse);
-    write_permutation_csv(round, num_packets, filename, "bit-reversal");
+    write_permutation_csv(round, num_packets, filename, "bit-reversal", inj);
 }
 
-void generateButterflyTraffic(int num_nodes, int num_packets, const std::string& filename) {
+void generateButterflyTraffic(int num_nodes, int num_packets, const std::string& filename, const InjectionCfg& inj = InjectionCfg()) {
     int k = bits_for_num_nodes(num_nodes);
     if (k < 0) {
         std::cerr << "Erro: butterfly (perfect shuffle) exige num_nodes potencia de 2 (recebido "
@@ -142,5 +186,5 @@ void generateButterflyTraffic(int num_nodes, int num_packets, const std::string&
         return;
     }
     auto round = build_permutation_round(num_nodes, k, left_rotate_bits);
-    write_permutation_csv(round, num_packets, filename, "butterfly (shuffle)");
+    write_permutation_csv(round, num_packets, filename, "butterfly (shuffle)", inj);
 }

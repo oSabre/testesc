@@ -1,0 +1,21 @@
+
+== gaRandomBF | uniform | bfs | seed 1007 | cus=16 ==
+  Total de fluxos no trafego                                     100
+  Completos (total)                                              98
+  Nao iniciados (fora da janela de simulacao)                    0
+  Presos em roteamento (aguardando alocacao de rota)             0
+  Presos em transmissao (rota alocada mas sem confirmacao)       1
+  Descartados por timeout de roteamento                          1
+  Taxa de conclusao (%)                                          98
+  Latencia media exata sem arredondar ciclos                     511.0102041
+  Fluxos nao concluidos penalizados                              2
+  Latencia media penalizada ciclos                               800.79
+  Retries medios por fluxo concluido (regime permanente)         0.1530612245
+  Fluxos concluidos com pelo menos 1 retry (%)                   14.28571429
+  Retries medios por fluxo que chegou ao plano de controle       0.26
+  Retries maximo em um fluxo                                     10
+  status por fluxo: {'COMPLETO': 98, 'PRESO_TRANSMISSAO': 1, 'DESCARTADO_TIMEOUT': 1}
+
+-- gaRandomBF: fluxos presos x simultaneidade (janela +-6000 ns, 1 seed(s)) --
+  presos em transmissao    n=1     outro fluxo com MESMO destino: 100.0% | MESMA origem: 100.0% | qualquer: 100.0%
+  concluidos               n=98    outro fluxo com MESMO destino:  25.5% | MESMA origem:  22.4% | qualquer:  38.8%

@@ -48,9 +48,17 @@ int sc_main(int argc, char* argv[]) {
 
     // Leitura do Network Params.
     NetworkConfig net_cfg;
-    net_cfg.link_transit_latency = sc_time(cfg["network_params"]["link_transit_latency_ns"], SC_NS);
+
+    // Todas as latências abaixo agora são lidas em CICLOS DE CLOCK, não
+    // nanosegundos crus -- ver levantamento de constantes de tempo. Cada
+    // uma é convertida para sc_time multiplicando por CLOCK_PERIOD, ou
+    // guardada como inteiro de ciclos quando é somada/sorteada junto com
+    // jitter antes de virar sc_time (ex: retry).
+    int link_transit_latency_cycles = cfg["network_params"]["link_transit_latency_cycles"];
+    net_cfg.link_transit_latency = CLOCK_PERIOD * link_transit_latency_cycles;
+
     net_cfg.max_retries = cfg["network_params"]["max_retries"];
-    net_cfg.retry_wait_ns = cfg["network_params"]["retry_wait_ns"];
+    net_cfg.retry_wait_cycles = cfg["network_params"]["retry_wait_cycles"];
     net_cfg.flits_per_packet = cfg["network_params"]["flits_per_packet"];
     net_cfg.idle_cycles = cfg["network_params"]["idle_cycles"];
     net_cfg.packets_per_flow = cfg["network_params"]["packets_per_flow"];
@@ -59,20 +67,38 @@ int sc_main(int argc, char* argv[]) {
     // próprio membro em NetworkConfig.
     net_cfg.buffer_size = cfg["network_params"].value("buffer_size_flits", net_cfg.buffer_size);
 
-    // Coeficientes do custo computacional do Dijkstra (opcionais no JSON;
-    // usam os defaults de definitions.h se não especificados).
-    net_cfg.dijkstra_base_ns_per_node = cfg["network_params"].value("dijkstra_base_ns_per_node", net_cfg.dijkstra_base_ns_per_node);
-    net_cfg.dijkstra_pq_op_ns         = cfg["network_params"].value("dijkstra_pq_op_ns", net_cfg.dijkstra_pq_op_ns);
-    net_cfg.dijkstra_edge_check_ns    = cfg["network_params"].value("dijkstra_edge_check_ns", net_cfg.dijkstra_edge_check_ns);
+    // Coeficientes do custo computacional do Dijkstra, em ciclos (mínimo 1
+    // ciclo por operação -- ver levantamento de constantes de tempo).
+    // Substituem os antigos dijkstra_base_ns_per_node/dijkstra_pq_op_ns/
+    // dijkstra_edge_check_ns (fracionários, em ns) e o wait(5,SC_NS) fixo
+    // que existia separadamente no ControlUnit (agora é
+    // dijkstra_dispatch_cycles, um só lugar de custo algorítmico).
+    net_cfg.dijkstra_dispatch_cycles      = cfg["network_params"].value("dijkstra_dispatch_cycles", net_cfg.dijkstra_dispatch_cycles);
+    net_cfg.dijkstra_init_cycles_per_node = cfg["network_params"].value("dijkstra_init_cycles_per_node", net_cfg.dijkstra_init_cycles_per_node);
+    net_cfg.dijkstra_pq_op_cycles         = cfg["network_params"].value("dijkstra_pq_op_cycles", net_cfg.dijkstra_pq_op_cycles);
+    net_cfg.dijkstra_edge_check_cycles    = cfg["network_params"].value("dijkstra_edge_check_cycles", net_cfg.dijkstra_edge_check_cycles);
+    net_cfg.dijkstra_early_exit           = cfg["network_params"].value("dijkstra_early_exit", net_cfg.dijkstra_early_exit);
+    net_cfg.routing_algorithm             = cfg["network_params"].value("routing_algorithm", net_cfg.routing_algorithm);
+    if (net_cfg.routing_algorithm != "dijkstra" && net_cfg.routing_algorithm != "bfs" &&
+        net_cfg.routing_algorithm != "bfs_free") {
+        std::cerr << "ERRO: routing_algorithm invalido '" << net_cfg.routing_algorithm
+                  << "' (use dijkstra, bfs ou bfs_free)." << std::endl;
+        return 1;
+    }
 
-    // Latência de propagação do plano de controle (SDN -> LocalAgent do roteador).
-    double control_plane_latency_ns = cfg["network_params"].value("control_plane_latency_ns", 0.0);
-    net_cfg.control_plane_latency = sc_time(control_plane_latency_ns, SC_NS);
+    // Latência de propagação do plano de controle (SDN -> LocalAgent do
+    // roteador), em ciclos.
+    int control_plane_latency_cycles = cfg["network_params"].value("control_plane_latency_cycles", 0);
+    net_cfg.control_plane_latency = CLOCK_PERIOD * control_plane_latency_cycles;
 
-    // Jitter de retry: se não vier do JSON, usa 25% do retry_wait_ns como default
-    // (em vez de 0), para já evitar o "thundering herd" sincronizado por padrão.
-    net_cfg.retry_jitter_ns = cfg["network_params"].value(
-        "retry_jitter_ns", std::max(1, net_cfg.retry_wait_ns / 4));
+    // Jitter de retry: se não vier do JSON, usa 25% do retry_wait_cycles
+    // como default (em vez de 0), para já evitar o "thundering herd"
+    // sincronizado por padrão.
+    net_cfg.retry_jitter_cycles = cfg["network_params"].value(
+        "retry_jitter_cycles", std::max(1, net_cfg.retry_wait_cycles / 4));
+
+    // Latência de arbitragem (round-robin entre ControlUnits), em ciclos.
+    net_cfg.arbitro_latency_cycles = cfg["network_params"].value("arbitro_latency_cycles", net_cfg.arbitro_latency_cycles);
 
     int num_cu = cfg["network_params"]["num_control_units"];
 
@@ -101,9 +127,41 @@ int sc_main(int argc, char* argv[]) {
     double duration_us = sim_cfg.value("duration_us", 15.0);
 
     stats.set_warmup_window(sc_time(warmup_ns, SC_NS));
+    stats.set_sim_duration(sc_time(duration_us, SC_US));
 
     // Topologia
     TopologyManager* tm = new TopologyManager();
+    // Reserva da porta de ejecao do destino (ver TopologyManager.h). Padrao: desligado.
+    tm->set_reserve_dst(cfg["network_params"].value("reserve_dst_port", true));
+    tm->set_reserve_src(cfg["network_params"].value("reserve_src_port", true));
+    // ---- trace (opcional) ----
+    {
+        const auto& np_t = cfg["network_params"];
+        if (np_t.contains("trace_flow_ids")) {
+            const auto& t = np_t["trace_flow_ids"];
+            if (t.is_number_integer()) {
+                trace_flow_ids().insert(t.get<int>());
+            } else if (t.is_array()) {
+                for (const auto& x : t) trace_flow_ids().insert(x.get<int>());
+            } else if (t.is_string()) {
+                std::string s = t.get<std::string>();
+                if (s == "all") {
+                    trace_flow_ids().insert(-1);
+                } else {
+                    std::stringstream ss(s);
+                    std::string tok;
+                    while (std::getline(ss, tok, ',')) {
+                        if (!tok.empty()) trace_flow_ids().insert(std::stoi(tok));
+                    }
+                }
+            }
+        }
+        if (!trace_flow_ids().empty()) {
+            std::string tf = np_t.value("trace_file", std::string("trace_flows.log"));
+            trace_out().open(tf, std::ios::out | std::ios::trunc);
+        }
+    }
+
     
     if(cfg.contains("topology") && cfg["topology"].is_array()){
         for(const auto& link : cfg["topology"]){
@@ -251,6 +309,16 @@ int sc_main(int argc, char* argv[]) {
     std::string traffic_mode = cfg["traffic"]["mode"]; // "deterministic", "uniform", "bit_reversal" ou "butterfly"
     TrafficInjector* ti = new TrafficInjector("Traffic_Injector", num_nodes, net_cfg, &stats);
     std::string csv_path;
+    // Modelo de tempo de injecao (traffic.injection): ver TrafficUtils.h
+    InjectionCfg inj;
+    {
+        json ij = cfg["traffic"].contains("injection") ? cfg["traffic"]["injection"] : json::object();
+        inj.mode        = ij.value("mode", std::string("burst"));
+        inj.burst_max   = ij.value("burst_max", 4);
+        inj.mean_gap_ns = ij.value("mean_gap_ns", 0.0);
+        inj.spacing_ns  = ij.value("spacing_ns", 100);
+        inj.seed        = ij.value("seed", cfg["traffic"].value("seed", static_cast<int>(net_cfg.master_seed)));
+    }
 
     if(traffic_mode == "deterministic"){
         csv_path = cfg["traffic"]["source_file"];
@@ -263,20 +331,20 @@ int sc_main(int argc, char* argv[]) {
         // explicitamente).
         int seed = cfg["traffic"].value("seed", static_cast<int>(net_cfg.master_seed));
         int num_packets = cfg["traffic"].value("num_packets", 1000);
-        generateUniformTraffic(num_nodes, num_packets, seed, "uniform.csv");
+        generateUniformTraffic(num_nodes, num_packets, seed, "uniform.csv", inj);
         csv_path = "uniform.csv";
     } else if (traffic_mode == "bit_reversal"){
         // Padrao de permutacao: exige num_nodes potencia de 2. Reusa o
         // mesmo campo traffic.num_packets do modo uniform, para permitir
         // comparacao com o mesmo volume total de trafego entre padroes.
         int num_packets = cfg["traffic"].value("num_packets", 1000);
-        generateBitReversalTraffic(num_nodes, num_packets, "bit_reversal.csv");
+        generateBitReversalTraffic(num_nodes, num_packets, "bit_reversal.csv", inj);
         csv_path = "bit_reversal.csv";
     } else if (traffic_mode == "butterfly"){
         // Padrao de permutacao "perfect shuffle" (rotaciona os bits do
         // endereco). Mesma logica de reaproveitamento de num_packets.
         int num_packets = cfg["traffic"].value("num_packets", 1000);
-        generateButterflyTraffic(num_nodes, num_packets, "butterfly.csv");
+        generateButterflyTraffic(num_nodes, num_packets, "butterfly.csv", inj);
         csv_path = "butterfly.csv";
     }else{
         std::cerr << "Erro: Modo de trafego desconhecido: " << traffic_mode << std::endl;
@@ -334,6 +402,24 @@ int sc_main(int argc, char* argv[]) {
     std::cout << "Simulacao finalizada com sucesso." << std::endl;
 
     stats.generate_report(output_file);
+
+    // Exporta a utilizacao por link (quantos fluxos passaram por cada
+    // link fisico ao longo da simulacao) -- usado para confirmar/refutar
+    // hipoteses de gargalo/concentracao de trafego em poucos links (ex:
+    // atalhos de longo alcance de uma small-world), mesmo quando as
+    // metricas estruturais (diametro/caminho medio) parecem boas.
+    // Nome derivado de output_file: "results_seed3.csv" ->
+    // "results_seed3_linkusage.csv".
+    {
+        std::string link_usage_file = output_file;
+        std::size_t dot_pos = link_usage_file.rfind(".csv");
+        if (dot_pos != std::string::npos) {
+            link_usage_file = link_usage_file.substr(0, dot_pos) + "_linkusage.csv";
+        } else {
+            link_usage_file += "_linkusage.csv";
+        }
+        tm->export_link_usage(link_usage_file);
+    }
 
     // Desalocação segura de memória (Evitando leaks no C++)
     delete tm;

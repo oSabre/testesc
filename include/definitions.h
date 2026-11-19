@@ -5,6 +5,38 @@
 #include <vector>
 #include <systemc.h>
 #include "flit.h"
+#include <map>
+#include <string>
+
+// Tentativas FALHAS de alocacao de rota por fluxo (retries). Escrito pela
+// ControlUnit, lido pelo StatsCollector. Threads SystemC sao cooperativas
+// (sem concorrencia real), entao nao precisa de mutex.
+inline std::map<int, int>& flow_retry_counts() {
+    static std::map<int, int> m;
+    return m;
+}
+
+// ---- Rastreamento opcional (trace). Desligado por padrao. ----
+// Ligado por network_params.trace_flow_ids + trace_file (ver main.cpp).
+// Nao usa wait(): nao altera o tempo simulado.
+#include <set>
+#include <fstream>
+#include <sstream>
+inline std::set<int>& trace_flow_ids() { static std::set<int> s; return s; }  // -1 = todos
+inline std::ofstream& trace_out() { static std::ofstream f; return f; }
+inline bool trace_enabled() { return trace_out().is_open(); }
+inline bool trace_flow(int id) {
+    return trace_enabled() && (trace_flow_ids().count(id) > 0 || trace_flow_ids().count(-1) > 0);
+}
+// Porta de entrada em que cada OutputMUX esta bloqueado lendo (-1 = nenhuma).
+inline std::map<std::string, int>& mux_blocked_port() { static std::map<std::string, int> m; return m; }
+inline std::string trace_route_str(const std::vector<int>& r) {
+    std::ostringstream os;
+    for (size_t i = 0; i < r.size(); ++i) os << r[i] << (i + 1 < r.size() ? "->" : "");
+    return os.str();
+}
+#define TRACE_LOG(expr) do { if (trace_enabled()) { trace_out() << "@" << sc_core::sc_time_stamp() << " " << expr << std::endl; } } while (0)
+#define TRACE_FLOW(fid, expr) do { if (trace_flow(fid)) { TRACE_LOG(expr); } } while (0)
 
 inline std::ostream& operator<<(std::ostream& os, const std::vector<int>& v) {
     os << "[ ";
@@ -110,15 +142,33 @@ struct PortSignals {
 // Definição de constantes úteis
 const int NUM_PORTS = 5; // N, S, L, O, Local
 const int BUFFER_SIZE = 16;
-const sc_time CLOCK_PERIOD(10, SC_NS); 
-const sc_time LAT(1, SC_NS);
+const sc_time CLOCK_PERIOD(10, SC_NS);
+
+// Latência do InputBuffer (1 estágio de "chegada no buffer"). Antes era
+// 1ns hardcoded, sem relação com o clock -- agora é literalmente 1 ciclo,
+// por decisão explícita (ver levantamento de constantes de tempo): num
+// roteador circuito-comutado (rota já configurada pelo SDN, sem
+// computação de rota nem arbitragem de canal por flit), os únicos dois
+// estágios físicos que restam são "chegou no buffer" (este) e "atravessou
+// o link" (link_transit_latency, abaixo) -- 1 ciclo cada é consistente
+// com a literatura de roteadores síncronos.
+const sc_time LAT = CLOCK_PERIOD;
 
 struct NetworkConfig {
+    // Latência de trânsito de um link físico, em ciclos de clock. Antes
+    // era lido como "link_transit_latency_ns" (nanosegundos crus, sem
+    // garantia de ser múltiplo do período de clock). Convertido para
+    // sc_time em main.cpp como link_transit_latency_cycles * CLOCK_PERIOD.
     sc_time link_transit_latency;
+
     int max_retries;
-    int retry_wait_ns;
     int packets_per_flow;
     int flits_per_packet;
+
+    // Tempo ocioso entre pacotes de um mesmo fluxo, em ciclos de clock.
+    // Já se chamava "idle_cycles" antes, mas era aplicado como
+    // wait(idle_cycles, SC_NS) -- nanosegundos crus com nome de ciclos.
+    // Agora é genuinamente ciclos: wait(CLOCK_PERIOD * idle_cycles).
     int idle_cycles;
 
     // Profundidade (em flits) dos FIFOs do plano de DADOS: injetor<->roteador
@@ -129,42 +179,72 @@ struct NetworkConfig {
     int buffer_size = BUFFER_SIZE;
 
     // --- Coeficientes do modelo de custo do Dijkstra (ControlUnit) ---
-    // O tempo de cálculo de rota deixou de ser um valor fixo e passou a
-    // escalar com o trabalho real do algoritmo: O((V + E) log V).
-    // Todos calibráveis via config.json; valores abaixo são defaults.
+    // O tempo de cálculo de rota escala com o trabalho real do algoritmo:
+    // O((V + E) log V). Reformulado para ciclos "de verdade": cada
+    // operação elementar custa NO MÍNIMO 1 ciclo inteiro (não dá pra fazer
+    // trabalho em menos que isso) -- ver levantamento de constantes de
+    // tempo. Isso também absorveu o antigo wait(5,SC_NS) de "decodificação"
+    // da requisição (dijkstra_dispatch_cycles), que era um custo fixo
+    // desconectado do modelo -- agora há um só lugar de custo algorítmico.
 
-    // Custo de inicialização O(V): alocar/zerar dist[] e prev[] escala
-    // com o tamanho da rede (num_nodes).
-    double dijkstra_base_ns_per_node = 0.1;
+    // Custo fixo de despacho/decodificação da requisição, pago 1x por
+    // chamada (substitui o antigo wait(5,SC_NS) hardcoded no ControlUnit).
+    int dijkstra_dispatch_cycles = 1;
 
-    // Custo de uma operação de heap (push/pop na priority_queue),
-    // escalado por log2(tamanho da fila) — mais nós/arestas ativos na
-    // busca tornam cada operação de heap mais cara.
-    double dijkstra_pq_op_ns = 1.0;
+    // Custo de inicialização O(V): alocar/zerar dist[] e prev[], por nó.
+    int dijkstra_init_cycles_per_node = 1;
+
+    // Custo BASE de uma operação de heap (push/pop na priority_queue),
+    // escalado por log2(tamanho da fila) -- com mínimo de 1 ciclo por
+    // operação, mesmo quando o fator log2 arredondaria para menos.
+    int dijkstra_pq_op_cycles = 1;
 
     // Custo de examinar uma aresta candidata (olhar o vizinho + consultar
-    // o estado do link via is_link_busy, que representa o controlador
-    // consultando o estado atual da rede).
-    double dijkstra_edge_check_ns = 0.2;
+    // o estado do link via is_link_busy). Mínimo 1 ciclo por aresta.
+    int dijkstra_edge_check_cycles = 1;
+    // true: o Dijkstra para ao extrair o destino (custo depende da distancia);
+    // false: explora o grafo todo (custo independente da topologia) -- ablacao.
+    bool dijkstra_early_exit = true;
 
-    // Latência de propagação do PLANO DE CONTROLE: tempo entre o SDN
-    // Controller escrever um SwitchConfigCmd e o LocalAgent do roteador
-    // efetivamente aplicar a configuração no hardware (mux_sel/mux_enable/
-    // buffer_target). Antes esse valor era zero (o comando "teleportava"),
-    // o que fazia a rede parecer reagir instantaneamente às decisões do
-    // controlador. Análogo ao link_transit_latency, mas para o plano de
-    // controle. Default 0 preserva o comportamento antigo se não setado.
+    // Algoritmo de roteamento do plano de controle (fator experimental):
+    //   "dijkstra"  : Dijkstra com heap (modelo original; custo O((V+E)log V))
+    //   "bfs"       : busca em largura com fila FIFO. Equivalente ao Dijkstra
+    //                 com pesos unitarios (mesmos caminhos minimos), mas sem
+    //                 heap: push/pop custam dijkstra_pq_op_cycles FIXOS (sem
+    //                 log2) => custo quase independente da topologia.
+    //   "bfs_free"  : mesmo BFS, com custo ZERO de computacao (so o
+    //                 dijkstra_dispatch_cycles). Isola o efeito da TOPOLOGIA
+    //                 (controle ideal/instantaneo).
+    // Respeita dijkstra_early_exit e evita links ocupados nos tres casos.
+    std::string routing_algorithm = "dijkstra";
+
+    // Latência de propagação do PLANO DE CONTROLE, em ciclos: tempo entre
+    // o SDN Controller escrever um SwitchConfigCmd e o LocalAgent do
+    // roteador efetivamente aplicar a configuração no hardware
+    // (mux_sel/mux_enable/buffer_target). Antes era ns crus (5ns, nem
+    // múltiplo do período de clock); default 0 preserva o comportamento
+    // "instantâneo" antigo se não setado.
     sc_time control_plane_latency = SC_ZERO_TIME;
 
-    // Jitter máximo (em ns) somado ao retry_wait_ns de cada ControlUnit.
-    // Sem isso, vários fluxos que colidem no mesmo link re-tentam sempre
-    // no mesmo instante simulado (retry_wait_ns fixo), gerando um
-    // "thundering herd" artificial e sincronizado que não existe num
-    // sistema real. O valor efetivo de espera de cada retry é sorteado
-    // uniformemente em [retry_wait_ns, retry_wait_ns + retry_jitter_ns].
-    // Se não vier do JSON, main.cpp usa um default proporcional a
-    // retry_wait_ns (25%) em vez de 0.
-    int retry_jitter_ns = 0;
+    // Espera de retry, em ciclos: tempo entre uma tentativa de alocação de
+    // caminho falhar e a próxima tentativa começar.
+    int retry_wait_cycles = 0;
+
+    // Jitter máximo, em ciclos, somado ao retry_wait_cycles de cada
+    // ControlUnit. Sem isso, vários fluxos que colidem no mesmo link
+    // re-tentam sempre no mesmo instante simulado, gerando um "thundering
+    // herd" artificial que não existe num sistema real. O valor efetivo de
+    // espera de cada retry é sorteado uniformemente em
+    // [retry_wait_cycles, retry_wait_cycles + retry_jitter_cycles]. Se não
+    // vier do JSON, main.cpp usa um default proporcional a
+    // retry_wait_cycles (25%) em vez de 0.
+    int retry_jitter_cycles = 0;
+
+    // Latência de arbitragem (round-robin entre ControlUnits), em ciclos.
+    // Antes era wait(1,SC_NS) hardcoded no Arbitro, com um comentário no
+    // próprio código original ("Ou defina um valor via cfg") indicando que
+    // ficou pendente de calibração. Agora é configurável de verdade.
+    int arbitro_latency_cycles = 1;
 
     // Seed mestre da simulação. Combinado com o hash do nome de cada
     // ControlUnit para semear o RNG do jitter de retry. Sem isso, duas

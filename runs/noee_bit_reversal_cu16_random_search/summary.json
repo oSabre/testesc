@@ -1,0 +1,22 @@
+{
+  "name": "noee_bit_reversal_cu16_random_search",
+  "algo": "random_search",
+  "init": "seeded",
+  "traffic": "bit_reversal",
+  "cus": 16,
+  "pop": 30,
+  "gens": 40,
+  "budget_evals": 1230,
+  "unique_topologies_evaluated": 1230,
+  "train_seeds": [
+    1,
+    2,
+    3
+  ],
+  "best_fitness": 785.6999999999999,
+  "best_completion": 100.0,
+  "best_avg_path": 3.577876984126984,
+  "best_diameter": 7,
+  "refs": {},
+  "elapsed_s": 104.0
+}

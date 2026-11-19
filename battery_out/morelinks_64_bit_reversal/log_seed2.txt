@@ -6,3 +6,4 @@ JSON carregado com sucesso!
 Arquivo bit_reversal.csv gerado com sucesso (bit-reversal, 100 pacotes, 56 pares unicos por rodada).
 Iniciando a simulacao do sistema...
 Simulacao finalizada com sucesso.
+Arquivo battery_out/morelinks_64_bit_reversal/results_seed2_linkusage.csv gerado com sucesso (uso de 128 links).

@@ -1,0 +1,42 @@
+
+== smallworld | uniform | bfs | seed 1002 | cus=16 ==
+  Total de fluxos no trafego                                     100
+  Completos (total)                                              99
+  Nao iniciados (fora da janela de simulacao)                    0
+  Presos em roteamento (aguardando alocacao de rota)             0
+  Presos em transmissao (rota alocada mas sem confirmacao)       1
+  Descartados por timeout de roteamento                          0
+  Taxa de conclusao (%)                                          99
+  Latencia media exata sem arredondar ciclos                     489.7474747
+  Fluxos nao concluidos penalizados                              1
+  Latencia media penalizada ciclos                               634.85
+  Retries medios por fluxo concluido (regime permanente)         0.101010101
+  Fluxos concluidos com pelo menos 1 retry (%)                   9.090909091
+  Retries medios por fluxo que chegou ao plano de controle       0.1
+  Retries maximo em um fluxo                                     2
+  status por fluxo: {'COMPLETO': 99, 'PRESO_TRANSMISSAO': 1}
+
+-- smallworld: fluxos presos x simultaneidade (janela +-6000 ns, 1 seed(s)) --
+  presos em transmissao    n=1     outro fluxo com MESMO destino:   0.0% | MESMA origem: 100.0% | qualquer: 100.0%
+  concluidos               n=99    outro fluxo com MESMO destino:  21.2% | MESMA origem:  25.3% | qualquer:  43.4%
+
+== gaRandomU | uniform | bfs | seed 1002 | cus=16 ==
+  Total de fluxos no trafego                                     100
+  Completos (total)                                              96
+  Nao iniciados (fora da janela de simulacao)                    0
+  Presos em roteamento (aguardando alocacao de rota)             0
+  Presos em transmissao (rota alocada mas sem confirmacao)       1
+  Descartados por timeout de roteamento                          3
+  Taxa de conclusao (%)                                          96
+  Latencia media exata sem arredondar ciclos                     559.4166667
+  Fluxos nao concluidos penalizados                              4
+  Latencia media penalizada ciclos                               1137.04
+  Retries medios por fluxo concluido (regime permanente)         0.1145833333
+  Fluxos concluidos com pelo menos 1 retry (%)                   11.45833333
+  Retries medios por fluxo que chegou ao plano de controle       0.42
+  Retries maximo em um fluxo                                     10
+  status por fluxo: {'COMPLETO': 96, 'PRESO_TRANSMISSAO': 1, 'DESCARTADO_TIMEOUT': 3}
+
+-- gaRandomU: fluxos presos x simultaneidade (janela +-6000 ns, 1 seed(s)) --
+  presos em transmissao    n=1     outro fluxo com MESMO destino:   0.0% | MESMA origem: 100.0% | qualquer: 100.0%
+  concluidos               n=96    outro fluxo com MESMO destino:  21.9% | MESMA origem:  26.0% | qualquer:  44.8%

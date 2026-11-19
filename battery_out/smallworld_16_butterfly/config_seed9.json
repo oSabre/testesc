@@ -1,0 +1,156 @@
+{
+  "network_params": {
+    "num_control_units": 4,
+    "max_retries": 10,
+    "packets_per_flow": 1,
+    "flits_per_packet": 1,
+    "idle_cycles": 2,
+    "buffer_size_flits": 16,
+    "link_transit_latency_cycles": 1,
+    "retry_wait_cycles": 100,
+    "retry_jitter_cycles": 25,
+    "control_plane_latency_cycles": 1,
+    "dijkstra_dispatch_cycles": 1,
+    "dijkstra_init_cycles_per_node": 1,
+    "dijkstra_pq_op_cycles": 1,
+    "dijkstra_edge_check_cycles": 1,
+    "arbitro_latency_cycles": 1
+  },
+  "topology_description": "Small-world irregular: mesh 4x4 com 2 links centrais removidos e 2 links de longo alcance adicionados. Mesmo orcamento da mesh (24 links), grau uniforme 3.",
+  "topology": [
+    {
+      "id": 0,
+      "u": 0,
+      "v": 1
+    },
+    {
+      "id": 1,
+      "u": 0,
+      "v": 4
+    },
+    {
+      "id": 2,
+      "u": 0,
+      "v": 15
+    },
+    {
+      "id": 3,
+      "u": 1,
+      "v": 2
+    },
+    {
+      "id": 4,
+      "u": 1,
+      "v": 5
+    },
+    {
+      "id": 5,
+      "u": 2,
+      "v": 3
+    },
+    {
+      "id": 6,
+      "u": 2,
+      "v": 6
+    },
+    {
+      "id": 7,
+      "u": 3,
+      "v": 7
+    },
+    {
+      "id": 8,
+      "u": 3,
+      "v": 12
+    },
+    {
+      "id": 9,
+      "u": 4,
+      "v": 5
+    },
+    {
+      "id": 10,
+      "u": 4,
+      "v": 8
+    },
+    {
+      "id": 11,
+      "u": 5,
+      "v": 9
+    },
+    {
+      "id": 12,
+      "u": 6,
+      "v": 7
+    },
+    {
+      "id": 13,
+      "u": 6,
+      "v": 10
+    },
+    {
+      "id": 14,
+      "u": 7,
+      "v": 11
+    },
+    {
+      "id": 15,
+      "u": 8,
+      "v": 9
+    },
+    {
+      "id": 16,
+      "u": 8,
+      "v": 12
+    },
+    {
+      "id": 17,
+      "u": 9,
+      "v": 13
+    },
+    {
+      "id": 18,
+      "u": 10,
+      "v": 11
+    },
+    {
+      "id": 19,
+      "u": 10,
+      "v": 14
+    },
+    {
+      "id": 20,
+      "u": 11,
+      "v": 15
+    },
+    {
+      "id": 21,
+      "u": 12,
+      "v": 13
+    },
+    {
+      "id": 22,
+      "u": 13,
+      "v": 14
+    },
+    {
+      "id": 23,
+      "u": 14,
+      "v": 15
+    }
+  ],
+  "traffic": {
+    "mode": "butterfly",
+    "num_packets": 100,
+    "injection": {
+      "mode": "burst",
+      "burst_max": 4
+    }
+  },
+  "simulation": {
+    "seed": 9,
+    "warmup_ns": 0,
+    "duration_us": 15.0,
+    "output_file": "battery_out/smallworld_16_butterfly/results_seed9.csv"
+  }
+}

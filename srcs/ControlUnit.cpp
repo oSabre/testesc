@@ -3,6 +3,8 @@
 #include <cmath>
 #include <random>
 #include <functional>
+#include <deque>
+#include <algorithm>
 #include "SDN_Controller.h"
 
 ControlUnit::ControlUnit(sc_module_name name) : sc_module(name) {
@@ -26,14 +28,14 @@ void ControlUnit::process_routing() {
                       ^ static_cast<std::size_t>(cfg->master_seed));
 
     // Espera o tempo de retry configurado + um jitter aleatório uniforme
-    // em [0, retry_jitter_ns]. Sem o jitter, vários fluxos que colidem no
-    // mesmo link/CU re-tentam sempre no mesmo instante simulado exato,
-    // criando um "thundering herd" sincronizado que não reflete o
-    // comportamento disperso de um sistema real.
+    // em [0, retry_jitter_cycles], em ciclos de clock. Sem o jitter, vários
+    // fluxos que colidem no mesmo link/CU re-tentam sempre no mesmo
+    // instante simulado exato, criando um "thundering herd" sincronizado
+    // que não reflete o comportamento disperso de um sistema real.
     auto wait_retry = [&]() {
-        std::uniform_int_distribution<int> jitter_dist(0, std::max(0, cfg->retry_jitter_ns));
-        int jitter = jitter_dist(rng);
-        wait(cfg->retry_wait_ns + jitter, SC_NS);
+        std::uniform_int_distribution<int> jitter_dist(0, std::max(0, cfg->retry_jitter_cycles));
+        int jitter_cycles = jitter_dist(rng);
+        wait(CLOCK_PERIOD * (cfg->retry_wait_cycles + jitter_cycles));
     };
 
     while (true) {
@@ -57,6 +59,7 @@ void ControlUnit::process_routing() {
         // travando a fila de todos os fluxos seguintes atribuídos a ela.
         auto exceeded_max_retries = [&]() {
             retry_count++;
+            flow_retry_counts()[req.flow_id] = retry_count;  // p/ o CSV (coluna retries)
             return retry_count >= cfg->max_retries;
         };
 
@@ -66,12 +69,11 @@ void ControlUnit::process_routing() {
          //         << " (Origem: " << req.sender_id 
          //         << " -> Destino: " << req.receiver_id << ")" << std::endl;
 
-        // 3. Simula um tempo de processamento (latência do cálculo da rota)
-        // Por enquanto vamos colocar um tempo fixo
-        wait(5, SC_NS); 
-
-        //std::cout << "[ControlUnit " << name() << "] @ " << sc_time_stamp() 
-        //  << ": Acordou do processamento, iniciando loop de alocacao." << std::endl;
+        // O antigo wait(5,SC_NS) fixo de "decodificação" foi removido daqui
+        // e absorvido no próprio modelo de custo do Dijkstra
+        // (dijkstra_dispatch_cycles, pago 1x por chamada de
+        // calculate_dijkstra) -- um só lugar de custo algorítmico, em vez
+        // de um custo fixo desconectado do modelo variável.
 
         // Segunda camada de defesa: origem == destino nunca gera uma rota
         // alocável (try_allocate_path sempre recusa caminhos de tamanho 1).
@@ -102,6 +104,7 @@ void ControlUnit::process_routing() {
             // ----------------------------------------
 
             route = calculate_dijkstra(req.sender_id, req.receiver_id);
+            TRACE_FLOW(req.flow_id, "[CU " << name() << "] flow " << req.flow_id << " " << req.sender_id << "->" << req.receiver_id << " falhas_ate_agora=" << retry_count << " rota=" << trace_route_str(route));
 
             if (route.empty()) {
                 // Não há caminhos livres na topologia inteira.
@@ -119,11 +122,13 @@ void ControlUnit::process_routing() {
             }
 
             path_allocated = tm->try_allocate_path(route);
+            TRACE_FLOW(req.flow_id, "[CU " << name() << "] flow " << req.flow_id << " try_allocate_path=" << path_allocated);
 
             if(path_allocated){
                 //std::cout << "[ControlUnit] Rota encontrada e reservada para o Flow " << req.flow_id 
                 //          << " (CU: " << this->name() << ")" << std::endl;
                 parent_sdn->configure_path_hardware(route, req.flow_id);
+                TRACE_FLOW(req.flow_id, "[CU " << name() << "] flow " << req.flow_id << " comandos SETUP enviados");
 
                 // CRÍTICO: configure_path_hardware só ESCREVE os comandos SETUP
                 // nas FIFOs dos roteadores -- cada LocalAgent ainda precisa
@@ -143,12 +148,14 @@ void ControlUnit::process_routing() {
                 // que todos os roteadores da rota já aplicaram o comando,
                 // em vez de adivinhar um tempo fixo.
                 parent_sdn->wait_for_route_ack(req.flow_id, route);
+                TRACE_FLOW(req.flow_id, "[CU " << name() << "] flow " << req.flow_id << " ACK de SETUP de todos os roteadores");
 
                 path_ready_out.write(req.flow_id);
+                TRACE_FLOW(req.flow_id, "[CU " << name() << "] flow " << req.flow_id << " path_ready enviado");
             }else{
                 //std::cout << "[ControlUnit " << name() << "] @ " << sc_time_stamp() 
                 //            << ": Caminho para Flow " << req.flow_id << " BUSY. Tentando novamente em " 
-                 //           << cfg->retry_wait_ns << " ns." << std::endl;
+                 //           << cfg->retry_wait_cycles << " ciclos." << std::endl;
                 if (exceeded_max_retries()) {
                     flow_discarded = true;
                     break;
@@ -178,6 +185,51 @@ void ControlUnit::set_topology(TopologyManager* _tm){
 std::vector<int> ControlUnit::calculate_dijkstra(int src, int dst){
     int num_nodes = tm->get_num_nodes();
 
+    // --- Variante BFS (routing_algorithm = "bfs" | "bfs_free") ---
+    // Pesos sao unitarios, entao BFS acha os mesmos caminhos minimos que o
+    // Dijkstra, sem heap. Custo (ciclos): dispatch + init por no + 1 push e
+    // 1 pop por no visitado (custo FIXO, sem log2) + 1 verificacao por aresta
+    // examinada. "bfs_free" cobra so o dispatch (controle ideal).
+    if (cfg->routing_algorithm != "dijkstra") {
+        const bool free_cost = (cfg->routing_algorithm == "bfs_free");
+        std::vector<int> bprev(num_nodes, -1);
+        std::vector<char> seen(num_nodes, 0);
+        std::deque<int> fifo;
+        long long bcost = cfg->dijkstra_dispatch_cycles;
+        const long long q_op = std::max(1, cfg->dijkstra_pq_op_cycles);
+        const long long e_op = std::max(1, cfg->dijkstra_edge_check_cycles);
+        if (!free_cost) bcost += static_cast<long long>(cfg->dijkstra_init_cycles_per_node) * num_nodes;
+
+        seen[src] = 1;
+        fifo.push_back(src);
+        if (!free_cost) bcost += q_op;
+        while (!fifo.empty()) {
+            int u = fifo.front();
+            fifo.pop_front();
+            if (!free_cost) bcost += q_op;
+            if (u == dst && cfg->dijkstra_early_exit) break;
+            for (int p = 0; p < NUM_PORTS; ++p) {
+                int v = tm->get_neighbor_at_port(u, p);
+                if (v == -1) continue;
+                if (!free_cost) bcost += e_op;
+                if (!tm->is_link_busy(u, v) && !seen[v]) {
+                    seen[v] = 1;
+                    bprev[v] = u;
+                    fifo.push_back(v);
+                    if (!free_cost) bcost += q_op;
+                }
+            }
+        }
+        wait(CLOCK_PERIOD * bcost);
+
+        std::vector<int> bpath;
+        if (!seen[dst]) return bpath;           // sem caminho livre
+        for (int at = dst; at != -1; at = bprev[at]) bpath.push_back(at);
+        std::reverse(bpath.begin(), bpath.end());
+        if (bpath.empty() || bpath[0] != src) return std::vector<int>();
+        return bpath;
+    }
+
     const int INF = std::numeric_limits<int>::max();
     std::vector<int> dist(num_nodes, INF);
     std::vector<int> prev(num_nodes, -1);
@@ -188,30 +240,43 @@ std::vector<int> ControlUnit::calculate_dijkstra(int src, int dst){
         std::greater<std::pair<int,int>>
     > pq;
 
-    // --- Modelo de custo computacional do Dijkstra ---
-    // Antes: tempo fixo (wait(5, SC_NS) no process_routing), igual para
-    // qualquer topologia e qualquer par origem/destino.
-    // Agora: o custo escala com o trabalho real do algoritmo (O((V+E) log V)):
-    //   1) Custo de inicialização O(V): alocar/zerar dist[]/prev[], que
-    //      cresce com o tamanho da rede (num_nodes).
-    //   2) Custo de operações de heap O(log V) por push/pop na priority_queue.
-    //   3) Custo de examinar cada aresta candidata, incluindo a consulta ao
-    //      estado do link (is_link_busy) — um controlador real também paga
-    //      um custo para consultar o estado atual da rede.
+    // --- Modelo de custo computacional do Dijkstra, em CICLOS DE CLOCK ---
+    // Antes: tempo fixo (wait(5, SC_NS) em process_routing) + um custo
+    // variável em nanosegundos fracionários (nunca alinhado ao clock).
+    // Agora: cada operação elementar custa NO MÍNIMO 1 ciclo inteiro (não
+    // dá pra fazer trabalho em menos que isso), e o custo fixo de
+    // "decodificação" foi absorvido aqui como dijkstra_dispatch_cycles --
+    // um só lugar de custo algorítmico, coerente com a filosofia de que o
+    // overhead de uma SDN deve estar concentrado no plano de controle
+    // (algoritmo), não na rede (plano de dados):
+    //   1) dijkstra_dispatch_cycles: custo fixo de despacho, 1x por chamada.
+    //   2) Custo de inicialização O(V): 1+ ciclo(s) por nó.
+    //   3) Custo de operações de heap O(log V) por push/pop, mínimo 1 ciclo
+    //      cada, mesmo quando o fator log2 arredondaria para menos.
+    //   4) Custo de examinar cada aresta candidata, mínimo 1 ciclo cada,
+    //      incluindo a consulta ao estado do link (is_link_busy) — um
+    //      controlador real também paga um custo para consultar o estado
+    //      atual da rede.
     // Os coeficientes vêm do NetworkConfig (calibráveis via config.json).
-    double custo_ns = cfg->dijkstra_base_ns_per_node * num_nodes;
+    long long custo_ciclos = cfg->dijkstra_dispatch_cycles;
+    custo_ciclos += static_cast<long long>(cfg->dijkstra_init_cycles_per_node) * num_nodes;
+
+    auto pq_op_cost = [&](double queue_size_arg) -> long long {
+        long long c = std::llround(cfg->dijkstra_pq_op_cycles * std::log2(queue_size_arg));
+        return std::max<long long>(1, c);
+    };
 
     dist[src] = 0;
     pq.push({0, src});
-    custo_ns += cfg->dijkstra_pq_op_ns * std::log2(pq.size() + 1.0);
+    custo_ciclos += pq_op_cost(pq.size() + 1.0);
 
     while(!pq.empty()){
         int d = pq.top().first;
         int u = pq.top().second;
         pq.pop();
-        custo_ns += cfg->dijkstra_pq_op_ns * std::log2(pq.size() + 2.0);
+        custo_ciclos += pq_op_cost(pq.size() + 2.0);
 
-        if (u==dst) break;
+        if (u==dst && cfg->dijkstra_early_exit) break;
 
         if (d>dist[u]) continue;
 
@@ -220,27 +285,28 @@ std::vector<int> ControlUnit::calculate_dijkstra(int src, int dst){
             if (v == -1) continue;
 
             // Custo de examinar a aresta candidata (vizinho + consulta ao
-            // estado atual do link).
-            custo_ns += cfg->dijkstra_edge_check_ns;
+            // estado atual do link). Mínimo 1 ciclo.
+            custo_ciclos += std::max(1, cfg->dijkstra_edge_check_cycles);
 
             if(!tm->is_link_busy(u,v)){
                 int weight = 1;
                 if(dist[u] + weight < dist[v]){
                     dist[v] = dist[u] + weight;
                     prev[v] = u;
-                    custo_ns += cfg->dijkstra_pq_op_ns * std::log2(pq.size()+1.0);
+                    custo_ciclos += pq_op_cost(pq.size() + 1.0);
                     pq.push({dist[v],v});
                 }
             }
         }
     }
 
-    // Aplica o custo computacional simulado desta chamada. Importante: como
-    // calculate_dijkstra é chamado de novo a cada retry (o estado dos links
-    // pode ter mudado), cada tentativa paga o custo de recalcular a rota do
-    // zero — o que é o comportamento real de um controlador que refaz o
-    // cálculo sob nova informação de estado da rede.
-    wait(custo_ns, SC_NS);
+    // Aplica o custo computacional simulado desta chamada, convertendo
+    // ciclos inteiros para tempo simulado via CLOCK_PERIOD. Importante:
+    // como calculate_dijkstra é chamado de novo a cada retry (o estado dos
+    // links pode ter mudado), cada tentativa paga o custo de recalcular a
+    // rota do zero — o que é o comportamento real de um controlador que
+    // refaz o cálculo sob nova informação de estado da rede.
+    wait(CLOCK_PERIOD * custo_ciclos);
 
     std::vector<int> path;
     for (int at = dst; at != -1; at = prev[at]) {

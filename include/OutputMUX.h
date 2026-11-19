@@ -22,6 +22,7 @@ SC_MODULE(OutputMUX) {
         while (true) {
             // Se o MUX não estiver habilitado pelo SDN, espera uma mudança no controle
             if (!enable.read()) {
+                if (trace_enabled()) { mux_blocked_port()[std::string(name())] = -1; }
                 wait(enable.value_changed_event() | sel.value_changed_event());
                 continue; 
             }
@@ -43,6 +44,7 @@ SC_MODULE(OutputMUX) {
             // Solução: esperar por dado disponível OU por mudança de config,
             // e só então fazer um nb_read() (que não bloqueia, pois já garantimos
             // que há dado disponível).
+            if (trace_enabled()) { mux_blocked_port()[std::string(name())] = port; }
             bool reconfigured = false;
             while (flit_in[port].num_available() == 0) {
                 wait(flit_in[port].data_written_event()
@@ -62,7 +64,11 @@ SC_MODULE(OutputMUX) {
             }
 
             Flit f;
-            flit_in[port].nb_read(f); // Garantido não bloquear: já sabemos que há dado
+            flit_in[port].nb_read(f);
+            if (trace_enabled()) {
+                mux_blocked_port()[std::string(name())] = -1;
+                TRACE_FLOW(f.flow_id, "[MUX " << name() << "] flit " << f.flit_id << " pkt " << f.packet_id << " flow " << f.flow_id << " lido da porta " << port);
+            } // Garantido não bloquear: já sabemos que há dado
 
             //std::cout << "@" << sc_time_stamp() << " [Output MUX " << name() 
             //          << "] Flit " << f.flit_id << std::endl;

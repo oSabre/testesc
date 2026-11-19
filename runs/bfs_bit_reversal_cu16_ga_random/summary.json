@@ -1,0 +1,23 @@
+{
+  "name": "bfs_bit_reversal_cu16_ga_random",
+  "algo": "ga",
+  "init": "random",
+  "traffic": "bit_reversal",
+  "cus": 16,
+  "pop": 30,
+  "gens": 40,
+  "budget_evals": 1230,
+  "unique_topologies_evaluated": 1230,
+  "train_seeds": [
+    1,
+    2,
+    3
+  ],
+  "best_fitness": 427.14,
+  "best_completion": 100.0,
+  "best_avg_path": 3.4756944444444446,
+  "best_diameter": 7,
+  "refs": {},
+  "best_per_pattern_ratio_vs_mesh": null,
+  "elapsed_s": 139.5
+}

@@ -48,7 +48,7 @@ fi
 
 echo "Usando interpretador Python: $PYTHON_BIN ($(command -v "$PYTHON_BIN"))"
 
-BIN="./main.exe"   # ajuste para o nome/caminho do seu executavel
+BIN="./main.exe"
 MANIFEST="battery_manifest.txt"
 
 NUM_REPLICAS="${1:?uso: run_full_battery.sh <num_replicas> [seed_inicial]}"

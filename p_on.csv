@@ -1,0 +1,2 @@
+pattern,cus,duration_us,spacing_ns,topology,completion,lat_completed,control_lat,data_lat,fitness
+bit_reversal,16,100.0,400,mesh,100.0,687.41,673.59,13.82,687.41

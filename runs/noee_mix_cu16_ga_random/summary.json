@@ -1,0 +1,27 @@
+{
+  "name": "noee_mix_cu16_ga_random",
+  "algo": "ga",
+  "init": "random",
+  "traffic": "mix",
+  "cus": 16,
+  "pop": 20,
+  "gens": 30,
+  "budget_evals": 620,
+  "unique_topologies_evaluated": 620,
+  "train_seeds": [
+    1,
+    2,
+    3
+  ],
+  "best_fitness": 0.9489494179384069,
+  "best_completion": 99.88888888888889,
+  "best_avg_path": 3.6051587301587302,
+  "best_diameter": 7,
+  "refs": {},
+  "best_per_pattern_ratio_vs_mesh": {
+    "uniform": 1.1281169239365787,
+    "bit_reversal": 0.7892437929355763,
+    "butterfly": 0.9294875369430659
+  },
+  "elapsed_s": 145.4
+}

@@ -6,3 +6,4 @@ JSON carregado com sucesso!
 Arquivo butterfly.csv gerado com sucesso (butterfly (shuffle), 100 pacotes, 62 pares unicos por rodada).
 Iniciando a simulacao do sistema...
 Simulacao finalizada com sucesso.
+Arquivo battery_out/smallworld_64_butterfly/results_seed2_linkusage.csv gerado com sucesso (uso de 112 links).

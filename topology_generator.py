@@ -21,18 +21,20 @@ from collections import defaultdict, deque
 # ---------------------------------------------------------------------
 NETWORK_PARAMS = {
     "num_control_units": 4,
-    "link_transit_latency_ns": 10,
+    "link_transit_latency_cycles": 1,
     "max_retries": 10,
-    "retry_wait_ns": 1000,
+    "retry_wait_cycles": 100,
     "packets_per_flow": 1,
     "flits_per_packet": 1,
     "idle_cycles": 2,
     "buffer_size_flits": 16,
-    "dijkstra_base_ns_per_node": 0.1,
-    "dijkstra_pq_op_ns": 1.0,
-    "dijkstra_edge_check_ns": 0.2,
-    "control_plane_latency_ns": 5,
-    "retry_jitter_ns": 250,
+    "dijkstra_dispatch_cycles": 1,
+    "dijkstra_init_cycles_per_node": 1,
+    "dijkstra_pq_op_cycles": 1,
+    "dijkstra_edge_check_cycles": 1,
+    "control_plane_latency_cycles": 1,
+    "retry_jitter_cycles": 25,
+    "arbitro_latency_cycles": 1,
 }
 
 TRAFFIC = {

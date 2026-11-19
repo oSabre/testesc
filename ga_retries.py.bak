@@ -1,0 +1,96 @@
+#!/usr/bin/env python3
+"""
+ga_retries.py -- mede RETRIES por fluxo (tentativas falhas de alocar rota) por
+topologia x padrao, para testar a hipotese 'o small-world perde por conflito de
+rotas/retries, nao por saltos ou custo de Dijkstra'.
+
+Por topologia (media sobre replicas, fluxos concluidos fora do warm-up):
+  conclusao%, latencia total/controle/dados, retries medios, % com >=1 retry,
+  retries max, latencia de controle SEM retry vs COM retry (custo do retry).
+Requer o main.exe com a coluna 'retries' (patch ControlUnit/StatsCollector).
+
+Uso:
+  py ga_retries.py --bin ./main.exe --traffic butterfly --cus 16 --duration-us 150 \
+     --spacing-ns 800 --np dijkstra_early_exit=false --replicas 5 \
+     mesh:configs/configs_ciclos/config_mesh_64.json \
+     smallworld:configs/configs_ciclos/config_irregular_smallworld_64.json \
+     gaBF:runs/noee_butterfly_cu16_ga_random/best_config.json
+Rode uma vez por padrao (--traffic). Saida: retries_<padrao>.csv + tabela.
+"""
+import argparse, csv, json, os, shutil, statistics as st, subprocess, tempfile
+from concurrent.futures import ThreadPoolExecutor
+import ga_common as gc
+
+
+def run(a, edges, seed):
+    cfg = gc.build_config(gc.load_template(a.template), edges, a.traffic, seed, a.cus,
+                          a.duration_us, a.num_packets,
+                          {"mode": a.injection_mode, "burst_max": a.burst_max, "spacing_ns": a.spacing_ns},
+                          gc.parse_kv(a.np))
+    tmp = tempfile.mkdtemp(prefix="rt_")
+    try:
+        os.makedirs(os.path.join(tmp, "log"), exist_ok=True)
+        json.dump(cfg, open(os.path.join(tmp, "config.json"), "w"))
+        cmd = a.bin.split()
+        if os.path.exists(cmd[0]):
+            cmd[0] = os.path.abspath(cmd[0])
+        subprocess.run(cmd, cwd=tmp, timeout=a.timeout, stdout=subprocess.DEVNULL,
+                       stderr=subprocess.DEVNULL)
+        res = gc.parse_results(os.path.join(tmp, "results.csv"))
+        flows = []   # (ctrl, data, retries) dos concluidos fora do warm-up
+        with open(os.path.join(tmp, "results.csv"), newline="") as f:
+            for r in csv.DictReader(f):
+                if r.get("status") == "COMPLETO" and r.get("in_warmup") == "0":
+                    flows.append((float(r["control_latency_cycles"]),
+                                  float(r["data_latency_cycles"]),
+                                  int(r["retries"])))
+        return res, flows
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+
+
+def main():
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    gc.common_args(ap)
+    ap.add_argument("--replicas", type=int, default=5)
+    ap.add_argument("--seed-start", type=int, default=2000)
+    ap.add_argument("--tag", default="", help="prefixo do CSV de saida (retries_<tag><padrao>.csv)")
+    ap.add_argument("topos", nargs="+", help="rotulo:config.json")
+    a = ap.parse_args()
+    seeds = list(range(a.seed_start, a.seed_start + a.replicas))
+    topos = {}
+    for it in a.topos:
+        k, p = it.split(":", 1)
+        topos[k] = gc.edges_from_config(p)
+    jobs = [(k, s) for k in topos for s in seeds]
+    with ThreadPoolExecutor(max_workers=a.workers) as ex:
+        out = list(ex.map(lambda j: run(a, topos[j[0]], j[1]), jobs))
+    allf = {k: [] for k in topos}; comp = {k: [] for k in topos}; pen = {k: [] for k in topos}
+    for (k, s), (res, flows) in zip(jobs, out):
+        allf[k] += flows; comp[k].append(res["completion"] or 0); pen[k].append(res["pen"] or 0)
+    rows = []
+    for k in topos:
+        f = allf[k]
+        if not f:
+            print(f"[aviso] {k}: sem fluxos (binario sem coluna retries?)"); continue
+        r0 = [x for x in f if x[2] == 0]; r1 = [x for x in f if x[2] > 0]
+        m = lambda L, i: (st.mean(x[i] for x in L) if L else float("nan"))
+        rows.append({"topologia": k, "pen_ciclos": st.mean(pen[k]), "conclusao": st.mean(comp[k]),
+                     "ctrl": m(f, 0), "data": m(f, 1), "retries_medios": m(f, 2),
+                     "pct_com_retry": 100 * len(r1) / len(f), "retries_max": max(x[2] for x in f),
+                     "ctrl_sem_retry": m(r0, 0), "ctrl_com_retry": m(r1, 0), "n_fluxos": len(f)})
+    out_csv = f"retries_{a.tag}{a.traffic}.csv"
+    with open(out_csv, "w", newline="") as fh:
+        w = csv.DictWriter(fh, fieldnames=list(rows[0])); w.writeheader(); w.writerows(rows)
+    print(f"\n== {a.traffic} (cus={a.cus}, {a.replicas} replicas) ==")
+    h = ["topologia", "pen", "concl%", "ctrl", "data", "retr.med", "%c/retry", "retr.max", "ctrl s/r", "ctrl c/r"]
+    print("".join(f"{x:>12}" for x in h))
+    for r in rows:
+        print(f"{r['topologia']:>12}{r['pen_ciclos']:>12.1f}{r['conclusao']:>12.1f}{r['ctrl']:>12.1f}"
+              f"{r['data']:>12.1f}{r['retries_medios']:>12.3f}{r['pct_com_retry']:>12.1f}"
+              f"{r['retries_max']:>12d}{r['ctrl_sem_retry']:>12.1f}{r['ctrl_com_retry']:>12.1f}")
+    print(f"\nSalvo em {out_csv}")
+
+
+if __name__ == "__main__":
+    main()
