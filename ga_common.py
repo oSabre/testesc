@@ -31,6 +31,99 @@ from collections import deque
 MAX_DEG = 4          # NUM_PORTS - 1 (porta 0 = local)
 FAIL_PENALTY = 1e6   # fitness de uma simulacao que falhou/travou
 
+# ----------------------------------------------------------------------------
+# Orcamento de FIO (teto no fio total). None = sem teto.
+# Planta fixa W x W (id = y*W + x); comprimento = distancia de Manhattan.
+# ----------------------------------------------------------------------------
+WIRE_CAP = None      # fio total maximo (tiles)
+WIRE_BIAS = 1.0      # vies de random_topology para pares curtos (0 = uniforme)
+
+
+def set_wire_cap(cap):
+    global WIRE_CAP
+    WIRE_CAP = None if cap is None else int(cap)
+
+
+def grid_w(n):
+    w = int(round(n ** 0.5))
+    if w * w != n:
+        raise ValueError(f"n={n} nao e quadrado perfeito (planta W x W)")
+    return w
+
+
+def elen(e, W):
+    u, v = e
+    return abs(u % W - v % W) + abs(u // W - v // W)
+
+
+def wire_total(edges, n):
+    W = grid_w(n)
+    return sum(elen(e, W) for e in edges)
+
+
+def apply_wire_args(a, n, m):
+    """Define o teto a partir de --wire-cap / --wire-mult (usar apos o parse)."""
+    cap = getattr(a, "wire_cap", None)
+    mult = getattr(a, "wire_mult", None)
+    if cap is None and mult is not None:
+        cap = int(round(mult * m))
+    set_wire_cap(cap)
+    if cap is not None:
+        print(f"[fio] teto = {cap} tiles (mesh {n}x: {2 * grid_w(n) * (grid_w(n) - 1)}; "
+              f"{cap / m:.2f} por link)")
+    return cap
+
+
+def _shuffled_pairs(n, rng):
+    """Todos os pares (u,v), em ordem aleatoria. Com teto, amostra SEM reposicao
+    ponderada por 1/comprimento**WIRE_BIAS (Efraimidis-Spirakis), favorecendo curtos."""
+    pairs = [(u, v) for u in range(n) for v in range(u + 1, n)]
+    if WIRE_CAP is None or WIRE_BIAS <= 0:
+        rng.shuffle(pairs)
+        return pairs
+    W = grid_w(n)
+    keyed = [(rng.random() ** (elen(p, W) ** WIRE_BIAS), p) for p in pairs]
+    keyed.sort(key=lambda t: -t[0])
+    return [p for _, p in keyed]
+
+
+def _wire_fix(es, n, rng):
+    """Reduz o fio de `es` (set, modificado no lugar) ate o teto, trocando links
+    longos por pares livres mais curtos sem desconectar nem violar grau.
+    Mantem o numero de links. True se atingiu o teto."""
+    if WIRE_CAP is None:
+        return True
+    W = grid_w(n)
+    for _ in range(3000):
+        tot = sum(elen(e, W) for e in es)
+        if tot <= WIRE_CAP:
+            return True
+        order = sorted(es, key=lambda e: (-elen(e, W), rng.random()))
+        moved = False
+        for e in order[:16]:
+            L = elen(e, W)
+            if L <= 1:
+                break
+            rest = set(es)
+            rest.discard(e)
+            if len(components(rest, n)) != 1:
+                continue
+            deg = degrees(rest, n)
+            cand = [(u, v) for u in range(n) for v in range(u + 1, n)
+                    if deg[u] < MAX_DEG and deg[v] < MAX_DEG
+                    and (u, v) not in rest and elen((u, v), W) < L]
+            if not cand:
+                continue
+            half = [c for c in cand if elen(c, W) <= (L + 1) // 2]
+            rest.add(rng.choice(half or cand))
+            es.clear()
+            es.update(rest)
+            moved = True
+            break
+        if not moved:
+            return False
+    return sum(elen(e, W) for e in es) <= WIRE_CAP
+
 
 # ----------------------------------------------------------------------------
 # Topologia
@@ -104,6 +197,8 @@ def is_valid(edges, n, m):
     if len(edges) != m or len(set(edges)) != m:
         return False
     if max(degrees(edges, n)) > MAX_DEG:
+        return False
+    if WIRE_CAP is not None and wire_total(edges, n) > WIRE_CAP:
         return False
     return len(components(edges, n)) == 1
 
@@ -190,17 +285,22 @@ def repair(edges, n, m, rng):
     while len(es) < m:
         deg = degrees(es, n)
         cand = _free_pairs(es, n, deg)
+        if WIRE_CAP is not None:             # so pares que cabem no fio restante
+            W = grid_w(n)
+            left = WIRE_CAP - sum(elen(e, W) for e in es)
+            cand = [c for c in cand if elen(c, W) <= left] or cand
         if not cand:
             return None
         es.add(rng.choice(cand))
+    if not _wire_fix(es, n, rng):
+        return None
     out = canon(es)
     return out if is_valid(out, n, m) else None
 
 
 def random_topology(n, m, rng):
     for _ in range(100):
-        pairs = [(u, v) for u in range(n) for v in range(u + 1, n)]
-        rng.shuffle(pairs)
+        pairs = _shuffled_pairs(n, rng)
         deg = [0] * n
         es = []
         for u, v in pairs:
@@ -252,6 +352,10 @@ def mutate(edges, n, m, rng, max_ops=3):
         else:                                        # troca livre
             cand = _free_pairs(es, n, deg)
         cand = [c for c in cand if c != (u, v)] or [(u, v)]
+        if WIRE_CAP is not None:                     # so trocas que cabem no teto
+            W = grid_w(n)
+            left = WIRE_CAP - sum(elen(e, W) for e in es)
+            cand = [c for c in cand if elen(c, W) <= left] or [(u, v)]
         es.add(rng.choice(cand))
     r = repair(es, n, m, rng)
     return r if r is not None else canon(edges)
@@ -501,6 +605,10 @@ def common_args(ap):
                          "concluidos (+penalidade p/ nao concluidos)")
     ap.add_argument("--np", action="append", default=[],
                     help="override de network_params: chave=valor (repetivel)")
+    ap.add_argument("--wire-mult", type=float, default=None,
+                    help="teto de fio total = wire_mult * links (so ga_optimize); sem teto se ausente")
+    ap.add_argument("--wire-cap", type=int, default=None,
+                    help="teto absoluto de fio total (tiles); prioridade sobre --wire-mult")
     ap.add_argument("--workers", type=int, default=4)
     ap.add_argument("--timeout", type=int, default=300)
     return ap

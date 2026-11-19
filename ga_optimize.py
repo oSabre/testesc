@@ -167,6 +167,7 @@ def main():
     os.makedirs(out_dir, exist_ok=True)
     rng = random.Random(a.ga_seed)
     n, m = a.nodes, a.links
+    gc.apply_wire_args(a, n, m)
     if a.traffic == "mix":
         import copy
         evs = {}
@@ -203,6 +204,11 @@ def main():
                         init.append(e)
         init += [e for e, _ in refs.values() if len(e) == m]
         init = list(dict.fromkeys(init))
+        if gc.WIRE_CAP is not None:
+            _ok = [e for e in init if gc.wire_total(e, n) <= gc.WIRE_CAP]
+            if len(_ok) < len(init):
+                print(f"[fio] {len(init) - len(_ok)} semente(s) acima do teto {gc.WIRE_CAP} descartada(s)")
+            init = _ok
     print(f"[init] {len(init)} topologias semeadas + {a.pop - min(len(init), a.pop)} aleatorias")
 
     problem = TopoProblem(ev, a.workers)
@@ -266,6 +272,7 @@ def main():
                "train_seeds": a.train_seeds, "best_fitness": best_rec["fitness"],
                "best_completion": best_rec["completion"],
                "best_avg_path": avg, "best_diameter": dia,
+               "wire_cap": gc.WIRE_CAP, "best_wire": gc.wire_total(best_edges, n),
                "refs": {k: v[1] for k, v in refs.items()},
                "best_per_pattern_ratio_vs_mesh": best_rec.get("per_pattern"),
                "elapsed_s": round(time.time() - t0, 1)}

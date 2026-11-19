@@ -4,6 +4,8 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
+#include <cmath>
+#include <cstdlib>
 #include "ControlUnit.h"
 #include "definitions.h"
 #include "TopologyManager.h"
@@ -56,6 +58,10 @@ int sc_main(int argc, char* argv[]) {
     // jitter antes de virar sc_time (ex: retry).
     int link_transit_latency_cycles = cfg["network_params"]["link_transit_latency_cycles"];
     net_cfg.link_transit_latency = CLOCK_PERIOD * link_transit_latency_cycles;
+    // Alcance do fio em tiles por ciclo (opcional). 0 = desligado: todo link usa
+    // link_transit_latency (comportamento anterior). Ver apply_link_length_patch.py.
+    const double link_reach_tiles_per_cycle =
+        cfg["network_params"].value("link_reach_tiles_per_cycle", 0.0);
 
     net_cfg.max_retries = cfg["network_params"]["max_retries"];
     net_cfg.retry_wait_cycles = cfg["network_params"]["retry_wait_cycles"];
@@ -281,6 +287,23 @@ int sc_main(int argc, char* argv[]) {
 
                 // Roteador 'i' envia dados por este canal
                 routers[i]->flit_out[p](*link_fifo);
+
+                // Latencia do link proporcional ao comprimento (opcional).
+                // Planta fixa W x W (id = y*W + x); comprimento = distancia de Manhattan.
+                if (link_reach_tiles_per_cycle > 0.0) {
+                    int W = static_cast<int>(std::lround(std::sqrt(static_cast<double>(num_nodes))));
+                    if (W < 1) W = 1;
+                    static bool warned_grid = false;
+                    if (!warned_grid && W * W != num_nodes) {
+                        std::cerr << "AVISO: num_nodes=" << num_nodes
+                                  << " nao e quadrado perfeito; comprimento dos links assume grade "
+                                  << W << "x" << W << std::endl;
+                        warned_grid = true;
+                    }
+                    int len = std::abs(i % W - vizinho % W) + std::abs(i / W - vizinho / W);
+                    int mult = std::max(1, static_cast<int>(std::ceil(len / link_reach_tiles_per_cycle - 1e-9)));
+                    routers[i]->muxes[p]->link_delay = net_cfg.link_transit_latency * mult;
+                }
                 
                 // Roteador 'vizinho' lê os dados deste canal na sua porta reversa
                 int reverse_port = tm->get_port_to_neighbor(vizinho, i);
