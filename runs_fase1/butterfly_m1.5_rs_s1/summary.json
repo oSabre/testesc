@@ -1,0 +1,28 @@
+{
+  "name": "butterfly_m1.5_rs_s1",
+  "algo": "random_search",
+  "init": "seeded",
+  "traffic": "butterfly",
+  "cus": 16,
+  "pop": 30,
+  "gens": 40,
+  "budget_evals": 1230,
+  "unique_topologies_evaluated": 1232,
+  "train_seeds": [
+    1,
+    2,
+    3
+  ],
+  "best_fitness": 6141.41,
+  "best_completion": 100.0,
+  "best_avg_path": 4.406746031746032,
+  "best_diameter": 10,
+  "wire_cap": 168,
+  "best_wire": 168,
+  "refs": {
+    "config_mesh_64.json": 7295.84,
+    "config_irregular_smallworld_64.json": 7104.423333333333
+  },
+  "best_per_pattern_ratio_vs_mesh": null,
+  "elapsed_s": 400.6
+}

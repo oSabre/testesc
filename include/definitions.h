@@ -7,6 +7,7 @@
 #include "flit.h"
 #include <map>
 #include <string>
+#include <cmath>
 
 // Tentativas FALHAS de alocacao de rota por fluxo (retries). Escrito pela
 // ControlUnit, lido pelo StatsCollector. Threads SystemC sao cooperativas
@@ -202,6 +203,17 @@ struct NetworkConfig {
     // Custo de examinar uma aresta candidata (olhar o vizinho + consultar
     // o estado do link via is_link_busy). Mínimo 1 ciclo por aresta.
     int dijkstra_edge_check_cycles = 1;
+    // Custo FIXO por operacao de heap do Dijkstra, somado ao termo em log2
+    // (calibrado no gem5, Fase 0.7). Padrao 0 = modelo antigo.
+    int dijkstra_pq_base_cycles = 0;
+    // Razao r = f_core / f_NoC do controlador. Os custos acima sao em ciclos do
+    // CORE; o tempo simulado de cada chamada e ceil(custo / r) ciclos da NoC.
+    // Padrao 1.0 = core e NoC na mesma frequencia (e nao altera o comportamento antigo).
+    double control_clock_ratio = 1.0;
+    long long scale_control_cycles(long long core_cycles) const {
+        if (control_clock_ratio == 1.0 || core_cycles <= 0) return core_cycles;
+        return static_cast<long long>(std::ceil(static_cast<double>(core_cycles) / control_clock_ratio - 1e-9));
+    }
     // true: o Dijkstra para ao extrair o destino (custo depende da distancia);
     // false: explora o grafo todo (custo independente da topologia) -- ablacao.
     bool dijkstra_early_exit = true;

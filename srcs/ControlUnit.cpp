@@ -220,7 +220,7 @@ std::vector<int> ControlUnit::calculate_dijkstra(int src, int dst){
                 }
             }
         }
-        wait(CLOCK_PERIOD * bcost);
+        wait(CLOCK_PERIOD * cfg->scale_control_cycles(bcost));
 
         std::vector<int> bpath;
         if (!seen[dst]) return bpath;           // sem caminho livre
@@ -263,7 +263,7 @@ std::vector<int> ControlUnit::calculate_dijkstra(int src, int dst){
 
     auto pq_op_cost = [&](double queue_size_arg) -> long long {
         long long c = std::llround(cfg->dijkstra_pq_op_cycles * std::log2(queue_size_arg));
-        return std::max<long long>(1, c);
+        return std::max<long long>(1, c) + cfg->dijkstra_pq_base_cycles;
     };
 
     dist[src] = 0;
@@ -306,7 +306,7 @@ std::vector<int> ControlUnit::calculate_dijkstra(int src, int dst){
     // links pode ter mudado), cada tentativa paga o custo de recalcular a
     // rota do zero — o que é o comportamento real de um controlador que
     // refaz o cálculo sob nova informação de estado da rede.
-    wait(CLOCK_PERIOD * custo_ciclos);
+    wait(CLOCK_PERIOD * cfg->scale_control_cycles(custo_ciclos));
 
     std::vector<int> path;
     for (int at = dst; at != -1; at = prev[at]) {

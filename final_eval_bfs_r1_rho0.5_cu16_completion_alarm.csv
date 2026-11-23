@@ -1,0 +1,4 @@
+context,seed,completion,presos_transmissao,presos_roteamento,timeouts,nao_iniciados,severity
+uniform cus=16 topo=d13c2982,1005,99.0,0,1,0,0,AVISO
+uniform cus=16 topo=80154206,1005,99.0,0,1,0,0,AVISO
+uniform cus=16 topo=2f1b1829,1005,99.0,0,1,0,0,AVISO

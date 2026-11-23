@@ -16,6 +16,28 @@ inline std::map<int, int>& flow_retry_counts() {
     return m;
 }
 
+// ---- Rastreamento opcional (trace). Desligado por padrao. ----
+// Ligado por network_params.trace_flow_ids + trace_file (ver main.cpp).
+// Nao usa wait(): nao altera o tempo simulado.
+#include <set>
+#include <fstream>
+#include <sstream>
+inline std::set<int>& trace_flow_ids() { static std::set<int> s; return s; }  // -1 = todos
+inline std::ofstream& trace_out() { static std::ofstream f; return f; }
+inline bool trace_enabled() { return trace_out().is_open(); }
+inline bool trace_flow(int id) {
+    return trace_enabled() && (trace_flow_ids().count(id) > 0 || trace_flow_ids().count(-1) > 0);
+}
+// Porta de entrada em que cada OutputMUX esta bloqueado lendo (-1 = nenhuma).
+inline std::map<std::string, int>& mux_blocked_port() { static std::map<std::string, int> m; return m; }
+inline std::string trace_route_str(const std::vector<int>& r) {
+    std::ostringstream os;
+    for (size_t i = 0; i < r.size(); ++i) os << r[i] << (i + 1 < r.size() ? "->" : "");
+    return os.str();
+}
+#define TRACE_LOG(expr) do { if (trace_enabled()) { trace_out() << "@" << sc_core::sc_time_stamp() << " " << expr << std::endl; } } while (0)
+#define TRACE_FLOW(fid, expr) do { if (trace_flow(fid)) { TRACE_LOG(expr); } } while (0)
+
 inline std::ostream& operator<<(std::ostream& os, const std::vector<int>& v) {
     os << "[ ";
     for (size_t i = 0; i < v.size(); ++i) {

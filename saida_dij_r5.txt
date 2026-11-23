@@ -1,0 +1,148 @@
+[ALARME CONCLUSAO][AVISO] uniform cus=16 topo=9f4af753 seed=1000 conclusao=83.0% presos_transmissao=0 timeouts=0 presos_roteamento=17 nao_iniciados=0
+[ALARME CONCLUSAO][AVISO] uniform cus=16 topo=d13c2982 seed=1000 conclusao=90.0% presos_transmissao=0 timeouts=0 presos_roteamento=10 nao_iniciados=0
+[ALARME CONCLUSAO][AVISO] uniform cus=16 topo=fbbbd777 seed=1000 conclusao=83.0% presos_transmissao=0 timeouts=0 presos_roteamento=17 nao_iniciados=0
+[ALARME CONCLUSAO][AVISO] uniform cus=16 topo=d1dc882e seed=1000 conclusao=85.0% presos_transmissao=0 timeouts=0 presos_roteamento=15 nao_iniciados=0
+[ALARME CONCLUSAO][AVISO] uniform cus=16 topo=bf387478 seed=1000 conclusao=87.0% presos_transmissao=0 timeouts=0 presos_roteamento=13 nao_iniciados=0
+[ALARME CONCLUSAO][AVISO] uniform cus=16 topo=80154206 seed=1000 conclusao=88.0% presos_transmissao=0 timeouts=0 presos_roteamento=12 nao_iniciados=0
+[ALARME CONCLUSAO][AVISO] uniform cus=16 topo=20dcc632 seed=1000 conclusao=87.0% presos_transmissao=0 timeouts=0 presos_roteamento=13 nao_iniciados=0
+[ALARME CONCLUSAO][AVISO] uniform cus=16 topo=9f4af753 seed=1001 conclusao=89.0% presos_transmissao=0 timeouts=0 presos_roteamento=11 nao_iniciados=0
+[ALARME CONCLUSAO] (demais ocorrencias so no resumo final)
+[final] 14 candidatas x 3 padroes x 10 seeds
+
+Latencia media penalizada (ciclos), seeds 1000..1009; delta% e p-valor (Welch) vs 'mesh'
+
+== uniform ==
+candidata                     media      dp  concl%   delta%        p
+mesh                        5104.93  679.34    94.0      0.0    1.000
+smallworld                  5999.15  623.33    89.3     17.5    0.007
+bfs_bit_reversal_cu16_random_search  6097.13  560.67    89.3     19.4    0.002
+bfs_uniform_cu16_random_search  6164.20  580.50    88.6     20.7    0.002
+bfs_uniform_cu16_ga_seeded  6176.01  662.92    88.4     21.0    0.002
+bfs_butterfly_cu16_ga_seeded  6180.37  650.97    88.6     21.1    0.002
+bfs_mix_cu16_ga_seeded      6194.98  609.75    88.5     21.4    0.001
+bfs_mix_cu16_ga_random      6242.16  521.41    87.7     22.3    0.001
+bfs_butterfly_cu16_random_search  6257.81  687.70    87.6     22.6    0.001
+bfs_butterfly_cu16_ga_random  6260.16  689.03    88.4     22.6    0.001
+bfs_bit_reversal_cu16_ga_seeded  6290.81  664.44    87.8     23.2    0.001
+bfs_mix_cu16_random_search  6307.50  747.33    87.4     23.6    0.001
+bfs_uniform_cu16_ga_random  6319.83  687.42    87.4     23.8    0.001
+bfs_bit_reversal_cu16_ga_random  6339.09  515.35    87.4     24.2    0.000
+
+== bit_reversal ==
+candidata                     media      dp  concl%   delta%        p
+mesh                        5663.62  652.50    91.3      0.0    1.000
+bfs_bit_reversal_cu16_ga_random  5861.74  626.92    90.5      3.5    0.498
+bfs_bit_reversal_cu16_ga_seeded  5874.27  578.76    90.7      3.7    0.455
+bfs_uniform_cu16_random_search  5878.06  618.99    90.6      3.8    0.461
+bfs_uniform_cu16_ga_seeded  5890.10  624.42    90.5      4.0    0.438
+bfs_bit_reversal_cu16_random_search  5949.11  654.27    89.7      5.0    0.341
+bfs_mix_cu16_ga_seeded      5949.16  648.26    90.2      5.0    0.339
+bfs_mix_cu16_ga_random      5964.05  658.05    90.0      5.3    0.319
+bfs_mix_cu16_random_search  6010.38  560.91    89.7      6.1    0.219
+bfs_butterfly_cu16_ga_seeded  6029.55  528.74    90.3      6.5    0.186
+bfs_uniform_cu16_ga_random  6058.78  609.05    89.2      7.0    0.179
+bfs_butterfly_cu16_ga_random  6086.65  640.15    89.3      7.5    0.161
+bfs_butterfly_cu16_random_search  6135.99  578.76    88.3      8.3    0.104
+smallworld                  6236.36  439.67    88.5     10.1    0.035
+
+== butterfly ==
+candidata                     media      dp  concl%   delta%        p
+mesh                        5268.63  584.05    93.2      0.0    1.000
+bfs_butterfly_cu16_ga_seeded  5786.27  595.84    91.2      9.8    0.065
+bfs_mix_cu16_random_search  5855.64  699.44    90.8     11.1    0.057
+bfs_butterfly_cu16_ga_random  5861.92  597.60    90.6     11.3    0.038
+bfs_mix_cu16_ga_random      5863.91  583.76    90.8     11.3    0.035
+bfs_uniform_cu16_random_search  5875.07  576.80    90.8     11.5    0.031
+bfs_mix_cu16_ga_seeded      5926.81  628.66    90.1     12.5    0.026
+bfs_bit_reversal_cu16_ga_seeded  5960.45  673.41    89.8     13.1    0.025
+bfs_butterfly_cu16_random_search  5976.54  595.31    89.8     13.4    0.015
+bfs_bit_reversal_cu16_ga_random  6027.83  665.70    89.5     14.4    0.014
+bfs_bit_reversal_cu16_random_search  6047.94  546.99    89.5     14.8    0.006
+bfs_uniform_cu16_ga_random  6062.77  595.39    89.2     15.1    0.008
+bfs_uniform_cu16_ga_seeded  6109.37  738.08    88.9     16.0    0.012
+smallworld                  6291.57  615.18    87.7     19.4    0.001
+
+[ALARME CONCLUSAO] 42 combinacao(oes) candidata x padrao com conclusao < 100%:
+   bfs_bit_reversal_cu16_ga_random    uniform        87.4%
+   bfs_bit_reversal_cu16_ga_seeded    uniform        87.8%
+   bfs_bit_reversal_cu16_random_search uniform        89.3%
+   bfs_butterfly_cu16_ga_random       uniform        88.4%
+   bfs_butterfly_cu16_ga_seeded       uniform        88.6%
+   bfs_butterfly_cu16_random_search   uniform        87.6%
+   bfs_mix_cu16_ga_random             uniform        87.7%
+   bfs_mix_cu16_ga_seeded             uniform        88.5%
+   bfs_mix_cu16_random_search         uniform        87.4%
+   bfs_uniform_cu16_ga_random         uniform        87.4%
+   bfs_uniform_cu16_ga_seeded         uniform        88.4%
+   bfs_uniform_cu16_random_search     uniform        88.6%
+   mesh                               uniform        94.0%
+   smallworld                         uniform        89.3%
+   bfs_bit_reversal_cu16_ga_random    bit_reversal   90.5%
+   bfs_bit_reversal_cu16_ga_seeded    bit_reversal   90.7%
+   bfs_bit_reversal_cu16_random_search bit_reversal   89.7%
+   bfs_butterfly_cu16_ga_random       bit_reversal   89.3%
+   bfs_butterfly_cu16_ga_seeded       bit_reversal   90.3%
+   bfs_butterfly_cu16_random_search   bit_reversal   88.3%
+   bfs_mix_cu16_ga_random             bit_reversal   90.0%
+   bfs_mix_cu16_ga_seeded             bit_reversal   90.2%
+   bfs_mix_cu16_random_search         bit_reversal   89.7%
+   bfs_uniform_cu16_ga_random         bit_reversal   89.2%
+   bfs_uniform_cu16_ga_seeded         bit_reversal   90.5%
+   bfs_uniform_cu16_random_search     bit_reversal   90.6%
+   mesh                               bit_reversal   91.3%
+   smallworld                         bit_reversal   88.5%
+   bfs_bit_reversal_cu16_ga_random    butterfly      89.5%
+   bfs_bit_reversal_cu16_ga_seeded    butterfly      89.8%
+   bfs_bit_reversal_cu16_random_search butterfly      89.5%
+   bfs_butterfly_cu16_ga_random       butterfly      90.6%
+   bfs_butterfly_cu16_ga_seeded       butterfly      91.2%
+   bfs_butterfly_cu16_random_search   butterfly      89.8%
+   bfs_mix_cu16_ga_random             butterfly      90.8%
+   bfs_mix_cu16_ga_seeded             butterfly      90.1%
+   bfs_mix_cu16_random_search         butterfly      90.8%
+   bfs_uniform_cu16_ga_random         butterfly      89.2%
+   bfs_uniform_cu16_ga_seeded         butterfly      88.9%
+   bfs_uniform_cu16_random_search     butterfly      90.8%
+   mesh                               butterfly      93.2%
+   smallworld                         butterfly      87.7%
+
+== Media dos padroes (delta% vs 'mesh'; negativo = melhor que a referencia) ==
+candidata                          media delta%   melhor     pior
+mesh                                        0.0      0.0      0.0
+bfs_uniform_cu16_random_search             12.0      3.8     20.7
+bfs_butterfly_cu16_ga_seeded               12.5      6.5     21.1
+bfs_mix_cu16_ga_random                     13.0      5.3     22.3
+bfs_mix_cu16_ga_seeded                     13.0      5.0     21.4
+bfs_bit_reversal_cu16_random_search         13.1      5.0     19.4
+bfs_bit_reversal_cu16_ga_seeded            13.4      3.7     23.2
+bfs_mix_cu16_random_search                 13.6      6.1     23.6
+bfs_uniform_cu16_ga_seeded                 13.6      4.0     21.0
+bfs_butterfly_cu16_ga_random               13.8      7.5     22.6
+bfs_bit_reversal_cu16_ga_random            14.0      3.5     24.2
+bfs_butterfly_cu16_random_search           14.8      8.3     22.6
+bfs_uniform_cu16_ga_random                 15.3      7.0     23.8
+smallworld                                 15.7     10.1     19.4
+
+Obs.: confira a conclusao% -- se diferir entre candidatas, compare a media penalizada, nao a latencia dos concluidos.
+Grafico: final_eval_dij_calib_r5.png | tabela: final_eval_dij_calib_r5.csv
+
+== ALARME DE CONCLUSAO (avaliacao final) ==
+419 de 420 simulacao(oes) com conclusao < 100% (30 VIOLACAO, 389 AVISO).
+VIOLACAO = fluxo preso em transmissao: o simulador violou um invariante (reserve_dst_port/reserve_src_port ligados? binario recompilado?). Nao use estes resultados antes de investigar (ga_diag.py + trace_flow_ids).
+  [VIOLACAO] uniform cus=16 topo=c424a08a seed=1000 conclusao=81.0% presos_tx=1 timeouts=0
+  [VIOLACAO] uniform cus=16 topo=82fcfb76 seed=1008 conclusao=83.0% presos_tx=1 timeouts=0
+  [VIOLACAO] butterfly cus=16 topo=82fcfb76 seed=1008 conclusao=83.0% presos_tx=1 timeouts=0
+  [VIOLACAO] uniform cus=16 topo=bf387478 seed=1002 conclusao=84.0% presos_tx=1 timeouts=0
+  [VIOLACAO] uniform cus=16 topo=9a4133de seed=1007 conclusao=87.0% presos_tx=1 timeouts=0
+  [VIOLACAO] bit_reversal cus=16 topo=460df146 seed=1007 conclusao=87.0% presos_tx=1 timeouts=0
+  [VIOLACAO] bit_reversal cus=16 topo=80154206 seed=1008 conclusao=87.0% presos_tx=1 timeouts=0
+  [VIOLACAO] uniform cus=16 topo=20dcc632 seed=1003 conclusao=88.0% presos_tx=1 timeouts=0
+  [VIOLACAO] uniform cus=16 topo=82fcfb76 seed=1007 conclusao=88.0% presos_tx=2 timeouts=0
+  [VIOLACAO] uniform cus=16 topo=2f1b1829 seed=1001 conclusao=88.0% presos_tx=1 timeouts=0
+  [VIOLACAO] bit_reversal cus=16 topo=9a4133de seed=1000 conclusao=88.0% presos_tx=1 timeouts=0
+  [VIOLACAO] bit_reversal cus=16 topo=6b4d9c9d seed=1002 conclusao=88.0% presos_tx=1 timeouts=0
+  [VIOLACAO] bit_reversal cus=16 topo=460df146 seed=1003 conclusao=88.0% presos_tx=1 timeouts=0
+  [VIOLACAO] bit_reversal cus=16 topo=20dcc632 seed=1007 conclusao=88.0% presos_tx=2 timeouts=0
+  [VIOLACAO] butterfly cus=16 topo=fbbbd777 seed=1000 conclusao=88.0% presos_tx=1 timeouts=0
+  ... (+404; lista completa no CSV)
+Lista completa: final_eval_dij_calib_r5_completion_alarm.csv

@@ -17,8 +17,20 @@ all: con.exe back.exe reset.exe burst.exe integrity.exe testevec.exe main.exe co
 conpl.exe: test_plano_control/TestControlPlane.cpp
 	$(CXX) $(CXXFLAGS) test_plano_control/TestControlPlane.cpp  test_plano_control/Stats.cpp -o test_plano_control/conpl.exe $(LDFLAGS)
 
+# ---- Linux: SystemC 2.3.3 em ~/systemc-2.3.3 (sobrescreva com: make SC_HOME=/outro/caminho main.exe) ----
+# Aceita SystemC instalado (include/ e lib-linux64/) ou a arvore de fontes ja compilada (src/ e src/.libs).
+SC_HOME   ?= $(HOME)/systemc-2.3.3
+SC_INCDIR := $(firstword $(wildcard $(SC_HOME)/include $(SC_HOME)/src))
+SC_LIBDIR := $(firstword $(wildcard $(SC_HOME)/lib-linux64 $(SC_HOME)/lib-linux $(SC_HOME)/lib $(SC_HOME)/src/.libs))
+# Sem -std de proposito: a biblioteca 2.3.3 checa o padrao C++ no link (sc_api_version_*_cxx...),
+# entao o padrao deve ser o mesmo usado para compilar o SystemC (o padrao do g++ da maquina).
+LINUX_CXXFLAGS = -I./include -I./srcs -I./tests_plano_rede -I./test_plano_control -I$(SC_INCDIR) -Wall -O2
+LINUX_LDFLAGS  = -L$(SC_LIBDIR) -Wl,-rpath,$(SC_LIBDIR) -lsystemc -lpthread
+
 main.exe: main.cpp
-	$(CXX) $(CXXFLAGS) $(MAIN_SOURCES) -o main.exe $(LDFLAGS)
+	@test -f $(SC_INCDIR)/systemc.h || { echo "ERRO: systemc.h nao encontrado em '$(SC_INCDIR)' (SC_HOME=$(SC_HOME))."; exit 1; }
+	@test -n "$(wildcard $(SC_LIBDIR)/libsystemc*)" || { echo "ERRO: libsystemc nao encontrada em '$(SC_LIBDIR)'. O SystemC precisa estar compilado (configure, make, make install)."; exit 1; }
+	$(CXX) $(LINUX_CXXFLAGS) $(MAIN_SOURCES) -o main.exe $(LINUX_LDFLAGS)
 
 testvec.exe: teste_vector.cpp
 	$(CXX) $(CXXFLAGS) teste_vector.cpp -o testevec.exe $(LDFLAGS)

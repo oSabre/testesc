@@ -1,0 +1,35 @@
+[fio] teto = 168 tiles (mesh 64x: 112; 1.50 por link)
+[init] 0 topologias semeadas + 12 aleatorias
+[gen   1] evals=   12 melhor=6719.033 media=7073.887 (4.1s)
+[gen   2] evals=   24 melhor=6719.033 media=6814.851 (7.9s)
+[gen   3] evals=   36 melhor=6415.320 media=6666.319 (11.8s)
+[gen   4] evals=   48 melhor=6415.320 media=6579.534 (15.1s)
+[gen   5] evals=   60 melhor=6235.017 media=6515.786 (18.4s)
+{
+  "name": "pilot_br_m15",
+  "algo": "ga",
+  "init": "random",
+  "traffic": "bit_reversal",
+  "cus": 16,
+  "pop": 12,
+  "gens": 4,
+  "budget_evals": 60,
+  "unique_topologies_evaluated": 60,
+  "train_seeds": [
+    1,
+    2,
+    3
+  ],
+  "best_fitness": 6235.016666666666,
+  "best_completion": 100.0,
+  "best_avg_path": 4.477678571428571,
+  "best_diameter": 10,
+  "wire_cap": 168,
+  "best_wire": 168,
+  "refs": {},
+  "best_per_pattern_ratio_vs_mesh": null,
+  "elapsed_s": 18.4
+}
+
+== ALARME DE CONCLUSAO (treino) ==
+OK: 180 simulacao(oes) novas, todas com 100% de conclusao.

@@ -83,6 +83,12 @@ int sc_main(int argc, char* argv[]) {
     net_cfg.dijkstra_init_cycles_per_node = cfg["network_params"].value("dijkstra_init_cycles_per_node", net_cfg.dijkstra_init_cycles_per_node);
     net_cfg.dijkstra_pq_op_cycles         = cfg["network_params"].value("dijkstra_pq_op_cycles", net_cfg.dijkstra_pq_op_cycles);
     net_cfg.dijkstra_edge_check_cycles    = cfg["network_params"].value("dijkstra_edge_check_cycles", net_cfg.dijkstra_edge_check_cycles);
+    net_cfg.dijkstra_pq_base_cycles       = cfg["network_params"].value("dijkstra_pq_base_cycles", net_cfg.dijkstra_pq_base_cycles);
+    net_cfg.control_clock_ratio           = cfg["network_params"].value("control_clock_ratio", net_cfg.control_clock_ratio);
+    if (!(net_cfg.control_clock_ratio > 0.0)) {
+        std::cerr << "ERRO: control_clock_ratio deve ser > 0." << std::endl;
+        return 1;
+    }
     net_cfg.dijkstra_early_exit           = cfg["network_params"].value("dijkstra_early_exit", net_cfg.dijkstra_early_exit);
     net_cfg.routing_algorithm             = cfg["network_params"].value("routing_algorithm", net_cfg.routing_algorithm);
     if (net_cfg.routing_algorithm != "dijkstra" && net_cfg.routing_algorithm != "bfs" &&

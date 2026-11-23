@@ -1,0 +1,14 @@
+[fio] teto = 336 tiles (mesh 64x: 112; 3.00 por link)
+[ref] config_mesh_64.json: fitness=7894.480
+[ref] config_irregular_smallworld_64.json: fitness=6820.497
+[init] 0 topologias semeadas + 30 aleatorias
+[lote   1] evals=   30 melhor-ate-agora=5741.533
+[lote   2] evals=   60 melhor-ate-agora=5741.533
+[lote   3] evals=   90 melhor-ate-agora=5741.533
+[lote   4] evals=  120 melhor-ate-agora=5741.533
+[lote   5] evals=  150 melhor-ate-agora=5699.053
+[lote   6] evals=  180 melhor-ate-agora=5699.053
+[lote   7] evals=  210 melhor-ate-agora=5699.053
+[lote   8] evals=  240 melhor-ate-agora=5699.053
+[lote   9] evals=  270 melhor-ate-agora=5699.053
+[lote  10] evals=  300 melhor-ate-agora=5689.613

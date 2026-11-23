@@ -1,0 +1,79 @@
+[final] 14 candidatas x 3 padroes x 10 seeds
+
+Latencia media penalizada (ciclos), seeds 1000..1009; delta% e p-valor (Welch) vs 'mesh'
+
+== uniform ==
+candidata                     media      dp  concl%   delta%        p
+bfs_uniform_cu16_ga_seeded 21851.58 3707.20   100.0     -0.1    0.990
+bfs_butterfly_cu16_ga_random 21855.47 3663.83   100.0     -0.1    0.991
+bfs_uniform_cu16_ga_random 21859.54 3723.41   100.0     -0.1    0.993
+bfs_butterfly_cu16_random_search 21859.76 3707.10   100.0     -0.1    0.994
+bfs_mix_cu16_ga_seeded     21862.65 3722.34   100.0     -0.0    0.995
+bfs_uniform_cu16_random_search 21868.91 3677.03   100.0     -0.0    0.998
+mesh                       21873.44 3720.13   100.0      0.0    1.000
+bfs_bit_reversal_cu16_ga_seeded 21875.16 3724.05   100.0      0.0    0.999
+smallworld                 21882.83 3725.14   100.0      0.0    0.996
+bfs_bit_reversal_cu16_ga_random 21888.46 3788.29   100.0      0.1    0.993
+bfs_mix_cu16_random_search 21898.57 3726.91   100.0      0.1    0.988
+bfs_bit_reversal_cu16_random_search 21907.58 3627.95   100.0      0.2    0.984
+bfs_butterfly_cu16_ga_seeded 21915.49 3736.43   100.0      0.2    0.980
+bfs_mix_cu16_ga_random     21944.67 3646.11   100.0      0.3    0.966
+
+== bit_reversal ==
+candidata                     media      dp  concl%   delta%        p
+bfs_bit_reversal_cu16_ga_random 21800.28 3693.15   100.0     -0.1    0.992
+mesh                       21816.71 3706.46   100.0      0.0    1.000
+bfs_mix_cu16_random_search 21820.77 3704.84   100.0      0.0    0.998
+bfs_bit_reversal_cu16_random_search 21832.32 3699.45   100.0      0.1    0.993
+bfs_mix_cu16_ga_random     21836.09 3714.26   100.0      0.1    0.991
+bfs_butterfly_cu16_ga_seeded 21859.52 3719.65   100.0      0.2    0.980
+bfs_bit_reversal_cu16_ga_seeded 21859.98 3722.50   100.0      0.2    0.980
+bfs_uniform_cu16_ga_random 21865.42 3722.83   100.0      0.2    0.977
+bfs_uniform_cu16_ga_seeded 21870.62 3723.52   100.0      0.2    0.974
+bfs_mix_cu16_ga_seeded     21880.29 3725.19   100.0      0.3    0.970
+bfs_butterfly_cu16_ga_random 21883.47 3748.22   100.0      0.3    0.968
+smallworld                 21883.55 3725.20   100.0      0.3    0.968
+bfs_butterfly_cu16_random_search 21941.94 3694.43   100.0      0.6    0.941
+bfs_uniform_cu16_random_search 21966.39 3940.49   100.0      0.7    0.931
+
+== butterfly ==
+candidata                     media      dp  concl%   delta%        p
+bfs_butterfly_cu16_ga_random 21827.44 3716.85   100.0     -0.2    0.979
+bfs_mix_cu16_ga_random     21834.62 3710.69   100.0     -0.2    0.983
+bfs_butterfly_cu16_ga_seeded 21849.78 3712.00   100.0     -0.1    0.990
+bfs_uniform_cu16_ga_seeded 21850.90 3716.29   100.0     -0.1    0.990
+bfs_mix_cu16_random_search 21852.58 3733.51   100.0     -0.1    0.991
+bfs_mix_cu16_ga_seeded     21858.26 3717.52   100.0     -0.1    0.994
+bfs_uniform_cu16_ga_random 21858.54 3716.26   100.0     -0.1    0.994
+bfs_bit_reversal_cu16_ga_seeded 21863.47 3721.21   100.0     -0.0    0.996
+bfs_bit_reversal_cu16_random_search 21865.01 3702.25   100.0     -0.0    0.997
+mesh                       21871.09 3719.24   100.0      0.0    1.000
+smallworld                 21883.03 3725.25   100.0      0.1    0.994
+bfs_bit_reversal_cu16_ga_random 21887.64 3634.08   100.0      0.1    0.992
+bfs_butterfly_cu16_random_search 21971.80 3963.40   100.0      0.5    0.954
+bfs_uniform_cu16_random_search 22007.44 3790.09   100.0      0.6    0.936
+
+[ALARME CONCLUSAO] OK: todas as candidatas x padroes com 100% de conclusao (media das seeds).
+
+== Media dos padroes (delta% vs 'mesh'; negativo = melhor que a referencia) ==
+candidata                          media delta%   melhor     pior
+mesh                                        0.0      0.0      0.0
+bfs_butterfly_cu16_ga_random                0.0     -0.2      0.3
+bfs_mix_cu16_random_search                  0.0     -0.1      0.1
+bfs_uniform_cu16_ga_seeded                  0.0     -0.1      0.2
+bfs_bit_reversal_cu16_ga_random             0.0     -0.1      0.1
+bfs_uniform_cu16_ga_random                  0.0     -0.1      0.2
+bfs_bit_reversal_cu16_ga_seeded             0.1     -0.0      0.2
+bfs_mix_cu16_ga_seeded                      0.1     -0.1      0.3
+bfs_bit_reversal_cu16_random_search          0.1     -0.0      0.2
+bfs_mix_cu16_ga_random                      0.1     -0.2      0.3
+bfs_butterfly_cu16_ga_seeded                0.1     -0.1      0.2
+smallworld                                  0.1      0.0      0.3
+bfs_butterfly_cu16_random_search            0.3     -0.1      0.6
+bfs_uniform_cu16_random_search              0.4     -0.0      0.7
+
+Obs.: confira a conclusao% -- se diferir entre candidatas, compare a media penalizada, nao a latencia dos concluidos.
+Grafico: final_eval_bfs_timing_r1_rho0.5_cu1.png | tabela: final_eval_bfs_timing_r1_rho0.5_cu1.csv
+
+== ALARME DE CONCLUSAO (avaliacao final) ==
+OK: 420 simulacao(oes) novas, todas com 100% de conclusao.

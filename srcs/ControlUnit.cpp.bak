@@ -104,6 +104,7 @@ void ControlUnit::process_routing() {
             // ----------------------------------------
 
             route = calculate_dijkstra(req.sender_id, req.receiver_id);
+            TRACE_FLOW(req.flow_id, "[CU " << name() << "] flow " << req.flow_id << " " << req.sender_id << "->" << req.receiver_id << " falhas_ate_agora=" << retry_count << " rota=" << trace_route_str(route));
 
             if (route.empty()) {
                 // Não há caminhos livres na topologia inteira.
@@ -121,11 +122,13 @@ void ControlUnit::process_routing() {
             }
 
             path_allocated = tm->try_allocate_path(route);
+            TRACE_FLOW(req.flow_id, "[CU " << name() << "] flow " << req.flow_id << " try_allocate_path=" << path_allocated);
 
             if(path_allocated){
                 //std::cout << "[ControlUnit] Rota encontrada e reservada para o Flow " << req.flow_id 
                 //          << " (CU: " << this->name() << ")" << std::endl;
                 parent_sdn->configure_path_hardware(route, req.flow_id);
+                TRACE_FLOW(req.flow_id, "[CU " << name() << "] flow " << req.flow_id << " comandos SETUP enviados");
 
                 // CRÍTICO: configure_path_hardware só ESCREVE os comandos SETUP
                 // nas FIFOs dos roteadores -- cada LocalAgent ainda precisa
@@ -145,8 +148,10 @@ void ControlUnit::process_routing() {
                 // que todos os roteadores da rota já aplicaram o comando,
                 // em vez de adivinhar um tempo fixo.
                 parent_sdn->wait_for_route_ack(req.flow_id, route);
+                TRACE_FLOW(req.flow_id, "[CU " << name() << "] flow " << req.flow_id << " ACK de SETUP de todos os roteadores");
 
                 path_ready_out.write(req.flow_id);
+                TRACE_FLOW(req.flow_id, "[CU " << name() << "] flow " << req.flow_id << " path_ready enviado");
             }else{
                 //std::cout << "[ControlUnit " << name() << "] @ " << sc_time_stamp() 
                 //            << ": Caminho para Flow " << req.flow_id << " BUSY. Tentando novamente em " 

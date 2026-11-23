@@ -1,0 +1,25 @@
+{
+  "name": "pilot_br_m15",
+  "algo": "ga",
+  "init": "random",
+  "traffic": "bit_reversal",
+  "cus": 16,
+  "pop": 12,
+  "gens": 4,
+  "budget_evals": 60,
+  "unique_topologies_evaluated": 60,
+  "train_seeds": [
+    1,
+    2,
+    3
+  ],
+  "best_fitness": 6235.016666666666,
+  "best_completion": 100.0,
+  "best_avg_path": 4.477678571428571,
+  "best_diameter": 10,
+  "wire_cap": 168,
+  "best_wire": 168,
+  "refs": {},
+  "best_per_pattern_ratio_vs_mesh": null,
+  "elapsed_s": 18.4
+}
