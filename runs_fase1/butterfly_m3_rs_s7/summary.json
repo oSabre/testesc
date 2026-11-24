@@ -1,0 +1,28 @@
+{
+  "name": "butterfly_m3_rs_s7",
+  "algo": "random_search",
+  "init": "seeded",
+  "traffic": "butterfly",
+  "cus": 16,
+  "pop": 30,
+  "gens": 40,
+  "budget_evals": 1230,
+  "unique_topologies_evaluated": 1232,
+  "train_seeds": [
+    1,
+    2,
+    3
+  ],
+  "best_fitness": 5708.69,
+  "best_completion": 100.0,
+  "best_avg_path": 3.675595238095238,
+  "best_diameter": 7,
+  "wire_cap": 336,
+  "best_wire": 334,
+  "refs": {
+    "config_mesh_64.json": 7295.84,
+    "config_irregular_smallworld_64.json": 7104.423333333333
+  },
+  "best_per_pattern_ratio_vs_mesh": null,
+  "elapsed_s": 347.9
+}

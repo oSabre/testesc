@@ -1,0 +1,28 @@
+{
+  "name": "butterfly_m3_ga_s8",
+  "algo": "ga",
+  "init": "random",
+  "traffic": "butterfly",
+  "cus": 16,
+  "pop": 30,
+  "gens": 40,
+  "budget_evals": 1230,
+  "unique_topologies_evaluated": 1232,
+  "train_seeds": [
+    1,
+    2,
+    3
+  ],
+  "best_fitness": 5456.166666666667,
+  "best_completion": 100.0,
+  "best_avg_path": 3.549107142857143,
+  "best_diameter": 7,
+  "wire_cap": 336,
+  "best_wire": 336,
+  "refs": {
+    "config_mesh_64.json": 7295.84,
+    "config_irregular_smallworld_64.json": 7104.423333333333
+  },
+  "best_per_pattern_ratio_vs_mesh": null,
+  "elapsed_s": 338.5
+}

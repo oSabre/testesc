@@ -1,0 +1,7 @@
+nohup: ignoring input
+[cenario cu1_bfs_rho0.5] spacing 106600 ns, janela 21640 us
+[bit_reversal_m1.5] GA 0.24% (0/10 melhores, 0/10 piores) | RS 0.31% | sw 0.35%
+[bit_reversal_m2] GA 0.17% (0/10 melhores, 0/10 piores) | RS 0.24% | sw 0.35%
+[bit_reversal_m3] GA 0.19% (0/10 melhores, 0/10 piores) | RS 0.21% | sw 0.35%
+[butterfly_m1.5] GA -0.06% (0/10 melhores, 0/10 piores) | RS -0.0% | sw 0.07%
+[butterfly_m2] GA -0.12% (0/10 melhores, 0/10 piores) | RS -0.07% | sw 0.07%

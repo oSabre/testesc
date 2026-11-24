@@ -130,3 +130,103 @@ nohup: ignoring input
 [pula] bit_reversal_m3_ga_s9
 [pula] bit_reversal_m3_ga_s10
 === bit_reversal_m3_rs_s1 (10:19:21, decorrido 0 min) ===
+  "best_fitness": 5541.9366666666665,  "best_wire": 336,
+=== bit_reversal_m3_rs_s2 (10:26:45, decorrido 7 min) ===
+  "best_fitness": 5593.8133333333335,  "best_wire": 332,
+=== bit_reversal_m3_rs_s3 (10:32:38, decorrido 13 min) ===
+  "best_fitness": 5568.78,  "best_wire": 334,
+=== bit_reversal_m3_rs_s4 (10:38:19, decorrido 18 min) ===
+  "best_fitness": 5577.656666666667,  "best_wire": 335,
+=== bit_reversal_m3_rs_s5 (10:43:59, decorrido 24 min) ===
+  "best_fitness": 5581.193333333334,  "best_wire": 336,
+=== bit_reversal_m3_rs_s6 (10:49:43, decorrido 30 min) ===
+  "best_fitness": 5608.900000000001,  "best_wire": 335,
+=== bit_reversal_m3_rs_s7 (10:55:25, decorrido 36 min) ===
+  "best_fitness": 5663.946666666667,  "best_wire": 334,
+=== bit_reversal_m3_rs_s8 (11:01:07, decorrido 41 min) ===
+  "best_fitness": 5596.213333333333,  "best_wire": 334,
+=== bit_reversal_m3_rs_s9 (11:06:49, decorrido 47 min) ===
+  "best_fitness": 5618.96,  "best_wire": 332,
+=== bit_reversal_m3_rs_s10 (11:12:28, decorrido 53 min) ===
+  "best_fitness": 5620.066666666667,  "best_wire": 334,
+=== butterfly_m3_ga_s1 (11:17:58, decorrido 58 min) ===
+  "best_fitness": 5432.366666666667,  "best_wire": 334,
+=== butterfly_m3_ga_s2 (11:23:27, decorrido 64 min) ===
+  "best_fitness": 5433.383333333333,  "best_wire": 329,
+=== butterfly_m3_ga_s3 (11:28:54, decorrido 69 min) ===
+  "best_fitness": 5433.51,  "best_wire": 327,
+=== butterfly_m3_ga_s4 (11:34:22, decorrido 75 min) ===
+  "best_fitness": 5432.42,  "best_wire": 336,
+=== butterfly_m3_ga_s5 (11:40:01, decorrido 80 min) ===
+  "best_fitness": 5433.236666666667,  "best_wire": 336,
+=== butterfly_m3_ga_s6 (11:45:39, decorrido 86 min) ===
+  "best_fitness": 5432.8966666666665,  "best_wire": 332,
+=== butterfly_m3_ga_s7 (11:51:18, decorrido 91 min) ===
+  "best_fitness": 5452.286666666667,  "best_wire": 324,
+=== butterfly_m3_ga_s8 (11:56:58, decorrido 97 min) ===
+  "best_fitness": 5456.166666666667,  "best_wire": 336,
+=== butterfly_m3_ga_s9 (12:02:36, decorrido 103 min) ===
+  "best_fitness": 5432.953333333333,  "best_wire": 336,
+=== butterfly_m3_ga_s10 (12:08:10, decorrido 108 min) ===
+  "best_fitness": 5452.26,  "best_wire": 335,
+=== butterfly_m3_rs_s1 (12:13:39, decorrido 114 min) ===
+  "best_fitness": 5619.61,  "best_wire": 330,
+=== butterfly_m3_rs_s2 (12:19:11, decorrido 119 min) ===
+  "best_fitness": 5620.463333333333,  "best_wire": 334,
+=== butterfly_m3_rs_s3 (12:24:43, decorrido 125 min) ===
+  "best_fitness": 5562.39,  "best_wire": 334,
+=== butterfly_m3_rs_s4 (12:30:22, decorrido 131 min) ===
+  "best_fitness": 5664.266666666666,  "best_wire": 336,
+=== butterfly_m3_rs_s5 (12:35:53, decorrido 136 min) ===
+  "best_fitness": 5658.743333333334,  "best_wire": 334,
+=== butterfly_m3_rs_s6 (12:41:35, decorrido 142 min) ===
+  "best_fitness": 5494.706666666667,  "best_wire": 335,
+=== butterfly_m3_rs_s7 (12:47:23, decorrido 148 min) ===
+  "best_fitness": 5708.69,  "best_wire": 334,
+=== butterfly_m3_rs_s8 (12:53:11, decorrido 153 min) ===
+  "best_fitness": 5576.796666666667,  "best_wire": 336,
+=== butterfly_m3_rs_s9 (12:58:58, decorrido 159 min) ===
+  "best_fitness": 5661.79,  "best_wire": 336,
+=== butterfly_m3_rs_s10 (13:04:46, decorrido 165 min) ===
+  "best_fitness": 5630.266666666666,  "best_wire": 334,
+=== uniform_m3_ga_s1 (13:10:26, decorrido 171 min) ===
+  "best_fitness": 5708.34,  "best_wire": 333,
+=== uniform_m3_ga_s2 (13:15:57, decorrido 176 min) ===
+  "best_fitness": 5798.66,  "best_wire": 335,
+=== uniform_m3_ga_s3 (13:21:29, decorrido 182 min) ===
+  "best_fitness": 5752.04,  "best_wire": 335,
+=== uniform_m3_ga_s4 (13:27:01, decorrido 187 min) ===
+  "best_fitness": 5856.173333333333,  "best_wire": 333,
+=== uniform_m3_ga_s5 (13:32:32, decorrido 193 min) ===
+  "best_fitness": 5847.94,  "best_wire": 330,
+=== uniform_m3_ga_s6 (13:38:04, decorrido 198 min) ===
+  "best_fitness": 5811.0633333333335,  "best_wire": 333,
+=== uniform_m3_ga_s7 (13:43:36, decorrido 204 min) ===
+  "best_fitness": 5807.1866666666665,  "best_wire": 336,
+=== uniform_m3_ga_s8 (13:49:08, decorrido 209 min) ===
+  "best_fitness": 5726.8966666666665,  "best_wire": 330,
+=== uniform_m3_ga_s9 (13:54:39, decorrido 215 min) ===
+  "best_fitness": 5745.736666666667,  "best_wire": 336,
+=== uniform_m3_ga_s10 (14:00:10, decorrido 220 min) ===
+  "best_fitness": 5813.183333333333,  "best_wire": 336,
+=== uniform_m3_rs_s1 (14:05:41, decorrido 226 min) ===
+  "best_fitness": 5924.5,  "best_wire": 335,
+=== uniform_m3_rs_s2 (14:11:16, decorrido 231 min) ===
+  "best_fitness": 5942.77,  "best_wire": 336,
+=== uniform_m3_rs_s3 (14:16:51, decorrido 237 min) ===
+  "best_fitness": 5902.83,  "best_wire": 334,
+=== uniform_m3_rs_s4 (14:22:25, decorrido 243 min) ===
+  "best_fitness": 5934.86,  "best_wire": 336,
+=== uniform_m3_rs_s5 (14:28:13, decorrido 248 min) ===
+  "best_fitness": 5937.383333333333,  "best_wire": 332,
+=== uniform_m3_rs_s6 (14:33:47, decorrido 254 min) ===
+  "best_fitness": 5925.03,  "best_wire": 335,
+=== uniform_m3_rs_s7 (14:39:22, decorrido 260 min) ===
+  "best_fitness": 5923.833333333334,  "best_wire": 333,
+=== uniform_m3_rs_s8 (14:44:55, decorrido 265 min) ===
+  "best_fitness": 5978.126666666666,  "best_wire": 334,
+=== uniform_m3_rs_s9 (14:50:28, decorrido 271 min) ===
+  "best_fitness": 5919.143333333333,  "best_wire": 336,
+=== uniform_m3_rs_s10 (14:56:00, decorrido 276 min) ===
+  "best_fitness": 5953.156666666667,  "best_wire": 333,
+Fase 1A (treino) concluida em 282 min

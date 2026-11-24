@@ -1,0 +1,28 @@
+{
+  "name": "uniform_m3_ga_s10",
+  "algo": "ga",
+  "init": "random",
+  "traffic": "uniform",
+  "cus": 16,
+  "pop": 30,
+  "gens": 40,
+  "budget_evals": 1230,
+  "unique_topologies_evaluated": 1231,
+  "train_seeds": [
+    1,
+    2,
+    3
+  ],
+  "best_fitness": 5813.183333333333,
+  "best_completion": 100.0,
+  "best_avg_path": 3.4320436507936507,
+  "best_diameter": 6,
+  "wire_cap": 336,
+  "best_wire": 336,
+  "refs": {
+    "config_mesh_64.json": 6448.046666666667,
+    "config_irregular_smallworld_64.json": 6524.153333333334
+  },
+  "best_per_pattern_ratio_vs_mesh": null,
+  "elapsed_s": 330.6
+}

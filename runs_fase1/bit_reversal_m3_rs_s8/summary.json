@@ -1,0 +1,28 @@
+{
+  "name": "bit_reversal_m3_rs_s8",
+  "algo": "random_search",
+  "init": "seeded",
+  "traffic": "bit_reversal",
+  "cus": 16,
+  "pop": 30,
+  "gens": 40,
+  "budget_evals": 1230,
+  "unique_topologies_evaluated": 1232,
+  "train_seeds": [
+    1,
+    2,
+    3
+  ],
+  "best_fitness": 5596.213333333333,
+  "best_completion": 100.0,
+  "best_avg_path": 3.6220238095238093,
+  "best_diameter": 7,
+  "wire_cap": 336,
+  "best_wire": 334,
+  "refs": {
+    "config_mesh_64.json": 7894.4800000000005,
+    "config_irregular_smallworld_64.json": 6820.496666666667
+  },
+  "best_per_pattern_ratio_vs_mesh": null,
+  "elapsed_s": 341.0
+}
