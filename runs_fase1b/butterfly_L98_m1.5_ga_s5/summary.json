@@ -1,0 +1,28 @@
+{
+  "name": "butterfly_L98_m1.5_ga_s5",
+  "algo": "ga",
+  "init": "random",
+  "traffic": "butterfly",
+  "cus": 16,
+  "pop": 30,
+  "gens": 40,
+  "budget_evals": 1230,
+  "unique_topologies_evaluated": 1232,
+  "train_seeds": [
+    1,
+    2,
+    3
+  ],
+  "best_fitness": 5853.193333333334,
+  "best_completion": 100.0,
+  "best_avg_path": 4.537202380952381,
+  "best_diameter": 9,
+  "wire_cap": 147,
+  "best_wire": 147,
+  "refs": {
+    "config_mesh_64.json": 7295.84,
+    "config_irregular_smallworld_64.json": 7104.423333333333
+  },
+  "best_per_pattern_ratio_vs_mesh": null,
+  "elapsed_s": 334.5
+}

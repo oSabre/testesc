@@ -1,0 +1,362 @@
+nohup: ignoring input
+=== bit_reversal_L84_m1.5_ga_s1 (00:58:40, decorrido 0 min) ===
+  "best_fitness": 6176.07,  "best_wire": 125,
+=== bit_reversal_L84_m1.5_ga_s2 (01:04:16, decorrido 5 min) ===
+  "best_fitness": 6221.28,  "best_wire": 126,
+=== bit_reversal_L84_m1.5_ga_s3 (01:09:49, decorrido 11 min) ===
+  "best_fitness": 5967.026666666667,  "best_wire": 122,
+=== bit_reversal_L84_m1.5_ga_s4 (01:15:23, decorrido 16 min) ===
+  "best_fitness": 6147.923333333333,  "best_wire": 126,
+=== bit_reversal_L84_m1.5_ga_s5 (01:20:57, decorrido 22 min) ===
+  "best_fitness": 6196.51,  "best_wire": 125,
+=== bit_reversal_L84_m1.5_ga_s6 (01:26:29, decorrido 27 min) ===
+  "best_fitness": 6235.786666666667,  "best_wire": 125,
+=== bit_reversal_L84_m1.5_ga_s7 (01:31:59, decorrido 33 min) ===
+  "best_fitness": 6211.033333333334,  "best_wire": 126,
+=== bit_reversal_L84_m1.5_ga_s8 (01:37:31, decorrido 38 min) ===
+  "best_fitness": 6370.106666666667,  "best_wire": 124,
+=== bit_reversal_L84_m1.5_ga_s9 (01:43:01, decorrido 44 min) ===
+  "best_fitness": 6224.43,  "best_wire": 125,
+=== bit_reversal_L84_m1.5_ga_s10 (01:48:33, decorrido 49 min) ===
+  "best_fitness": 6180.716666666667,  "best_wire": 125,
+=== bit_reversal_L84_m1.5_rs_s1 (01:54:04, decorrido 55 min) ===
+  "best_fitness": 6721.486666666667,  "best_wire": 125,
+=== bit_reversal_L84_m1.5_rs_s2 (02:01:27, decorrido 62 min) ===
+  "best_fitness": 6726.78,  "best_wire": 126,
+=== bit_reversal_L84_m1.5_rs_s3 (02:08:52, decorrido 70 min) ===
+  "best_fitness": 6670.093333333333,  "best_wire": 126,
+=== bit_reversal_L84_m1.5_rs_s4 (02:16:15, decorrido 77 min) ===
+  "best_fitness": 6817.236666666667,  "best_wire": 126,
+=== bit_reversal_L84_m1.5_rs_s5 (02:23:39, decorrido 84 min) ===
+  "best_fitness": 6704.45,  "best_wire": 126,
+=== bit_reversal_L84_m1.5_rs_s6 (02:31:11, decorrido 92 min) ===
+  "best_fitness": 6763.993333333333,  "best_wire": 126,
+=== bit_reversal_L84_m1.5_rs_s7 (02:38:35, decorrido 99 min) ===
+  "best_fitness": 6500.0633333333335,  "best_wire": 126,
+=== bit_reversal_L84_m1.5_rs_s8 (02:45:59, decorrido 107 min) ===
+  "best_fitness": 6580.22,  "best_wire": 125,
+=== bit_reversal_L84_m1.5_rs_s9 (02:53:21, decorrido 114 min) ===
+  "best_fitness": 6701.246666666667,  "best_wire": 126,
+=== bit_reversal_L84_m1.5_rs_s10 (03:00:44, decorrido 122 min) ===
+  "best_fitness": 6699.7266666666665,  "best_wire": 126,
+=== butterfly_L84_m1.5_ga_s1 (03:08:11, decorrido 129 min) ===
+  "best_fitness": 5958.943333333334,  "best_wire": 126,
+=== butterfly_L84_m1.5_ga_s2 (03:13:44, decorrido 135 min) ===
+  "best_fitness": 6125.076666666667,  "best_wire": 126,
+=== butterfly_L84_m1.5_ga_s3 (03:19:15, decorrido 140 min) ===
+  "best_fitness": 6120.283333333333,  "best_wire": 126,
+=== butterfly_L84_m1.5_ga_s4 (03:24:46, decorrido 146 min) ===
+  "best_fitness": 5948.4400000000005,  "best_wire": 126,
+=== butterfly_L84_m1.5_ga_s5 (03:30:19, decorrido 151 min) ===
+  "best_fitness": 6128.316666666667,  "best_wire": 125,
+=== butterfly_L84_m1.5_ga_s6 (03:35:51, decorrido 157 min) ===
+  "best_fitness": 5957.39,  "best_wire": 126,
+=== butterfly_L84_m1.5_ga_s7 (03:41:24, decorrido 162 min) ===
+  "best_fitness": 6070.083333333333,  "best_wire": 126,
+=== butterfly_L84_m1.5_ga_s8 (03:46:53, decorrido 168 min) ===
+  "best_fitness": 5998.54,  "best_wire": 126,
+=== butterfly_L84_m1.5_ga_s9 (03:52:24, decorrido 173 min) ===
+  "best_fitness": 6111.696666666667,  "best_wire": 126,
+=== butterfly_L84_m1.5_ga_s10 (03:57:56, decorrido 179 min) ===
+  "best_fitness": 5881.4366666666665,  "best_wire": 126,
+=== butterfly_L84_m1.5_rs_s1 (04:03:27, decorrido 184 min) ===
+  "best_fitness": 6618.666666666667,  "best_wire": 126,
+=== butterfly_L84_m1.5_rs_s2 (04:10:49, decorrido 192 min) ===
+  "best_fitness": 6420.823333333334,  "best_wire": 126,
+=== butterfly_L84_m1.5_rs_s3 (04:18:14, decorrido 199 min) ===
+  "best_fitness": 6556.996666666667,  "best_wire": 126,
+=== butterfly_L84_m1.5_rs_s4 (04:25:36, decorrido 206 min) ===
+  "best_fitness": 6636.543333333333,  "best_wire": 126,
+=== butterfly_L84_m1.5_rs_s5 (04:33:07, decorrido 214 min) ===
+  "best_fitness": 6614.2300000000005,  "best_wire": 126,
+=== butterfly_L84_m1.5_rs_s6 (04:40:32, decorrido 221 min) ===
+  "best_fitness": 6609.29,  "best_wire": 126,
+=== butterfly_L84_m1.5_rs_s7 (04:47:56, decorrido 229 min) ===
+  "best_fitness": 6621.723333333333,  "best_wire": 126,
+=== butterfly_L84_m1.5_rs_s8 (04:55:19, decorrido 236 min) ===
+  "best_fitness": 6583.406666666667,  "best_wire": 126,
+=== butterfly_L84_m1.5_rs_s9 (05:02:43, decorrido 244 min) ===
+  "best_fitness": 6501.426666666666,  "best_wire": 126,
+=== butterfly_L84_m1.5_rs_s10 (05:10:05, decorrido 251 min) ===
+  "best_fitness": 6487.136666666666,  "best_wire": 126,
+=== uniform_L84_m1.5_ga_s1 (05:17:28, decorrido 258 min) ===
+  "best_fitness": 6248.026666666667,  "best_wire": 126,
+=== uniform_L84_m1.5_ga_s2 (05:23:03, decorrido 264 min) ===
+  "best_fitness": 6228.3133333333335,  "best_wire": 126,
+=== uniform_L84_m1.5_ga_s3 (05:28:36, decorrido 269 min) ===
+  "best_fitness": 6371.966666666666,  "best_wire": 126,
+=== uniform_L84_m1.5_ga_s4 (05:34:10, decorrido 275 min) ===
+  "best_fitness": 6413.55,  "best_wire": 126,
+=== uniform_L84_m1.5_ga_s5 (05:39:51, decorrido 281 min) ===
+  "best_fitness": 6500.126666666666,  "best_wire": 126,
+=== uniform_L84_m1.5_ga_s6 (05:45:33, decorrido 286 min) ===
+  "best_fitness": 6348.1900000000005,  "best_wire": 126,
+=== uniform_L84_m1.5_ga_s7 (05:51:09, decorrido 292 min) ===
+  "best_fitness": 6390.203333333333,  "best_wire": 126,
+=== uniform_L84_m1.5_ga_s8 (05:56:47, decorrido 298 min) ===
+  "best_fitness": 6511.973333333333,  "best_wire": 126,
+=== uniform_L84_m1.5_ga_s9 (06:02:26, decorrido 303 min) ===
+  "best_fitness": 6324.31,  "best_wire": 126,
+=== uniform_L84_m1.5_ga_s10 (06:08:05, decorrido 309 min) ===
+  "best_fitness": 6243.6900000000005,  "best_wire": 126,
+=== uniform_L84_m1.5_rs_s1 (06:13:37, decorrido 314 min) ===
+  "best_fitness": 6680.68,  "best_wire": 126,
+=== uniform_L84_m1.5_rs_s2 (06:21:00, decorrido 322 min) ===
+  "best_fitness": 6617.293333333333,  "best_wire": 126,
+=== uniform_L84_m1.5_rs_s3 (06:28:26, decorrido 329 min) ===
+  "best_fitness": 6543.32,  "best_wire": 125,
+=== uniform_L84_m1.5_rs_s4 (06:35:55, decorrido 337 min) ===
+  "best_fitness": 6580.083333333333,  "best_wire": 126,
+=== uniform_L84_m1.5_rs_s5 (06:43:22, decorrido 344 min) ===
+  "best_fitness": 6649.246666666667,  "best_wire": 126,
+=== uniform_L84_m1.5_rs_s6 (06:50:48, decorrido 352 min) ===
+  "best_fitness": 6540.95,  "best_wire": 126,
+=== uniform_L84_m1.5_rs_s7 (06:58:14, decorrido 359 min) ===
+  "best_fitness": 6482.45,  "best_wire": 126,
+=== uniform_L84_m1.5_rs_s8 (07:05:39, decorrido 366 min) ===
+  "best_fitness": 6666.166666666667,  "best_wire": 126,
+=== uniform_L84_m1.5_rs_s9 (07:13:02, decorrido 374 min) ===
+  "best_fitness": 6592.166666666667,  "best_wire": 126,
+=== uniform_L84_m1.5_rs_s10 (07:20:26, decorrido 381 min) ===
+  "best_fitness": 6620.4766666666665,  "best_wire": 126,
+=== bit_reversal_L98_m1.5_ga_s1 (07:27:53, decorrido 389 min) ===
+  "best_fitness": 5831.64,  "best_wire": 147,
+=== bit_reversal_L98_m1.5_ga_s2 (07:33:32, decorrido 394 min) ===
+  "best_fitness": 5945.29,  "best_wire": 147,
+=== bit_reversal_L98_m1.5_ga_s3 (07:39:16, decorrido 400 min) ===
+  "best_fitness": 5721.483333333334,  "best_wire": 145,
+=== bit_reversal_L98_m1.5_ga_s4 (07:45:15, decorrido 406 min) ===
+  "best_fitness": 5955.2,  "best_wire": 146,
+=== bit_reversal_L98_m1.5_ga_s5 (07:50:59, decorrido 412 min) ===
+  "best_fitness": 5876.2733333333335,  "best_wire": 147,
+=== bit_reversal_L98_m1.5_ga_s6 (07:56:33, decorrido 417 min) ===
+  "best_fitness": 6021.616666666667,  "best_wire": 147,
+=== bit_reversal_L98_m1.5_ga_s7 (08:02:12, decorrido 423 min) ===
+  "best_fitness": 5843.72,  "best_wire": 147,
+=== bit_reversal_L98_m1.5_ga_s8 (08:07:47, decorrido 429 min) ===
+  "best_fitness": 5806.4766666666665,  "best_wire": 147,
+=== bit_reversal_L98_m1.5_ga_s9 (08:13:22, decorrido 434 min) ===
+  "best_fitness": 5910.64,  "best_wire": 147,
+=== bit_reversal_L98_m1.5_ga_s10 (08:18:58, decorrido 440 min) ===
+  "best_fitness": 5810.416666666667,  "best_wire": 147,
+=== bit_reversal_L98_m1.5_rs_s1 (08:24:33, decorrido 445 min) ===
+  "best_fitness": 6424.643333333333,  "best_wire": 147,
+=== bit_reversal_L98_m1.5_rs_s2 (08:31:41, decorrido 453 min) ===
+  "best_fitness": 6567.536666666667,  "best_wire": 147,
+=== bit_reversal_L98_m1.5_rs_s3 (08:38:40, decorrido 460 min) ===
+  "best_fitness": 6481.866666666667,  "best_wire": 147,
+=== bit_reversal_L98_m1.5_rs_s4 (08:45:40, decorrido 467 min) ===
+  "best_fitness": 6381.123333333334,  "best_wire": 147,
+=== bit_reversal_L98_m1.5_rs_s5 (08:52:38, decorrido 473 min) ===
+  "best_fitness": 6446.9766666666665,  "best_wire": 146,
+=== bit_reversal_L98_m1.5_rs_s6 (08:59:37, decorrido 480 min) ===
+  "best_fitness": 6431.986666666667,  "best_wire": 147,
+=== bit_reversal_L98_m1.5_rs_s7 (09:06:37, decorrido 487 min) ===
+  "best_fitness": 6351.72,  "best_wire": 147,
+=== bit_reversal_L98_m1.5_rs_s8 (09:13:37, decorrido 494 min) ===
+  "best_fitness": 6476.9,  "best_wire": 147,
+=== bit_reversal_L98_m1.5_rs_s9 (09:20:41, decorrido 502 min) ===
+  "best_fitness": 6342.173333333333,  "best_wire": 147,
+=== bit_reversal_L98_m1.5_rs_s10 (09:27:40, decorrido 509 min) ===
+  "best_fitness": 6494.106666666667,  "best_wire": 147,
+=== butterfly_L98_m1.5_ga_s1 (09:34:40, decorrido 516 min) ===
+  "best_fitness": 5865.093333333333,  "best_wire": 147,
+=== butterfly_L98_m1.5_ga_s2 (09:40:16, decorrido 521 min) ===
+  "best_fitness": 5797.733333333334,  "best_wire": 147,
+=== butterfly_L98_m1.5_ga_s3 (09:45:48, decorrido 527 min) ===
+  "best_fitness": 5753.386666666666,  "best_wire": 147,
+=== butterfly_L98_m1.5_ga_s4 (09:51:23, decorrido 532 min) ===
+  "best_fitness": 5621.1900000000005,  "best_wire": 147,
+=== butterfly_L98_m1.5_ga_s5 (09:56:56, decorrido 538 min) ===
+  "best_fitness": 5853.193333333334,  "best_wire": 147,
+=== butterfly_L98_m1.5_ga_s6 (10:02:31, decorrido 543 min) ===
+  "best_fitness": 5889.9366666666665,  "best_wire": 147,
+=== butterfly_L98_m1.5_ga_s7 (10:08:05, decorrido 549 min) ===
+  "best_fitness": 5689.1,  "best_wire": 146,
+=== butterfly_L98_m1.5_ga_s8 (10:13:40, decorrido 555 min) ===
+  "best_fitness": 5670.88,  "best_wire": 147,
+=== butterfly_L98_m1.5_ga_s9 (10:19:14, decorrido 560 min) ===
+  "best_fitness": 5921.8133333333335,  "best_wire": 147,
+=== butterfly_L98_m1.5_ga_s10 (10:24:50, decorrido 566 min) ===
+  "best_fitness": 6048.3,  "best_wire": 146,
+=== butterfly_L98_m1.5_rs_s1 (10:30:37, decorrido 571 min) ===
+  "best_fitness": 6298.52,  "best_wire": 147,
+=== butterfly_L98_m1.5_rs_s2 (10:37:34, decorrido 578 min) ===
+  "best_fitness": 6398.84,  "best_wire": 147,
+=== butterfly_L98_m1.5_rs_s3 (10:44:32, decorrido 585 min) ===
+  "best_fitness": 6366.373333333333,  "best_wire": 147,
+=== butterfly_L98_m1.5_rs_s4 (10:51:31, decorrido 592 min) ===
+  "best_fitness": 6358.7733333333335,  "best_wire": 147,
+=== butterfly_L98_m1.5_rs_s5 (10:58:28, decorrido 599 min) ===
+  "best_fitness": 6300.516666666666,  "best_wire": 147,
+=== butterfly_L98_m1.5_rs_s6 (11:05:26, decorrido 606 min) ===
+  "best_fitness": 6340.23,  "best_wire": 147,
+=== butterfly_L98_m1.5_rs_s7 (11:12:25, decorrido 613 min) ===
+  "best_fitness": 6251.636666666666,  "best_wire": 147,
+=== butterfly_L98_m1.5_rs_s8 (11:19:25, decorrido 620 min) ===
+  "best_fitness": 6364.683333333333,  "best_wire": 147,
+=== butterfly_L98_m1.5_rs_s9 (11:26:27, decorrido 627 min) ===
+  "best_fitness": 6253.256666666666,  "best_wire": 147,
+=== butterfly_L98_m1.5_rs_s10 (11:33:27, decorrido 634 min) ===
+  "best_fitness": 6275.113333333333,  "best_wire": 147,
+=== uniform_L98_m1.5_ga_s1 (11:40:26, decorrido 641 min) ===
+  "best_fitness": 6121.68,  "best_wire": 147,
+=== uniform_L98_m1.5_ga_s2 (11:46:01, decorrido 647 min) ===
+  "best_fitness": 6185.006666666667,  "best_wire": 146,
+=== uniform_L98_m1.5_ga_s3 (11:51:38, decorrido 652 min) ===
+  "best_fitness": 6145.37,  "best_wire": 147,
+=== uniform_L98_m1.5_ga_s4 (11:57:13, decorrido 658 min) ===
+  "best_fitness": 6192.423333333333,  "best_wire": 147,
+=== uniform_L98_m1.5_ga_s5 (12:02:50, decorrido 664 min) ===
+  "best_fitness": 6031.3133333333335,  "best_wire": 147,
+=== uniform_L98_m1.5_ga_s6 (12:08:25, decorrido 669 min) ===
+  "best_fitness": 6143.056666666666,  "best_wire": 146,
+=== uniform_L98_m1.5_ga_s7 (12:14:00, decorrido 675 min) ===
+  "best_fitness": 6079.776666666667,  "best_wire": 146,
+=== uniform_L98_m1.5_ga_s8 (12:19:36, decorrido 680 min) ===
+  "best_fitness": 6136.266666666666,  "best_wire": 146,
+=== uniform_L98_m1.5_ga_s9 (12:25:12, decorrido 686 min) ===
+  "best_fitness": 6136.15,  "best_wire": 146,
+=== uniform_L98_m1.5_ga_s10 (12:30:56, decorrido 692 min) ===
+  "best_fitness": 6094.286666666667,  "best_wire": 147,
+=== uniform_L98_m1.5_rs_s1 (12:36:31, decorrido 697 min) ===
+  "best_fitness": 6268.933333333333,  "best_wire": 147,
+=== uniform_L98_m1.5_rs_s2 (12:43:30, decorrido 704 min) ===
+  "best_fitness": 6342.786666666667,  "best_wire": 147,
+=== uniform_L98_m1.5_rs_s3 (12:50:28, decorrido 711 min) ===
+  "best_fitness": 6353.003333333333,  "best_wire": 147,
+=== uniform_L98_m1.5_rs_s4 (12:57:28, decorrido 718 min) ===
+  "best_fitness": 6346.293333333334,  "best_wire": 147,
+=== uniform_L98_m1.5_rs_s5 (13:04:32, decorrido 725 min) ===
+  "best_fitness": 6392.900000000001,  "best_wire": 147,
+=== uniform_L98_m1.5_rs_s6 (13:11:33, decorrido 732 min) ===
+  "best_fitness": 6444.463333333333,  "best_wire": 147,
+=== uniform_L98_m1.5_rs_s7 (13:18:33, decorrido 739 min) ===
+  "best_fitness": 6404.776666666667,  "best_wire": 147,
+=== uniform_L98_m1.5_rs_s8 (13:25:36, decorrido 746 min) ===
+  "best_fitness": 6319.183333333333,  "best_wire": 147,
+=== uniform_L98_m1.5_rs_s9 (13:32:36, decorrido 753 min) ===
+  "best_fitness": 6324.736666666667,  "best_wire": 147,
+=== uniform_L98_m1.5_rs_s10 (13:39:35, decorrido 760 min) ===
+  "best_fitness": 6360.156666666667,  "best_wire": 147,
+=== bit_reversal_L124_m1.5_ga_s1 (13:46:37, decorrido 767 min) ===
+  "best_fitness": 5738.356666666667,  "best_wire": 186,
+=== bit_reversal_L124_m1.5_ga_s2 (13:52:23, decorrido 773 min) ===
+  "best_fitness": 5684.843333333333,  "best_wire": 186,
+=== bit_reversal_L124_m1.5_ga_s3 (13:58:08, decorrido 779 min) ===
+  "best_fitness": 5595.98,  "best_wire": 186,
+=== bit_reversal_L124_m1.5_ga_s4 (14:03:51, decorrido 785 min) ===
+  "best_fitness": 5763.463333333333,  "best_wire": 186,
+=== bit_reversal_L124_m1.5_ga_s5 (14:09:37, decorrido 790 min) ===
+  "best_fitness": 5750.456666666667,  "best_wire": 186,
+=== bit_reversal_L124_m1.5_ga_s6 (14:15:22, decorrido 796 min) ===
+  "best_fitness": 5585.78,  "best_wire": 185,
+=== bit_reversal_L124_m1.5_ga_s7 (14:21:06, decorrido 802 min) ===
+  "best_fitness": 5678.643333333333,  "best_wire": 186,
+=== bit_reversal_L124_m1.5_ga_s8 (14:26:51, decorrido 808 min) ===
+  "best_fitness": 5732.106666666667,  "best_wire": 186,
+=== bit_reversal_L124_m1.5_ga_s9 (14:32:48, decorrido 814 min) ===
+  "best_fitness": 5596.696666666667,  "best_wire": 186,
+=== bit_reversal_L124_m1.5_ga_s10 (14:38:33, decorrido 819 min) ===
+  "best_fitness": 5675.57,  "best_wire": 186,
+=== bit_reversal_L124_m1.5_rs_s1 (14:44:18, decorrido 825 min) ===
+  "best_fitness": 6172.596666666666,  "best_wire": 186,
+=== bit_reversal_L124_m1.5_rs_s2 (14:50:44, decorrido 832 min) ===
+  "best_fitness": 6163.983333333334,  "best_wire": 186,
+=== bit_reversal_L124_m1.5_rs_s3 (14:57:08, decorrido 838 min) ===
+  "best_fitness": 6119.026666666667,  "best_wire": 186,
+=== bit_reversal_L124_m1.5_rs_s4 (15:03:32, decorrido 844 min) ===
+  "best_fitness": 6119.636666666666,  "best_wire": 186,
+=== bit_reversal_L124_m1.5_rs_s5 (15:10:01, decorrido 851 min) ===
+  "best_fitness": 6147.673333333333,  "best_wire": 186,
+=== bit_reversal_L124_m1.5_rs_s6 (15:16:25, decorrido 857 min) ===
+  "best_fitness": 6178.4766666666665,  "best_wire": 186,
+=== bit_reversal_L124_m1.5_rs_s7 (15:22:50, decorrido 864 min) ===
+  "best_fitness": 6226.356666666667,  "best_wire": 186,
+=== bit_reversal_L124_m1.5_rs_s8 (15:29:16, decorrido 870 min) ===
+  "best_fitness": 6191.176666666666,  "best_wire": 186,
+=== bit_reversal_L124_m1.5_rs_s9 (15:35:42, decorrido 877 min) ===
+  "best_fitness": 6102.996666666667,  "best_wire": 186,
+=== bit_reversal_L124_m1.5_rs_s10 (15:42:07, decorrido 883 min) ===
+  "best_fitness": 6185.63,  "best_wire": 186,
+=== butterfly_L124_m1.5_ga_s1 (15:48:31, decorrido 889 min) ===
+  "best_fitness": 5579.816666666667,  "best_wire": 186,
+=== butterfly_L124_m1.5_ga_s2 (15:54:13, decorrido 895 min) ===
+  "best_fitness": 5594.11,  "best_wire": 186,
+=== butterfly_L124_m1.5_ga_s3 (15:59:54, decorrido 901 min) ===
+  "best_fitness": 5679.256666666667,  "best_wire": 186,
+=== butterfly_L124_m1.5_ga_s4 (16:05:33, decorrido 906 min) ===
+  "best_fitness": 5659.0199999999995,  "best_wire": 185,
+=== butterfly_L124_m1.5_ga_s5 (16:11:13, decorrido 912 min) ===
+  "best_fitness": 5636.6466666666665,  "best_wire": 186,
+=== butterfly_L124_m1.5_ga_s6 (16:16:53, decorrido 918 min) ===
+  "best_fitness": 5579.993333333333,  "best_wire": 186,
+=== butterfly_L124_m1.5_ga_s7 (16:22:34, decorrido 923 min) ===
+  "best_fitness": 5640.3966666666665,  "best_wire": 185,
+=== butterfly_L124_m1.5_ga_s8 (16:28:15, decorrido 929 min) ===
+  "best_fitness": 5641.263333333333,  "best_wire": 185,
+=== butterfly_L124_m1.5_ga_s9 (16:34:03, decorrido 935 min) ===
+  "best_fitness": 5681.606666666667,  "best_wire": 186,
+=== butterfly_L124_m1.5_ga_s10 (16:39:45, decorrido 941 min) ===
+  "best_fitness": 5663.6866666666665,  "best_wire": 186,
+=== butterfly_L124_m1.5_rs_s1 (16:45:25, decorrido 946 min) ===
+  "best_fitness": 6090.193333333334,  "best_wire": 186,
+=== butterfly_L124_m1.5_rs_s2 (16:51:47, decorrido 953 min) ===
+  "best_fitness": 6078.566666666667,  "best_wire": 186,
+=== butterfly_L124_m1.5_rs_s3 (16:58:10, decorrido 959 min) ===
+  "best_fitness": 5958.2733333333335,  "best_wire": 186,
+=== butterfly_L124_m1.5_rs_s4 (17:04:34, decorrido 965 min) ===
+  "best_fitness": 6029.583333333333,  "best_wire": 186,
+=== butterfly_L124_m1.5_rs_s5 (17:10:56, decorrido 972 min) ===
+  "best_fitness": 6050.783333333333,  "best_wire": 186,
+=== butterfly_L124_m1.5_rs_s6 (17:17:18, decorrido 978 min) ===
+  "best_fitness": 5945.483333333334,  "best_wire": 186,
+=== butterfly_L124_m1.5_rs_s7 (17:23:48, decorrido 985 min) ===
+  "best_fitness": 6019.636666666666,  "best_wire": 186,
+=== butterfly_L124_m1.5_rs_s8 (17:30:13, decorrido 991 min) ===
+  "best_fitness": 6119.643333333333,  "best_wire": 186,
+=== butterfly_L124_m1.5_rs_s9 (17:36:37, decorrido 997 min) ===
+  "best_fitness": 6033.923333333333,  "best_wire": 186,
+=== butterfly_L124_m1.5_rs_s10 (17:43:03, decorrido 1004 min) ===
+  "best_fitness": 6016.57,  "best_wire": 186,
+=== uniform_L124_m1.5_ga_s1 (17:49:27, decorrido 1010 min) ===
+  "best_fitness": 5923.35,  "best_wire": 186,
+=== uniform_L124_m1.5_ga_s2 (17:55:13, decorrido 1016 min) ===
+  "best_fitness": 5967.916666666667,  "best_wire": 186,
+=== uniform_L124_m1.5_ga_s3 (18:00:58, decorrido 1022 min) ===
+  "best_fitness": 6033.610000000001,  "best_wire": 185,
+=== uniform_L124_m1.5_ga_s4 (18:06:45, decorrido 1028 min) ===
+  "best_fitness": 5958.1900000000005,  "best_wire": 186,
+=== uniform_L124_m1.5_ga_s5 (18:12:28, decorrido 1033 min) ===
+  "best_fitness": 5985.703333333333,  "best_wire": 186,
+=== uniform_L124_m1.5_ga_s6 (18:18:13, decorrido 1039 min) ===
+  "best_fitness": 5929.743333333333,  "best_wire": 185,
+=== uniform_L124_m1.5_ga_s7 (18:23:57, decorrido 1045 min) ===
+  "best_fitness": 5917.893333333333,  "best_wire": 186,
+=== uniform_L124_m1.5_ga_s8 (18:29:43, decorrido 1051 min) ===
+  "best_fitness": 5944.123333333333,  "best_wire": 185,
+=== uniform_L124_m1.5_ga_s9 (18:35:33, decorrido 1056 min) ===
+  "best_fitness": 5896.18,  "best_wire": 186,
+=== uniform_L124_m1.5_ga_s10 (18:41:16, decorrido 1062 min) ===
+  "best_fitness": 5928.97,  "best_wire": 186,
+=== uniform_L124_m1.5_rs_s1 (18:47:01, decorrido 1068 min) ===
+  "best_fitness": 6224.326666666667,  "best_wire": 186,
+=== uniform_L124_m1.5_rs_s2 (18:53:26, decorrido 1074 min) ===
+  "best_fitness": 6191.583333333333,  "best_wire": 186,
+=== uniform_L124_m1.5_rs_s3 (18:59:51, decorrido 1081 min) ===
+  "best_fitness": 6201.33,  "best_wire": 186,
+=== uniform_L124_m1.5_rs_s4 (19:06:18, decorrido 1087 min) ===
+  "best_fitness": 6232.496666666667,  "best_wire": 186,
+=== uniform_L124_m1.5_rs_s5 (19:12:44, decorrido 1094 min) ===
+  "best_fitness": 6152.8133333333335,  "best_wire": 186,
+=== uniform_L124_m1.5_rs_s6 (19:19:09, decorrido 1100 min) ===
+  "best_fitness": 6207.363333333333,  "best_wire": 186,
+=== uniform_L124_m1.5_rs_s7 (19:25:35, decorrido 1106 min) ===
+  "best_fitness": 6168.946666666667,  "best_wire": 186,
+=== uniform_L124_m1.5_rs_s8 (19:32:01, decorrido 1113 min) ===
+  "best_fitness": 6124.463333333333,  "best_wire": 186,
+=== uniform_L124_m1.5_rs_s9 (19:38:26, decorrido 1119 min) ===
+  "best_fitness": 6155.953333333333,  "best_wire": 186,
+=== uniform_L124_m1.5_rs_s10 (19:44:53, decorrido 1126 min) ===
+  "best_fitness": 6240.086666666667,  "best_wire": 186,
+concluido em 1132 min

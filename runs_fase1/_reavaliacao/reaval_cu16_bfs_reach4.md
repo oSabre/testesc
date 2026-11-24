@@ -1,0 +1,11 @@
+| cenario | celula | mesh_lat | ga_delta_mediano | ga_melhores | rs_delta_mediano | rs_melhores | sw_delta | ga_pior_que_mesh | tempo_s |
+|---|---|---|---|---|---|---|---|---|---|
+| cu16_bfs_reach4 | bit_reversal_m1.5 | 7945.3 | -22.16 | 10/10 | -18.23 | 10/10 | -13.91 | 0/10 | 21 |
+| cu16_bfs_reach4 | bit_reversal_m2 | 7945.3 | -27.16 | 10/10 | -22.73 | 10/10 | -13.91 | 0/10 | 17 |
+| cu16_bfs_reach4 | bit_reversal_m3 | 7945.3 | -28.92 | 10/10 | -27.18 | 10/10 | -13.91 | 0/10 | 17 |
+| cu16_bfs_reach4 | butterfly_m1.5 | 7403.0 | -19.34 | 10/10 | -14.64 | 10/10 | -4.2 | 0/10 | 20 |
+| cu16_bfs_reach4 | butterfly_m2 | 7403.0 | -22.35 | 10/10 | -18.27 | 10/10 | -4.2 | 0/10 | 18 |
+| cu16_bfs_reach4 | butterfly_m3 | 7403.0 | -24.08 | 10/10 | -21.7 | 10/10 | -4.2 | 0/10 | 17 |
+| cu16_bfs_reach4 | uniform_m1.5 | 6468.1 | 0.58 | 0/10 | 1.56 | 0/10 | -0.83 | 0/10 | 20 |
+| cu16_bfs_reach4 | uniform_m2 | 6468.1 | -1.81 | 0/10 | -1.5 | 0/10 | -0.83 | 0/10 | 17 |
+| cu16_bfs_reach4 | uniform_m3 | 6468.1 | -3.04 | 0/10 | -2.88 | 1/10 | -0.83 | 0/10 | 17 |

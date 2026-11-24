@@ -1,0 +1,28 @@
+{
+  "name": "bit_reversal_L84_m1.5_rs_s7",
+  "algo": "random_search",
+  "init": "seeded",
+  "traffic": "bit_reversal",
+  "cus": 16,
+  "pop": 30,
+  "gens": 40,
+  "budget_evals": 1230,
+  "unique_topologies_evaluated": 1232,
+  "train_seeds": [
+    1,
+    2,
+    3
+  ],
+  "best_fitness": 6500.0633333333335,
+  "best_completion": 100.0,
+  "best_avg_path": 5.132440476190476,
+  "best_diameter": 12,
+  "wire_cap": 126,
+  "best_wire": 126,
+  "refs": {
+    "config_mesh_64.json": 7894.4800000000005,
+    "config_irregular_smallworld_64.json": 6820.496666666667
+  },
+  "best_per_pattern_ratio_vs_mesh": null,
+  "elapsed_s": 443.4
+}

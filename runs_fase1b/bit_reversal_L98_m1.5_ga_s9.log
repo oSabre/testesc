@@ -1,0 +1,76 @@
+[fio] teto = 147 tiles (mesh 64x: 112; 1.50 por link)
+[ref] config_mesh_64.json: fitness=7894.480
+[ref] config_irregular_smallworld_64.json: fitness=6820.497
+[init] 0 topologias semeadas + 30 aleatorias
+[gen   1] evals=   30 melhor=6490.357 media=7297.292 (11.5s)
+[gen   2] evals=   60 melhor=6490.357 media=7001.804 (19.9s)
+[gen   3] evals=   90 melhor=6490.357 media=6886.551 (27.9s)
+[gen   4] evals=  120 melhor=6490.357 media=6836.968 (35.9s)
+[gen   5] evals=  150 melhor=6415.797 media=6768.812 (44.3s)
+[gen   6] evals=  180 melhor=6415.797 media=6669.657 (52.4s)
+[gen   7] evals=  210 melhor=6415.797 media=6619.917 (60.7s)
+[gen   8] evals=  240 melhor=6415.797 media=6596.660 (68.6s)
+[gen   9] evals=  270 melhor=6411.240 media=6561.776 (76.8s)
+[gen  10] evals=  300 melhor=6198.770 media=6538.937 (85.0s)
+[gen  11] evals=  330 melhor=6175.107 media=6489.898 (93.1s)
+[gen  12] evals=  360 melhor=6175.107 media=6468.961 (101.3s)
+[gen  13] evals=  390 melhor=6175.107 media=6429.066 (109.3s)
+[gen  14] evals=  420 melhor=6175.107 media=6376.688 (117.6s)
+[gen  15] evals=  450 melhor=6134.800 media=6340.287 (125.7s)
+[gen  16] evals=  480 melhor=6134.800 media=6294.809 (133.8s)
+[gen  17] evals=  510 melhor=6134.800 media=6268.825 (142.3s)
+[gen  18] evals=  540 melhor=6134.800 media=6232.893 (150.2s)
+[gen  19] evals=  570 melhor=6134.800 media=6210.305 (158.3s)
+[gen  20] evals=  600 melhor=6134.800 media=6194.781 (166.5s)
+[gen  21] evals=  630 melhor=6134.800 media=6190.051 (174.3s)
+[gen  22] evals=  660 melhor=6117.113 media=6182.008 (182.5s)
+[gen  23] evals=  690 melhor=6078.997 media=6164.810 (190.4s)
+[gen  24] evals=  720 melhor=6078.997 media=6145.061 (198.4s)
+[gen  25] evals=  750 melhor=6078.997 media=6137.564 (206.4s)
+[gen  26] evals=  780 melhor=6043.463 media=6117.912 (214.5s)
+[gen  27] evals=  810 melhor=6043.463 media=6105.932 (222.4s)
+[gen  28] evals=  840 melhor=6018.950 media=6095.281 (230.4s)
+[gen  29] evals=  870 melhor=6018.950 media=6092.985 (238.5s)
+[gen  30] evals=  900 melhor=5951.227 media=6082.894 (246.6s)
+[gen  31] evals=  930 melhor=5951.227 media=6081.081 (254.9s)
+[gen  32] evals=  960 melhor=5951.227 media=6064.189 (262.7s)
+[gen  33] evals=  990 melhor=5910.640 media=6046.923 (270.8s)
+[gen  34] evals= 1020 melhor=5910.640 media=6042.123 (278.6s)
+[gen  35] evals= 1050 melhor=5910.640 media=6029.690 (286.8s)
+[gen  36] evals= 1080 melhor=5910.640 media=6016.008 (294.8s)
+[gen  37] evals= 1110 melhor=5910.640 media=6006.082 (302.8s)
+[gen  38] evals= 1140 melhor=5910.640 media=6004.264 (310.9s)
+[gen  39] evals= 1170 melhor=5910.640 media=5991.981 (318.8s)
+[gen  40] evals= 1200 melhor=5910.640 media=5985.705 (326.9s)
+[gen  41] evals= 1230 melhor=5910.640 media=5980.247 (334.9s)
+{
+  "name": "bit_reversal_L98_m1.5_ga_s9",
+  "algo": "ga",
+  "init": "random",
+  "traffic": "bit_reversal",
+  "cus": 16,
+  "pop": 30,
+  "gens": 40,
+  "budget_evals": 1230,
+  "unique_topologies_evaluated": 1232,
+  "train_seeds": [
+    1,
+    2,
+    3
+  ],
+  "best_fitness": 5910.64,
+  "best_completion": 100.0,
+  "best_avg_path": 4.687003968253968,
+  "best_diameter": 10,
+  "wire_cap": 147,
+  "best_wire": 147,
+  "refs": {
+    "config_mesh_64.json": 7894.4800000000005,
+    "config_irregular_smallworld_64.json": 6820.496666666667
+  },
+  "best_per_pattern_ratio_vs_mesh": null,
+  "elapsed_s": 334.9
+}
+
+== ALARME DE CONCLUSAO (treino) ==
+OK: 3696 simulacao(oes) novas, todas com 100% de conclusao.

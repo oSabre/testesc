@@ -1,0 +1,76 @@
+[fio] teto = 126 tiles (mesh 64x: 112; 1.50 por link)
+[ref] config_mesh_64.json: fitness=6448.047
+[ref] config_irregular_smallworld_64.json: fitness=6524.153
+[init] 0 topologias semeadas + 30 aleatorias
+[lote   1] evals=   30 melhor-ate-agora=6728.023
+[lote   2] evals=   60 melhor-ate-agora=6580.083
+[lote   3] evals=   90 melhor-ate-agora=6580.083
+[lote   4] evals=  120 melhor-ate-agora=6580.083
+[lote   5] evals=  150 melhor-ate-agora=6580.083
+[lote   6] evals=  180 melhor-ate-agora=6580.083
+[lote   7] evals=  210 melhor-ate-agora=6580.083
+[lote   8] evals=  240 melhor-ate-agora=6580.083
+[lote   9] evals=  270 melhor-ate-agora=6580.083
+[lote  10] evals=  300 melhor-ate-agora=6580.083
+[lote  11] evals=  330 melhor-ate-agora=6580.083
+[lote  12] evals=  360 melhor-ate-agora=6580.083
+[lote  13] evals=  390 melhor-ate-agora=6580.083
+[lote  14] evals=  420 melhor-ate-agora=6580.083
+[lote  15] evals=  450 melhor-ate-agora=6580.083
+[lote  16] evals=  480 melhor-ate-agora=6580.083
+[lote  17] evals=  510 melhor-ate-agora=6580.083
+[lote  18] evals=  540 melhor-ate-agora=6580.083
+[lote  19] evals=  570 melhor-ate-agora=6580.083
+[lote  20] evals=  600 melhor-ate-agora=6580.083
+[lote  21] evals=  630 melhor-ate-agora=6580.083
+[lote  22] evals=  660 melhor-ate-agora=6580.083
+[lote  23] evals=  690 melhor-ate-agora=6580.083
+[lote  24] evals=  720 melhor-ate-agora=6580.083
+[lote  25] evals=  750 melhor-ate-agora=6580.083
+[lote  26] evals=  780 melhor-ate-agora=6580.083
+[lote  27] evals=  810 melhor-ate-agora=6580.083
+[lote  28] evals=  840 melhor-ate-agora=6580.083
+[lote  29] evals=  870 melhor-ate-agora=6580.083
+[lote  30] evals=  900 melhor-ate-agora=6580.083
+[lote  31] evals=  930 melhor-ate-agora=6580.083
+[lote  32] evals=  960 melhor-ate-agora=6580.083
+[lote  33] evals=  990 melhor-ate-agora=6580.083
+[lote  34] evals= 1020 melhor-ate-agora=6580.083
+[lote  35] evals= 1050 melhor-ate-agora=6580.083
+[lote  36] evals= 1080 melhor-ate-agora=6580.083
+[lote  37] evals= 1110 melhor-ate-agora=6580.083
+[lote  38] evals= 1140 melhor-ate-agora=6580.083
+[lote  39] evals= 1170 melhor-ate-agora=6580.083
+[lote  40] evals= 1200 melhor-ate-agora=6580.083
+[lote  41] evals= 1230 melhor-ate-agora=6580.083
+{
+  "name": "uniform_L84_m1.5_rs_s4",
+  "algo": "random_search",
+  "init": "seeded",
+  "traffic": "uniform",
+  "cus": 16,
+  "pop": 30,
+  "gens": 40,
+  "budget_evals": 1230,
+  "unique_topologies_evaluated": 1232,
+  "train_seeds": [
+    1,
+    2,
+    3
+  ],
+  "best_fitness": 6580.083333333333,
+  "best_completion": 100.0,
+  "best_avg_path": 5.362103174603175,
+  "best_diameter": 12,
+  "wire_cap": 126,
+  "best_wire": 126,
+  "refs": {
+    "config_mesh_64.json": 6448.046666666667,
+    "config_irregular_smallworld_64.json": 6524.153333333334
+  },
+  "best_per_pattern_ratio_vs_mesh": null,
+  "elapsed_s": 446.9
+}
+
+== ALARME DE CONCLUSAO (treino) ==
+OK: 3696 simulacao(oes) novas, todas com 100% de conclusao.

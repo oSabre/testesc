@@ -1,0 +1,28 @@
+{
+  "name": "uniform_L124_m1.5_ga_s8",
+  "algo": "ga",
+  "init": "random",
+  "traffic": "uniform",
+  "cus": 16,
+  "pop": 30,
+  "gens": 40,
+  "budget_evals": 1230,
+  "unique_topologies_evaluated": 1230,
+  "train_seeds": [
+    1,
+    2,
+    3
+  ],
+  "best_fitness": 5944.123333333333,
+  "best_completion": 100.0,
+  "best_avg_path": 4.031746031746032,
+  "best_diameter": 9,
+  "wire_cap": 186,
+  "best_wire": 185,
+  "refs": {
+    "config_mesh_64.json": 6448.046666666667,
+    "config_irregular_smallworld_64.json": 6524.153333333334
+  },
+  "best_per_pattern_ratio_vs_mesh": null,
+  "elapsed_s": 349.1
+}
