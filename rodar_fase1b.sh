@@ -12,7 +12,7 @@
 # 3) Teste curto:  LEVELS=84 PATTERNS=uniform RUNS=2 POP=12 GENS=4 OUT=runs_teste1b bash rodar_fase1b.sh
 # Nomes: <padrao>_L<L>_m<M>_<ga|rs>_s<i>. Tempo: ~6 min por execucao com 3 seeds de treino (x3,3 com 10 seeds).
 set -u
-PY=${PY:-python3}
+PY=${PY:-py}
 BIN=${BIN:-./main.exe}
 MESH=${MESH:-configs/configs_ciclos/config_mesh_64.json}
 SW=${SW:-configs/configs_ciclos/config_irregular_smallworld_64.json}

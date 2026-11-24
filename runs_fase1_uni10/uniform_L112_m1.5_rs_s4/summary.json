@@ -1,0 +1,35 @@
+{
+  "name": "uniform_L112_m1.5_rs_s4",
+  "algo": "random_search",
+  "init": "seeded",
+  "traffic": "uniform",
+  "cus": 16,
+  "pop": 30,
+  "gens": 40,
+  "budget_evals": 1230,
+  "unique_topologies_evaluated": 1232,
+  "train_seeds": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10
+  ],
+  "best_fitness": 6316.079,
+  "best_completion": 100.0,
+  "best_avg_path": 4.26984126984127,
+  "best_diameter": 10,
+  "wire_cap": 168,
+  "best_wire": 168,
+  "refs": {
+    "config_mesh_64.json": 6408.563,
+    "config_irregular_smallworld_64.json": 6396.524
+  },
+  "best_per_pattern_ratio_vs_mesh": null,
+  "elapsed_s": 376.0
+}

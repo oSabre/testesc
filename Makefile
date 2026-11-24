@@ -32,6 +32,9 @@ main.exe: main.cpp
 	@test -n "$(wildcard $(SC_LIBDIR)/libsystemc*)" || { echo "ERRO: libsystemc nao encontrada em '$(SC_LIBDIR)'. O SystemC precisa estar compilado (configure, make, make install)."; exit 1; }
 	$(CXX) $(LINUX_CXXFLAGS) $(MAIN_SOURCES) -o main.exe $(LINUX_LDFLAGS)
 
+wmain.exe: main.cpp
+	$(CXX) $(CXXFLAGS) $(MAIN_SOURCES) -o main.exe $(LDFLAGS)
+
 testvec.exe: teste_vector.cpp
 	$(CXX) $(CXXFLAGS) teste_vector.cpp -o testevec.exe $(LDFLAGS)
 

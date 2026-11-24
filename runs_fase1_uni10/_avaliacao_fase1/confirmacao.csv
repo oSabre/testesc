@@ -1,0 +1,7 @@
+celula,topologia,grupo,lat_media,mesh_lat,completion,delta_pct,ic_lo,ic_hi,p_holm,veredito
+uniform_L112_m1.5,uniform_L112_m1.5_ga_s4,ga,6398.3,6581.6,100.0,-2.61,-4.28,-0.95,0.006401608794215384,melhor
+uniform_L112_m1.5,uniform_L112_m1.5_rs_s9,rs,6551.0,6581.6,100.0,-0.34,-1.84,1.16,0.6448122077092425,equivalente/n.s.
+uniform_L112_m2,uniform_L112_m2_ga_s10,ga,6366.4,6581.6,100.0,-3.15,-4.7,-1.59,0.0005372751690260969,melhor
+uniform_L112_m2,uniform_L112_m2_rs_s1,rs,6361.3,6581.6,100.0,-3.21,-5.11,-1.3,0.0017614146401428137,melhor
+uniform_L112_m3,uniform_L112_m3_ga_s3,ga,6250.9,6581.6,100.0,-4.83,-6.61,-3.06,1.040345561603532e-05,melhor
+uniform_L112_m3,uniform_L112_m3_rs_s5,rs,6254.7,6581.6,100.0,-4.79,-6.58,-3.0,1.040345561603532e-05,melhor
