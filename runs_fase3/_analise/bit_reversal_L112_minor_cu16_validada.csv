@@ -1,0 +1,4 @@
+lat_eval,dlat,ci_lo,ci_hi,p_holm,lat_state,area,darea,area_state,verdict,L,wire,cus,core,completion_eval,hash,run
+6187.012,-22.222,-25.2542,-19.1897,0.0,melhor,2.8258,-0.0542,equiv,domina,112,168,16,minor,100.0,1e384d3380d6247a,bit_reversal_L112_minor_cu16_nsga_s10
+6058.022,-23.8488,-26.6906,-21.007,0.0,melhor,2.8262,-0.0406,equiv,domina,112,168,16,minor,100.0,5a36154ed97ab228,bit_reversal_L112_minor_cu16_nsga_s2
+5967.275,-24.9752,-27.9841,-21.9663,0.0,melhor,2.8281,0.0271,equiv,domina,112,167,16,minor,100.0,23f5c4ae203da2d4,bit_reversal_L112_minor_cu16_nsga_s2

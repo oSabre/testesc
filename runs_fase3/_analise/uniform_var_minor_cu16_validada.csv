@@ -1,0 +1,10 @@
+lat_eval,dlat,ci_lo,ci_hi,p_holm,lat_state,area,darea,area_state,verdict,L,wire,cus,core,completion_eval,hash,run
+7406.385,14.6146,10.486,18.7431,0.0004,pior,2.5309,-10.4854,melhor,troca,84,168,16,minor,100.0,f23e2553f7a87db4,uniform_var_minor_cu16_nsga_s3
+7033.786,8.919,3.3815,14.4565,0.0627,equiv,2.5309,-10.484,melhor,domina,84,168,16,minor,100.0,40432fc7c6417b09,uniform_var_minor_cu16_nsga_s6
+6906.834,7.011,3.3112,10.7108,0.0304,pior,2.5313,-10.4705,melhor,troca,84,168,16,minor,100.0,06453f4671d518f3,uniform_var_minor_cu16_nsga_s3
+6680.151,3.3875,1.5447,5.2303,0.0319,pior,2.5313,-10.4691,melhor,troca,84,157,16,minor,100.0,748ecac0a7d2ad04,uniform_var_minor_cu16_nsga_s1
+6589.898,2.0242,-0.1839,4.2323,0.5436,equiv,2.5576,-9.5411,melhor,domina,86,172,16,minor,100.0,7f87819dd90d0b26,uniform_var_minor_cu16_nsga_s3
+6530.185,1.1526,-1.7561,4.0613,1.0,equiv,2.566,-9.2444,melhor,domina,87,174,16,minor,100.0,018a8d095acc2cc4,uniform_var_minor_cu16_nsga_s9
+6524.081,0.9983,-1.4136,3.4102,1.0,equiv,2.6699,-5.5672,melhor,domina,97,191,16,minor,100.0,cea26a81e84495d6,uniform_var_minor_cu16_nsga_s1
+6398.282,-0.9565,-4.0505,2.1375,1.0,equiv,2.7025,-4.4142,melhor,domina,100,200,16,minor,100.0,08269bb2c6942d97,uniform_var_minor_cu16_nsga_s8
+6361.53,-1.4548,-4.5359,1.6262,1.0,equiv,2.7746,-1.8643,melhor,domina,107,214,16,minor,100.0,7242592c61a38fbf,uniform_var_minor_cu16_nsga_s8

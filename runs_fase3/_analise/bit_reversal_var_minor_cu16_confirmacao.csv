@@ -1,0 +1,13 @@
+lat_eval,dlat,ci_lo,ci_hi,p_holm,lat_state,area,darea,area_state,verdict,L,wire,cus,core,completion_eval,hash,run
+7355.2487,-5.2372,-7.5939,-2.8804,0.0001,melhor,2.5308,-10.4881,melhor,domina,84,168,16,minor,100.0,a815d0a0f5df9f53,bit_reversal_var_minor_cu16_nsga_s1
+6983.6457,-10.0934,-11.8361,-8.3506,0.0,melhor,2.5308,-10.4867,melhor,domina,84,168,16,minor,100.0,8688865dd3e52fe5,bit_reversal_var_minor_cu16_nsga_s2
+6678.1547,-14.0306,-15.8178,-12.2433,0.0,melhor,2.5309,-10.4854,melhor,domina,84,168,16,minor,100.0,67e742d712d930c4,bit_reversal_var_minor_cu16_nsga_s7
+6723.7447,-13.2575,-15.61,-10.9051,0.0,melhor,2.5316,-10.461,melhor,domina,84,165,16,minor,100.0,d3338e9a6ac8aa94,bit_reversal_var_minor_cu16_nsga_s7
+6507.8653,-16.0864,-18.2955,-13.8773,0.0,melhor,2.5327,-10.4204,melhor,domina,84,166,16,minor,100.0,bbaf8482c7d53ad0,bit_reversal_var_minor_cu16_nsga_s5
+6503.2663,-16.1709,-18.1763,-14.1655,0.0,melhor,2.5334,-10.396,melhor,domina,84,168,16,minor,100.0,06d269b56e8da1dc,bit_reversal_var_minor_cu16_nsga_s1
+6374.2147,-17.7918,-19.8877,-15.6959,0.0,melhor,2.5357,-10.3161,melhor,domina,84,168,16,minor,100.0,31dcf1ac2db2714b,bit_reversal_var_minor_cu16_nsga_s1
+6361.9463,-18.0192,-19.8499,-16.1885,0.0,melhor,2.5451,-9.9814,melhor,domina,85,168,16,minor,100.0,022e54fc20d55d87,bit_reversal_var_minor_cu16_nsga_s1
+6264.4877,-19.2476,-21.1009,-17.3942,0.0,melhor,2.5667,-9.2173,melhor,domina,87,173,16,minor,100.0,e7c896d0fdbc9010,bit_reversal_var_minor_cu16_nsga_s1
+6151.5613,-20.692,-22.5067,-18.8773,0.0,melhor,2.596,-8.1835,melhor,domina,90,178,16,minor,100.0,f3bbd8da2b088969,bit_reversal_var_minor_cu16_nsga_s1
+6113.2423,-21.2054,-23.0304,-19.3804,0.0,melhor,2.5963,-8.1699,melhor,domina,90,180,16,minor,100.0,979c4ddc91449aa6,bit_reversal_var_minor_cu16_nsga_s1
+5990.928,-22.7858,-24.6087,-20.9629,0.0,melhor,2.7128,-4.0511,melhor,domina,101,201,16,minor,100.0,a0f82b5b2a71cb80,bit_reversal_var_minor_cu16_nsga_s8

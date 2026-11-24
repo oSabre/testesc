@@ -1,0 +1,16 @@
+lat_eval,dlat,ci_lo,ci_hi,p_holm,lat_state,area,darea,area_state,verdict,L,wire,cus,core,completion_eval,hash,run
+6823.3947,-7.2153,-9.0492,-5.3814,0.0,melhor,2.5301,-10.5111,melhor,domina,84,168,16,minor,100.0,074972d31a053f2f,butterfly_var_minor_cu16_nsga_s4
+6637.9663,-9.7316,-11.189,-8.2742,0.0,melhor,2.5305,-10.5002,melhor,domina,84,167,16,minor,100.0,aada3bf0cb6d1aa5,butterfly_var_minor_cu16_nsga_s4
+6561.855,-10.7158,-12.6406,-8.7909,0.0,melhor,2.5319,-10.4474,melhor,domina,84,168,16,minor,100.0,a9057fdd493df0a6,butterfly_var_minor_cu16_nsga_s9
+6456.613,-12.174,-13.437,-10.911,0.0,melhor,2.5323,-10.4353,melhor,domina,84,168,16,minor,100.0,231a215eac976406,butterfly_var_minor_cu16_nsga_s1
+6483.6223,-11.8059,-13.4269,-10.185,0.0,melhor,2.5323,-10.4339,melhor,domina,84,166,16,minor,100.0,5cde77ecf951d220,butterfly_var_minor_cu16_nsga_s9
+6334.4647,-13.87,-15.3534,-12.3866,0.0,melhor,2.5356,-10.3188,melhor,domina,84,167,16,minor,100.0,97b76e4d378c56aa,butterfly_var_minor_cu16_nsga_s9
+6281.1443,-14.555,-16.0543,-13.0557,0.0,melhor,2.5451,-9.9814,melhor,domina,85,170,16,minor,100.0,af917ddb8b76a428,butterfly_var_minor_cu16_nsga_s4
+6198.2277,-15.7029,-17.0664,-14.3395,0.0,melhor,2.5554,-9.6197,melhor,domina,86,172,16,minor,100.0,b0dcec4d0308a426,butterfly_var_minor_cu16_nsga_s7
+6089.0567,-17.1558,-18.6665,-15.6451,0.0,melhor,2.5865,-8.5195,melhor,domina,89,178,16,minor,100.0,134d5ae1640e273c,butterfly_var_minor_cu16_nsga_s7
+6022.538,-18.0893,-19.2803,-16.8984,0.0,melhor,2.5887,-8.441,melhor,domina,89,175,16,minor,100.0,8105b2c26d99da90,butterfly_var_minor_cu16_nsga_s5
+6048.7063,-17.7191,-19.1414,-16.2969,0.0,melhor,2.6832,-5.0971,melhor,domina,98,195,16,minor,100.0,edc92ba9a4d6f6ed,butterfly_var_minor_cu16_nsga_s9
+5989.1787,-18.5312,-19.798,-17.2644,0.0,melhor,2.7026,-4.4129,melhor,domina,100,200,16,minor,100.0,ec36d9d5658de730,butterfly_var_minor_cu16_nsga_s9
+5975.4833,-18.7166,-20.0013,-17.4319,0.0,melhor,2.7033,-4.3871,melhor,domina,100,197,16,minor,100.0,6a39bdb546fad8f4,butterfly_var_minor_cu16_nsga_s9
+5915.797,-19.5531,-20.7266,-18.3797,0.0,melhor,2.7347,-3.2761,melhor,domina,103,206,16,minor,100.0,d1b3839d57782870,butterfly_var_minor_cu16_nsga_s4
+5820.2173,-20.8472,-21.8635,-19.8309,0.0,melhor,2.7867,-1.4362,melhor,domina,108,216,16,minor,100.0,a585f7bbc0818ebe,butterfly_var_minor_cu16_nsga_s4

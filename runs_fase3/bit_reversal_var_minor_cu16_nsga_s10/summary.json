@@ -1,0 +1,42 @@
+{
+  "name": "bit_reversal_var_minor_cu16_nsga_s10",
+  "version": "A",
+  "traffic": "bit_reversal",
+  "ctrl": "bfs",
+  "flit": 64,
+  "links": [
+    84,
+    124
+  ],
+  "wire_mult": 2.0,
+  "wire_cap": null,
+  "cus_set": [
+    16
+  ],
+  "core_set": [
+    "minor"
+  ],
+  "pop": 40,
+  "gens": 40,
+  "train_seeds": [
+    1,
+    2,
+    3
+  ],
+  "n_avaliacoes_unicas": 1640,
+  "mesh_ref": {
+    "lat": 7894.4800000000005,
+    "area": 2.82733265,
+    "area_noc": 1.3553326499999998,
+    "completion": 100.0,
+    "cus": 16,
+    "core": "minor"
+  },
+  "n_pareto": 11,
+  "hv_pareto_final": 0.31719941589700446,
+  "hv_ref": [
+    1.25,
+    1.5
+  ],
+  "elapsed_s": 160.2
+}
